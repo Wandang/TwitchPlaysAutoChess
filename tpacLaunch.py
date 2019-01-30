@@ -34,6 +34,97 @@ readbuffer = ""
 isDebug = False
 
 COORDMAP = {
+    'a1': {x: 633, y: 620},
+    'a2': {x: 651, y: 548},
+    'a3': {x: 669, y: 471},
+    'a4': {x: 683, y: 402},
+    'a5': {x: 695, y: 346},
+    'a6': {x: 708, y: 293},
+    'a7': {x: 715, y: 240},
+    'a8': {x: 727, y: 194},
+    'b1': {x: 734, y: 624},
+    'b2': {x: 744, y: 545},
+    'b3': {x: 750, y: 472},
+    'b4': {x: 761, y: 408},
+    'b5': {x: 769, y: 347},
+    'b6': {x: 778, y: 292},
+    'b7': {x: 783, y: 241},
+    'b8': {x: 793, y: 195},
+    'c1': {x: 824, y: 625},
+    'c2': {x: 831, y: 542},
+    'c3': {x: 835, y: 475},
+    'c4': {x: 842, y: 409},
+    'c5': {x: 846, y: 348},
+    'c6': {x: 853, y: 290},
+    'c7': {x: 856, y: 240},
+    'c8': {x: 862, y: 192},
+    'd1': {x: 913, y: 621},
+    'd2': {x: 917, y: 542},
+    'd3': {x: 919, y: 473},
+    'd4': {x: 920, y: 405},
+    'd5': {x: 923, y: 346},
+    'd6': {x: 926, y: 289},
+    'd7': {x: 928, y: 238},
+    'd8': {x: 927, y: 189},
+    'e1': {x: 1006, y: 621},
+    'e2': {x: 1004, y: 546},
+    'e3': {x: 1000, y: 476},
+    'e4': {x: 999, y: 409},
+    'e5': {x: 998, y: 346},
+    'e6': {x: 996, y: 288},
+    'e7': {x: 994, y: 240},
+    'e8': {x: 994, y: 188},
+    'f1': {x: 1098, y: 621},
+    'f2': {x: 1091, y: 541},
+    'f3': {x: 1084, y: 471},
+    'f4': {x: 1081, y: 404},
+    'f5': {x: 1072, y: 342},
+    'f6': {x: 1069, y: 288},
+    'f7': {x: 1066, y: 238},
+    'f8': {x: 1061, y: 192},
+    'g1': {x: 1193, y: 620},
+    'g2': {x: 1180, y: 543},
+    'g3': {x: 1167, y: 469},
+    'g4': {x: 1159, y: 405},
+    'g5': {x: 1149, y: 344},
+    'g6': {x: 1142, y: 293},
+    'g7': {x: 1137, y: 241},
+    'g8': {x: 1134, y: 191},
+    'h1': {x: 1278, y: 619},
+    'h2': {x: 1265, y: 539},
+    'h3': {x: 1248, y: 468},
+    'h4': {x: 1235, y: 405},
+    'h5': {x: 1227, y: 346},
+    'h6': {x: 1213, y: 290},
+    'h7': {x: 1204, y: 241},
+    'h8': {x: 1195, y: 194},
+
+    'aa': {x: 592 y: 807},
+    'bb': {x: 699 y: 809},
+    'cc': {x: 804 y: 809},
+    'dd': {x: 908 y: 808},
+    'ee': {x: 1014 y: 807},
+    'ff': {x: 1115 y: 809},
+    'gg': {x: 1224 y: 805},
+    'hh': {x: 1329 y: 806},
+
+
+    'pick1': {'x': 464, 'y': 276},
+    'pick2': {'x': 712, 'y': 257},
+    'pick3': {'x': 973, 'y': 265},
+    'pick4': {'x': 1220, 'y': 271},
+    'pick5': {'x': 1458, 'y': 256},
+    'lock': {'x': 313, 'y': 445},
+    'close': {'x': 1610, 'y': 344},
+    'dotaMenu': {'x': 32, 'y': 27},
+    'dotaDisconnectBtn': {'x': 1627, 'y': 1035},
+    'dotaLeaveBtn': {'x': 1648, 'y': 985},
+    'dotaLeaveAcceptBtn': {'x': 874, 'y': 603},
+    'dotaSearchBtn': {'x': 1493, 'y': 872},
+    'dotaAcceptBtn': {'x': 901, 'y': 529}
+}
+
+COORDMAPold = {
     'a1': {'x': 674, 'y': 447},
     'a2': {'x': 688, 'y': 396},
     'a3': {'x': 702, 'y': 317},
@@ -91,8 +182,10 @@ COORDMAP = {
     'dotaAcceptBtn': {'x': 901, 'y': 529}
 }
 
+
 def searchNextGame():
     pass
+
 
 def searchGame():
     subprocess.run(['xdotool',
@@ -358,6 +451,15 @@ def commandExtractor(incomingString):
         # check for valid move; ref example !q AA F4
         movePattern = r'^!q ([a-hA-H][a-hA-H1-4]{1}) (?!\1)([a-hA-H][a-hA-H1-4]{1})$'
         if(re.match(movePattern, incomingString)):
+            return True
+        else:
+            return None
+
+    elif(incomingString.startswith('!g')):
+        print('!q command to check: %s' % incomingString)
+        # check for valid move; ref example !g AA
+        grabPattern = r'^!q ([a-hA-H][a-hA-H1-8]{1}) (?!\1)([a-hA-H][a-hA-H1-8]{1})$'
+        if(re.match(grabPattern, incomingString)):
             return True
         else:
             return None
