@@ -164,6 +164,9 @@ def resetChickenPos():
 
 
 def moveItem(slot, target):
+    '''
+    move item from chicken slot to target hero
+    '''
     slotID = 'chickSlot'+slot
     subprocess.run(['xdotool',
                     'mousemove',
@@ -187,6 +190,7 @@ def moveItem(slot, target):
                     dota2WindowID,
                     '1'])
     time.sleep(delayBetweenActions)
+    resetChickenPos()
 
 
 def grabItem(target):
@@ -206,7 +210,7 @@ def grabItem(target):
 def tabTour():
     for i in range(8):
         subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'tab'])
-        time.sleep(0.4)
+        time.sleep(0.625)
 
 
 def camCalibration():
