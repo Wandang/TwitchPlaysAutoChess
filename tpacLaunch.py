@@ -34,79 +34,79 @@ readbuffer = ""
 isDebug = False
 
 COORDMAP = {
-    'a1': {x: 633, y: 620},
-    'a2': {x: 651, y: 548},
-    'a3': {x: 669, y: 471},
-    'a4': {x: 683, y: 402},
-    'a5': {x: 695, y: 346},
-    'a6': {x: 708, y: 293},
-    'a7': {x: 715, y: 240},
-    'a8': {x: 727, y: 194},
-    'b1': {x: 734, y: 624},
-    'b2': {x: 744, y: 545},
-    'b3': {x: 750, y: 472},
-    'b4': {x: 761, y: 408},
-    'b5': {x: 769, y: 347},
-    'b6': {x: 778, y: 292},
-    'b7': {x: 783, y: 241},
-    'b8': {x: 793, y: 195},
-    'c1': {x: 824, y: 625},
-    'c2': {x: 831, y: 542},
-    'c3': {x: 835, y: 475},
-    'c4': {x: 842, y: 409},
-    'c5': {x: 846, y: 348},
-    'c6': {x: 853, y: 290},
-    'c7': {x: 856, y: 240},
-    'c8': {x: 862, y: 192},
-    'd1': {x: 913, y: 621},
-    'd2': {x: 917, y: 542},
-    'd3': {x: 919, y: 473},
-    'd4': {x: 920, y: 405},
-    'd5': {x: 923, y: 346},
-    'd6': {x: 926, y: 289},
-    'd7': {x: 928, y: 238},
-    'd8': {x: 927, y: 189},
-    'e1': {x: 1006, y: 621},
-    'e2': {x: 1004, y: 546},
-    'e3': {x: 1000, y: 476},
-    'e4': {x: 999, y: 409},
-    'e5': {x: 998, y: 346},
-    'e6': {x: 996, y: 288},
-    'e7': {x: 994, y: 240},
-    'e8': {x: 994, y: 188},
-    'f1': {x: 1098, y: 621},
-    'f2': {x: 1091, y: 541},
-    'f3': {x: 1084, y: 471},
-    'f4': {x: 1081, y: 404},
-    'f5': {x: 1072, y: 342},
-    'f6': {x: 1069, y: 288},
-    'f7': {x: 1066, y: 238},
-    'f8': {x: 1061, y: 192},
-    'g1': {x: 1193, y: 620},
-    'g2': {x: 1180, y: 543},
-    'g3': {x: 1167, y: 469},
-    'g4': {x: 1159, y: 405},
-    'g5': {x: 1149, y: 344},
-    'g6': {x: 1142, y: 293},
-    'g7': {x: 1137, y: 241},
-    'g8': {x: 1134, y: 191},
-    'h1': {x: 1278, y: 619},
-    'h2': {x: 1265, y: 539},
-    'h3': {x: 1248, y: 468},
-    'h4': {x: 1235, y: 405},
-    'h5': {x: 1227, y: 346},
-    'h6': {x: 1213, y: 290},
-    'h7': {x: 1204, y: 241},
-    'h8': {x: 1195, y: 194},
+    'a1': {'x': 633, 'y': 620},
+    'a2': {'x': 651, 'y': 548},
+    'a3': {'x': 669, 'y': 471},
+    'a4': {'x': 683, 'y': 402},
+    'a5': {'x': 695, 'y': 346},
+    'a6': {'x': 708, 'y': 293},
+    'a7': {'x': 715, 'y': 240},
+    'a8': {'x': 727, 'y': 194},
+    'b1': {'x': 734, 'y': 624},
+    'b2': {'x': 744, 'y': 545},
+    'b3': {'x': 750, 'y': 472},
+    'b4': {'x': 761, 'y': 408},
+    'b5': {'x': 769, 'y': 347},
+    'b6': {'x': 778, 'y': 292},
+    'b7': {'x': 783, 'y': 241},
+    'b8': {'x': 793, 'y': 195},
+    'c1': {'x': 824, 'y': 625},
+    'c2': {'x': 831, 'y': 542},
+    'c3': {'x': 835, 'y': 475},
+    'c4': {'x': 842, 'y': 409},
+    'c5': {'x': 846, 'y': 348},
+    'c6': {'x': 853, 'y': 290},
+    'c7': {'x': 856, 'y': 240},
+    'c8': {'x': 862, 'y': 192},
+    'd1': {'x': 913, 'y': 621},
+    'd2': {'x': 917, 'y': 542},
+    'd3': {'x': 919, 'y': 473},
+    'd4': {'x': 920, 'y': 405},
+    'd5': {'x': 923, 'y': 346},
+    'd6': {'x': 926, 'y': 289},
+    'd7': {'x': 928, 'y': 238},
+    'd8': {'x': 927, 'y': 189},
+    'e1': {'x': 1006, 'y': 621},
+    'e2': {'x': 1004, 'y': 546},
+    'e3': {'x': 1000, 'y': 476},
+    'e4': {'x': 999, 'y': 409},
+    'e5': {'x': 998, 'y': 346},
+    'e6': {'x': 996, 'y': 288},
+    'e7': {'x': 994, 'y': 240},
+    'e8': {'x': 994, 'y': 188},
+    'f1': {'x': 1098, 'y': 621},
+    'f2': {'x': 1091, 'y': 541},
+    'f3': {'x': 1084, 'y': 471},
+    'f4': {'x': 1081, 'y': 404},
+    'f5': {'x': 1072, 'y': 342},
+    'f6': {'x': 1069, 'y': 288},
+    'f7': {'x': 1066, 'y': 238},
+    'f8': {'x': 1061, 'y': 192},
+    'g1': {'x': 1193, 'y': 620},
+    'g2': {'x': 1180, 'y': 543},
+    'g3': {'x': 1167, 'y': 469},
+    'g4': {'x': 1159, 'y': 405},
+    'g5': {'x': 1149, 'y': 344},
+    'g6': {'x': 1142, 'y': 293},
+    'g7': {'x': 1137, 'y': 241},
+    'g8': {'x': 1134, 'y': 191},
+    'h1': {'x': 1278, 'y': 619},
+    'h2': {'x': 1265, 'y': 539},
+    'h3': {'x': 1248, 'y': 468},
+    'h4': {'x': 1235, 'y': 405},
+    'h5': {'x': 1227, 'y': 346},
+    'h6': {'x': 1213, 'y': 290},
+    'h7': {'x': 1204, 'y': 241},
+    'h8': {'x': 1195, 'y': 194},
 
-    'aa': {x: 592 y: 807},
-    'bb': {x: 699 y: 809},
-    'cc': {x: 804 y: 809},
-    'dd': {x: 908 y: 808},
-    'ee': {x: 1014 y: 807},
-    'ff': {x: 1115 y: 809},
-    'gg': {x: 1224 y: 805},
-    'hh': {x: 1329 y: 806},
+    'aa': {'x': 592, 'y': 807},
+    'bb': {'x': 699, 'y': 809},
+    'cc': {'x': 804, 'y': 809},
+    'dd': {'x': 908, 'y': 808},
+    'ee': {'x': 1014, 'y': 807},
+    'ff': {'x': 1115, 'y': 809},
+    'gg': {'x': 1224, 'y': 805},
+    'hh': {'x': 1329, 'y': 806},
 
 
     'pick1': {'x': 464, 'y': 276},
@@ -262,7 +262,7 @@ def leaveGame():
                     dota2WindowID,
                     '1'])
 
-# !p 4
+# !b 4
 
 
 def pickPiece(target):
@@ -284,7 +284,7 @@ def pickPiece(target):
 # def toggleSelection():
 #     subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'space'])
 
-# !showSelection
+# !shophowSelection
 
 
 def showSelection(isOn):
@@ -322,7 +322,7 @@ def lockSelection():
     # optionally close selection afterwards
     # xdotool key space
 
-# !q AA F4
+# !m AA F4
 
 
 def movePiece(source, target):
@@ -340,7 +340,7 @@ def movePiece(source, target):
                     dota2WindowID,
                     '1'])
     time.sleep(delayBetweenActions)
-    subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'q'])
+    subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'm'])
     time.sleep(delayBetweenActions)
     subprocess.run(['xdotool',
                     'mousemove',
@@ -353,7 +353,7 @@ def movePiece(source, target):
                     dota2WindowID,
                     '1'])
 
-# !w F5
+# !b F5
 
 
 def benchPiece(target):
@@ -368,9 +368,9 @@ def benchPiece(target):
                     dota2WindowID,
                     '1'])
     time.sleep(delayBetweenActions)
-    subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'w'])
+    subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'b'])
 
-# !e F6
+# !s F6
 
 
 def sellPiece(target):
@@ -380,20 +380,20 @@ def sellPiece(target):
                     str(COORDMAP[target]['y']),
                     'click', '1'])
     time.sleep(delayBetweenActions)
-    subprocess.run(['xdotool', 'key', 'e'])
+    subprocess.run(['xdotool', 'key', 's'])
+
+# !r null
+
+
+def rerollPieces():
+    subprocess.run(['xdotool', 'key', 'r'])
 
 # !x null
 
 
-def rerollPieces():
-    subprocess.run(['xdotool', 'key', 'x'])
-
-# !c null
-
-
 def buyXP(amount):
     for i in range(amount):
-        subprocess.run(['xdotool', 'key', 'c'])
+        subprocess.run(['xdotool', 'key', 'x'])
         time.sleep(delayBetweenActions)
 
 
@@ -437,7 +437,7 @@ def most_common(lst):
             f.write(item + '\n')
     return maxList[0]
 
-# TODO: sort/reorder same solution for move (!q A3 F2 == !q F2 A3)
+# TODO: sort/reorder same solution for move (!m A3 F2 == !m F2 A3)
 
 
 def commandExtractor(incomingString):
@@ -446,64 +446,64 @@ def commandExtractor(incomingString):
         return None
 
     # starts with keywords?
-    if(incomingString.startswith('!q')):
-        print('!q command to check: %s' % incomingString)
-        # check for valid move; ref example !q AA F4
-        movePattern = r'^!q ([a-hA-H][a-hA-H1-4]{1}) (?!\1)([a-hA-H][a-hA-H1-4]{1})$'
+    if(incomingString.startswith('!m')):
+        print('!m command to check: %s' % incomingString)
+        # check for valid move; ref example !m AA F4
+        movePattern = r'^!m ([a-hA-H][a-hA-H1-4]{1}) (?!\1)([a-hA-H][a-hA-H1-4]{1})$'
         if(re.match(movePattern, incomingString)):
             return True
         else:
             return None
 
     elif(incomingString.startswith('!g')):
-        print('!q command to check: %s' % incomingString)
-        # check for valid move; ref example !g AA
-        grabPattern = r'^!q ([a-hA-H][a-hA-H1-8]{1}) (?!\1)([a-hA-H][a-hA-H1-8]{1})$'
+        print('!g command to check: %s' % incomingString)
+        # check for valid grab; ref example !g AA
+        grabPattern = r'^!g ([a-hA-H][a-hA-H1-8]{1}) (?!\1)([a-hA-H][a-hA-H1-8]{1})$'
         if(re.match(grabPattern, incomingString)):
             return True
         else:
             return None
 
-    elif incomingString.startswith('!w'):
-        print('!w command to check: %s' % incomingString)
-        # check for valid bench; ref example !w A3
-        benchPattern = r'^!w ([a-hA-H][1-4])$'
+    elif incomingString.startswith('!b'):
+        print('!b command to check: %s' % incomingString)
+        # check for valid bench; ref example !b A3
+        benchPattern = r'^!b ([a-hA-H][1-4])$'
         if(re.match(benchPattern, incomingString)):
-            return True
-        else:
-            return None
-
-    elif incomingString.startswith('!e'):
-        print('!e command to check: %s' % incomingString)
-        # check for valid delete; ref example !e A3
-        benchPattern = r'^!e ([a-hA-H][1-4])$'
-        if(re.match(benchPattern, incomingString)):
-            return True
-        else:
-            return None
-
-    elif incomingString.startswith('!x'):
-        print('!x command to check: %s' % incomingString)
-        # check for valid reroll; ref example !x
-        rerollPattern = r'^!x$'
-        if(re.match(rerollPattern, incomingString)):
-            return True
-        else:
-            return None
-
-    elif incomingString.startswith('!c'):
-        print('!c command to check: %s' % incomingString)
-        # check for valid xp; ref example !c
-        buyXPPattern = r'^!c [1-4]$'
-        if(re.match(buyXPPattern, incomingString)):
             return True
         else:
             return None
 
     elif incomingString.startswith('!s'):
         print('!s command to check: %s' % incomingString)
-        # check for valid xp; ref example !s
-        showSelectionPattern = r'^!s (on|off)$'
+        # check for valid delete; ref example !s A3
+        benchPattern = r'^!s ([a-hA-H][1-4])$'
+        if(re.match(benchPattern, incomingString)):
+            return True
+        else:
+            return None
+
+    elif incomingString.startswith('!r'):
+        print('!r command to check: %s' % incomingString)
+        # check for valid reroll; ref example !r
+        rerollPattern = r'^!r$'
+        if(re.match(rerollPattern, incomingString)):
+            return True
+        else:
+            return None
+
+    elif incomingString.startswith('!x'):
+        print('!x command to check: %s' % incomingString)
+        # check for valid xp; ref example !x
+        buyXPPattern = r'^!x [1-4]$'
+        if(re.match(buyXPPattern, incomingString)):
+            return True
+        else:
+            return None
+
+    elif incomingString.startswith('!shop'):
+        print('!shop command to check: %s' % incomingString)
+        # check for valid space; ref example !shop
+        showSelectionPattern = r'^!shop (on|off)$'
         if(re.match(showSelectionPattern, incomingString)):
             return True
         else:
@@ -518,10 +518,10 @@ def commandExtractor(incomingString):
         else:
             return None
 
-    elif incomingString.startswith('!p'):
-        print('!p command to check: %s' % incomingString)
-        # check for valid pick; ref example !p 1
-        pickPattern = r'^!p [1-5]$'
+    elif incomingString.startswith('!b'):
+        print('!b command to check: %s' % incomingString)
+        # check for valid pick; ref example !b 1
+        pickPattern = r'^!b [1-5]$'
         if(re.match(pickPattern, incomingString)):
             return True
         else:
@@ -552,38 +552,38 @@ def democracy():
             if(selected_c != 'None'):
                 splitted = selected_c.lower().split(' ')
                 if(isDebug == False):
-                    if splitted[0] == '!q':
+                    if splitted[0] == '!m':
                         # focus dota
                         # subprocess.run(['xdotool', 'search', dota2WindowID, 'windowactivate'])
                         time.sleep(.02)
                         # execute command
                         movePiece(splitted[1], splitted[2])
-                    if splitted[0] == '!w':
+                    if splitted[0] == '!b':
                         # focus dota
                         time.sleep(.02)
                         # execute command
                         benchPiece(splitted[1])
-                    if splitted[0] == '!e':
-                        # focus dota
-                        time.sleep(.02)
-                        # execute command
-                        sellPiece(splitted[1])
-                    if splitted[0] == '!x':
-                        # focus dota
-                        time.sleep(.02)
-                        # execute command
-                        rerollPieces()
-                    if splitted[0] == '!c':
-                        # focus dota
-                        time.sleep(.02)
-                        # execute command
-                        buyXP(splitted[1])
                     if splitted[0] == '!s':
                         # focus dota
                         time.sleep(.02)
                         # execute command
+                        sellPiece(splitted[1])
+                    if splitted[0] == '!r':
+                        # focus dota
+                        time.sleep(.02)
+                        # execute command
+                        rerollPieces()
+                    if splitted[0] == '!x':
+                        # focus dota
+                        time.sleep(.02)
+                        # execute command
+                        buyXP(splitted[1])
+                    if splitted[0] == '!shop':
+                        # focus dota
+                        time.sleep(.02)
+                        # execute command
                         showSelection(splitted[0])
-                    if splitted[0] == '!p':
+                    if splitted[0] == '!b':
                         # focus dota
                         time.sleep(.02)
                         # execute command
@@ -811,38 +811,38 @@ if mode.lower() == "anarchy":
             if(commandExtractor(out.lower())):
                 addtofile()
                 splitted = out.lower().split(' ')
-                if splitted[0] == '!q':
+                if splitted[0] == '!m':
                     # focus dota
                     # subprocess.run(['xdotool', 'search', dota2WindowID, 'windowactivate'])
                     time.sleep(.02)
                     # execute command
                     movePiece(splitted[1], splitted[2])
-                if splitted[0] == '!w':
+                if splitted[0] == '!b':
                     # focus dota
                     time.sleep(.02)
                     # execute command
                     benchPiece(splitted[1])
-                if splitted[0] == '!e':
-                    # focus dota
-                    time.sleep(.02)
-                    # execute command
-                    sellPiece(splitted[1])
-                if splitted[0] == '!x':
-                    # focus dota
-                    time.sleep(.02)
-                    # execute command
-                    rerollPieces()
-                if splitted[0] == '!c':
-                    # focus dota
-                    time.sleep(.02)
-                    # execute command
-                    buyXP(splitted[1])
                 if splitted[0] == '!s':
                     # focus dota
                     time.sleep(.02)
                     # execute command
+                    sellPiece(splitted[1])
+                if splitted[0] == '!r':
+                    # focus dota
+                    time.sleep(.02)
+                    # execute command
+                    rerollPieces()
+                if splitted[0] == '!x':
+                    # focus dota
+                    time.sleep(.02)
+                    # execute command
+                    buyXP(splitted[1])
+                if splitted[0] == '!shop':
+                    # focus dota
+                    time.sleep(.02)
+                    # execute command
                     showSelection(splitted[0])
-                if splitted[0] == '!p':
+                if splitted[0] == '!b':
                     # focus dota
                     time.sleep(.02)
                     # execute command
