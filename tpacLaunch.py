@@ -31,6 +31,7 @@ commands = []
 delayBetweenActions = 0.2
 dota2WindowID = ''
 readbuffer = ""
+isCamCalibrated = False
 isDebug = False
 
 COORDMAP = {
@@ -124,63 +125,17 @@ COORDMAP = {
     'dotaAcceptBtn': {'x': 901, 'y': 529}
 }
 
-COORDMAPold = {
-    'a1': {'x': 674, 'y': 447},
-    'a2': {'x': 688, 'y': 396},
-    'a3': {'x': 702, 'y': 317},
-    'a4': {'x': 710, 'y': 275},
-    'b1': {'x': 759, 'y': 447},
-    'b2': {'x': 767, 'y': 375},
-    'b3': {'x': 779, 'y': 322},
-    'b4': {'x': 783, 'y': 270},
-    'c1': {'x': 838, 'y': 444},
-    'c2': {'x': 843, 'y': 376},
-    'c3': {'x': 850, 'y': 321},
-    'c4': {'x': 854, 'y': 270},
-    'd1': {'x': 916, 'y': 450},
-    'd2': {'x': 922, 'y': 383},
-    'd3': {'x': 924, 'y': 326},
-    'd4': {'x': 928, 'y': 270},
-    'e1': {'x': 1006, 'y': 449},
-    'e2': {'x': 1001, 'y': 378},
-    'e3': {'x': 996, 'y': 320},
-    'e4': {'x': 998, 'y': 270},
-    'f1': {'x': 1084, 'y': 439},
-    'f2': {'x': 1078, 'y': 379},
-    'f3': {'x': 1074, 'y': 325},
-    'f4': {'x': 1071, 'y': 271},
-    'g1': {'x': 1165, 'y': 441},
-    'g2': {'x': 1153, 'y': 373},
-    'g3': {'x': 1145, 'y': 320},
-    'g4': {'x': 1139, 'y': 266},
-    'h1': {'x': 1231, 'y': 374},
-    'h2': {'x': 1231, 'y': 374},
-    'h3': {'x': 1219, 'y': 313},
-    'h4': {'x': 1207, 'y': 264},
 
-    'aa': {'x': 645, 'y': 576},
-    'bb': {'x': 736, 'y': 578},
-    'cc': {'x': 825, 'y': 577},
-    'dd': {'x': 911, 'y': 578},
-    'ee': {'x': 1004, 'y': 578},
-    'ff': {'x': 1096, 'y': 578},
-    'gg': {'x': 1184, 'y': 581},
-    'hh': {'x': 1277, 'y': 578},
+def tabTour():
+    for i in range(8):
+        subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'tab'])
+        time.sleep(0.4)
 
-    'pick1': {'x': 464, 'y': 276},
-    'pick2': {'x': 712, 'y': 257},
-    'pick3': {'x': 973, 'y': 265},
-    'pick4': {'x': 1220, 'y': 271},
-    'pick5': {'x': 1458, 'y': 256},
-    'lock': {'x': 313, 'y': 445},
-    'close': {'x': 1610, 'y': 344},
-    'dotaMenu': {'x': 32, 'y': 27},
-    'dotaDisconnectBtn': {'x': 1627, 'y': 1035},
-    'dotaLeaveBtn': {'x': 1648, 'y': 985},
-    'dotaLeaveAcceptBtn': {'x': 874, 'y': 603},
-    'dotaSearchBtn': {'x': 1493, 'y': 872},
-    'dotaAcceptBtn': {'x': 901, 'y': 529}
-}
+
+def camCalibration():
+    subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'tab'])
+    isCamCalibrated = True
+    time.sleep(delayBetweenActions)
 
 
 def searchNextGame():
@@ -188,6 +143,7 @@ def searchNextGame():
 
 
 def searchGame():
+    isCamCalibrated = False
     subprocess.run(['xdotool',
                     'mousemove',
                     '--window',
@@ -277,12 +233,6 @@ def pickPiece(target):
                     '--window',
                     dota2WindowID,
                     '1'])
-
-# !toggle
-
-
-# def toggleSelection():
-#     subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'space'])
 
 # !shophowSelection
 
