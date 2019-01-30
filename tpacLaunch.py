@@ -141,6 +141,7 @@ def resetChickenPos():
                     '3'])
     time.sleep(delayBetweenActions)
 
+
 def moveItem(slot, target):
     subprocess.run(['xdotool',
                     'mousemove',
@@ -433,7 +434,7 @@ def findAndExecute(splitted):
         time.sleep(.02)
         # execute command
         showSelection(splitted[0])
-    if splitted[0] == '!b':
+    if splitted[0] == '!p':
         # focus dota
         time.sleep(.02)
         # execute command
@@ -448,6 +449,11 @@ def findAndExecute(splitted):
         time.sleep(.02)
         # execute command
         grabItem(splitted[0])
+    if splitted[0] == '!i':
+        # focus dota
+        time.sleep(.02)
+        # execute command
+        moveItem(splitted[0], splitted[1])
     if splitted[0] == '!tab':
         # focus dota
         time.sleep(.02)
@@ -579,11 +585,20 @@ def commandExtractor(incomingString):
         else:
             return None
 
-    elif incomingString.startswith('!b'):
-        print('!b command to check: %s' % incomingString)
-        # check for valid pick; ref example !b 1
-        pickPattern = r'^!b [1-5]$'
+    elif incomingString.startswith('!p'):
+        print('!p command to check: %s' % incomingString)
+        # check for valid pick; ref example !p 1
+        pickPattern = r'^!p [1-5]$'
         if(re.match(pickPattern, incomingString)):
+            return True
+        else:
+            return None
+
+    elif incomingString.startswith('!i'):
+        print('!i command to check: %s' % incomingString)
+        # check for valid item to hero command; ref example !i 2 A5
+        pattern = r'^!i ([1-9]) ([a-hA-H][a-hA-H1-8]{1})$'
+        if(re.match(pattern, incomingString)):
             return True
         else:
             return None
