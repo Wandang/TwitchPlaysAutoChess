@@ -31,15 +31,14 @@ class GameStates(Enum):
     searching = 0
     calibration = 1
     gaming = 2
-    tabTour = 3
 
 
 settings = []
 commands = []
-delayBetweenActions = 0.2
+delayBetweenActions = 0.3
 dota2WindowID = ''
 readbuffer = ""
-gameState = GameStates.searching
+#gameState = GameStates.searching
 isCamCalibrated = False
 isDebug = False
 
@@ -176,21 +175,19 @@ def moveItem(slot, target):
                     dota2WindowID,
                     str(COORDMAP[slotID]['x']),
                     str(COORDMAP[slotID]['y']),
-                    'mousedown',
+                    'click',
                     '--window',
                     dota2WindowID,
                     '1'])
+    subprocess.run(['xdotool', 'mousedown', '--window', dota2WindowID, '1'])
     time.sleep(0.5)
     subprocess.run(['xdotool',
                     'mousemove',
                     '--window',
                     dota2WindowID,
                     str(COORDMAP[target]['x']),
-                    str(COORDMAP[target]['y']),
-                    'mouseup',
-                    '--window',
-                    dota2WindowID,
-                    '1'])
+                    str(COORDMAP[target]['y'])])
+    subprocess.run(['xdotool', 'mouseup', '--window', dota2WindowID, '1'])
     time.sleep(0.5)
     resetChickenPos()
 
@@ -222,8 +219,8 @@ def tabTour():
 def camCalibration():
     print('calibrating cam...')
     tabTour()
-    global gameState
-    gameState = GameStates.gaming
+    # global gameState
+    # gameState = GameStates.gaming
     time.sleep(delayBetweenActions)
 
 
@@ -243,12 +240,12 @@ def acceptGame():
                     '--window',
                     dota2WindowID,
                     '1'])
+    #global gameState
+    #gameState = GameStates.calibration
 
 
 def searchGame():
     print('searching game...')
-    global gameState
-    gameState = GameStates.calibration
     # subprocess.run(['xdotool', 'search', "Dota 2", 'windowactivate'])
     subprocess.run(['xdotool',
                     'mousemove',
@@ -266,58 +263,64 @@ def searchGame():
 
 def leaveGame():
     print('trying to leave game...')
+    # global gameState
+    if(adminMode == False):
+        # gameState = GameStates.searching
+        subprocess.run(['xdotool',
+                        'mousemove',
+                        '--window',
+                        dota2WindowID,
+                        str(COORDMAP['dotaMenu']['x']),
+                        str(COORDMAP['dotaMenu']['y']),
+                        'click',
+                        '--window',
+                        dota2WindowID,
+                        '1'])
 
-    subprocess.run(['xdotool',
-                    'mousemove',
-                    '--window',
-                    dota2WindowID,
-                    str(COORDMAP['dotaMenu']['x']),
-                    str(COORDMAP['dotaMenu']['y']),
-                    'click',
-                    '--window',
-                    dota2WindowID,
-                    '1'])
+        time.sleep(0.5)
 
-    time.sleep(delayBetweenActions)
+        subprocess.run(['xdotool',
+                        'mousemove',
+                        '--window',
+                        dota2WindowID,
+                        str(COORDMAP['dotaDisconnectBtn']['x']),
+                        str(COORDMAP['dotaDisconnectBtn']['y']),
+                        'click',
+                        '--window',
+                        dota2WindowID,
+                        '1'])
 
-    subprocess.run(['xdotool',
-                    'mousemove',
-                    '--window',
-                    dota2WindowID,
-                    str(COORDMAP['dotaDisconnectBtn']['x']),
-                    str(COORDMAP['dotaDisconnectBtn']['y']),
-                    'click',
-                    '--window',
-                    dota2WindowID,
-                    '1'])
+        time.sleep(0.5)
 
-    time.sleep(delayBetweenActions)
+        subprocess.run(['xdotool',
+                        'mousemove',
+                        '--window',
+                        dota2WindowID,
+                        str(COORDMAP['dotaLeaveBtn']['x']),
+                        str(COORDMAP['dotaLeaveBtn']['y']),
+                        'click',
+                        '--window',
+                        dota2WindowID,
+                        '1'])
 
-    subprocess.run(['xdotool',
-                    'mousemove',
-                    '--window',
-                    dota2WindowID,
-                    str(COORDMAP['dotaLeaveBtn']['x']),
-                    str(COORDMAP['dotaLeaveBtn']['y']),
-                    'click',
-                    '--window',
-                    dota2WindowID,
-                    '1'])
+        time.sleep(0.5)
 
-    time.sleep(delayBetweenActions)
+        subprocess.run(['xdotool',
+                        'mousemove',
+                        '--window',
+                        dota2WindowID,
+                        str(COORDMAP['dotaLeaveAcceptBtn']['x']),
+                        str(COORDMAP['dotaLeaveAcceptBtn']['y']),
+                        'click',
+                        '--window',
+                        dota2WindowID,
+                        '1'])
 
-    subprocess.run(['xdotool',
-                    'mousemove',
-                    '--window',
-                    dota2WindowID,
-                    str(COORDMAP['dotaLeaveAcceptBtn']['x']),
-                    str(COORDMAP['dotaLeaveAcceptBtn']['y']),
-                    'click',
-                    '--window',
-                    dota2WindowID,
-                    '1'])
-    global gameState
-    gameState = GameStates.searching
+    else:
+        pass
+        # continueGame = input('reconnect? y/n')
+        # if(continueGame.lower() == 'n'):
+        #     gameState = GameStates.searching
 
 
 def randomAction():
@@ -520,69 +523,70 @@ def buyXP(amount):
 
 
 def findAndExecute(splitted):
-    if(gameState == GameStates.gaming):
-        if splitted[0] == '!m':
-            time.sleep(.02)
-            # execute command
-            movePiece(splitted[1], splitted[2])
-        if splitted[0] == '!b':
-            time.sleep(.02)
-            # execute command
-            benchPiece(splitted[1])
-        if splitted[0] == '!s':
-            time.sleep(.02)
-            # execute command
-            sellPiece(splitted[1])
-        if splitted[0] == '!r':
-            time.sleep(.02)
-            # execute command
-            rerollPieces()
-        if splitted[0] == '!x':
-            time.sleep(.02)
-            # execute command
-            buyXP(splitted[1])
-        if splitted[0] == '!shop':
-            time.sleep(.02)
-            # execute command
-            showSelection(splitted[1])
-        if splitted[0] == '!p':
-            time.sleep(.02)
-            # execute command
-            pickPiece(splitted[1])
-        if splitted[0] == '!l':
-            time.sleep(.02)
-            # execute command
-            lockSelection()
-        if splitted[0] == '!g':
-            time.sleep(.02)
-            # execute command
-            grabItem(splitted[1])
-        if splitted[0] == '!i':
-            time.sleep(.02)
-            # execute command
-            moveItem(splitted[1], splitted[2])
-        if splitted[0] == '!tab':
-            time.sleep(.02)
-            # execute command
-            tabTour()
-        if splitted[0] == '!random':
-            time.sleep(.02)
-            # execute command
-            randomAction()
-        if splitted[0] == '!rq':
-            time.sleep(.02)
-            leaveGame()
-    elif(gameState == GameStates.searching):
-        if(splitted[0] == '!search'):
-            time.sleep(.02)
-            searchGame()
-        if(splitted[0] == '!accept'):
-            time.sleep(.02)
-            acceptGame()
-    elif(gameState == GameStates.calibration):
-        if(splitted[0] == '!calib'):
-            time.sleep(.02)
-            camCalibration()
+    # if(gameState == GameStates.gaming):
+    if splitted[0] == '!m':
+        time.sleep(.02)
+        # execute command
+        movePiece(splitted[1], splitted[2])
+    if splitted[0] == '!b':
+        time.sleep(.02)
+        # execute command
+        benchPiece(splitted[1])
+    if splitted[0] == '!s':
+        time.sleep(.02)
+        # execute command
+        sellPiece(splitted[1])
+    if splitted[0] == '!r':
+        time.sleep(.02)
+        # execute command
+        rerollPieces()
+    if splitted[0] == '!x':
+        time.sleep(.02)
+        # execute command
+        buyXP(splitted[1])
+    if splitted[0] == '!shop':
+        time.sleep(.02)
+        # execute command
+        showSelection(splitted[1])
+    if splitted[0] == '!p':
+        time.sleep(.02)
+        # execute command
+        pickPiece(splitted[1])
+    if splitted[0] == '!l':
+        time.sleep(.02)
+        # execute command
+        lockSelection()
+    if splitted[0] == '!g':
+        time.sleep(.02)
+        # execute command
+        grabItem(splitted[1])
+    if splitted[0] == '!i':
+        time.sleep(.02)
+        # execute command
+        moveItem(splitted[1], splitted[2])
+    if splitted[0] == '!tab':
+        time.sleep(.02)
+        # execute command
+        tabTour()
+    if splitted[0] == '!random':
+        time.sleep(.02)
+        # execute command
+        randomAction()
+    if splitted[0] == '!rq':
+        time.sleep(.02)
+        leaveGame()
+    # elif(gameState == GameStates.searching):
+    if(splitted[0] == '!search'):
+        time.sleep(.02)
+        searchGame()
+    if(splitted[0] == '!accept'):
+        print('about to enter acceptGame()')
+        time.sleep(.02)
+        acceptGame()
+    # elif(gameState == GameStates.calibration):
+    if(splitted[0] == '!calib'):
+        time.sleep(.02)
+        camCalibration()
 
 
 def addtofile():
@@ -778,12 +782,14 @@ def commandValidator(incomingString):
         # check for valid accept; ref example !accept
         pattern = r'^!accept$'
         if(re.match(pattern, incomingString)):
+            print('accept is valid!')
             return True
         else:
             return None
 
     else:
         return None
+
 
 def democracy():
     global list_commands
@@ -884,9 +890,14 @@ while True:
         completedProcess = subprocess.run(['xdotool', 'search', '--name',
                                            'Dota 2'], capture_output=True)
         dota2WindowID = completedProcess.stdout.decode('UTF-8')
+    aMode = input('Adminmode? y/n')
+    if(aMode.lower() == 'y'):
+        adminMode = True
+    else:
+        adminMode = False
     print("Currently available: Democracy, Anarchy")
-    # mode = input("Game type: ")
-    mode = 'anarchy'
+    mode = input("Game type: ")
+    #mode = 'anarchy'
     if mode.lower() == "anarchy":
         break
     if mode.lower() == "democracy":
