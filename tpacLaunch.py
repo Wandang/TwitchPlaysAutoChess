@@ -126,6 +126,19 @@ COORDMAP = {
 }
 
 
+def grabItem(target):
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP[target]['x']),
+                    str(COORDMAP[target]['y']),
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '3'])
+
+
 def tabTour():
     for i in range(8):
         subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'tab'])
@@ -347,6 +360,60 @@ def buyXP(amount):
         time.sleep(delayBetweenActions)
 
 
+def findAndExecute(splitted):
+    if splitted[0] == '!m':
+        # focus dota
+        # subprocess.run(['xdotool', 'search', dota2WindowID, 'windowactivate'])
+        time.sleep(.02)
+        # execute command
+        movePiece(splitted[1], splitted[2])
+    if splitted[0] == '!b':
+        # focus dota
+        time.sleep(.02)
+        # execute command
+        benchPiece(splitted[1])
+    if splitted[0] == '!s':
+        # focus dota
+        time.sleep(.02)
+        # execute command
+        sellPiece(splitted[1])
+    if splitted[0] == '!r':
+        # focus dota
+        time.sleep(.02)
+        # execute command
+        rerollPieces()
+    if splitted[0] == '!x':
+        # focus dota
+        time.sleep(.02)
+        # execute command
+        buyXP(splitted[1])
+    if splitted[0] == '!shop':
+        # focus dota
+        time.sleep(.02)
+        # execute command
+        showSelection(splitted[0])
+    if splitted[0] == '!b':
+        # focus dota
+        time.sleep(.02)
+        # execute command
+        pickPiece(splitted[1])
+    if splitted[0] == '!l':
+        # focus dota
+        time.sleep(.02)
+        # execute command
+        lockSelection()
+    if splitted[0] == '!g':
+        # focus dota
+        time.sleep(.02)
+        # execute command
+        grabItem(splitted[0])
+    if splitted[0] == '!tab':
+        # focus dota
+        time.sleep(.02)
+        # execute command
+        tabTour()
+
+
 def addtofile():
     if len(commands) >= command_length:
         del commands[0]
@@ -391,6 +458,9 @@ def most_common(lst):
 
 
 def commandExtractor(incomingString):
+    '''
+    Validate incoming commands
+    '''
     # not a command
     if(incomingString[:1] != '!'):
         return None
@@ -477,6 +547,15 @@ def commandExtractor(incomingString):
         else:
             return None
 
+    elif incomingString.startswith('!tab'):
+        print('!tab command to check: %s' % incomingString)
+        # check for valid tab; ref example !tab
+        lockPattern = r'^!tab$'
+        if(re.match(lockPattern, incomingString)):
+            return True
+        else:
+            return None
+
     else:
         return None
 
@@ -501,48 +580,7 @@ def democracy():
             list_commands = []
             if(selected_c != 'None'):
                 splitted = selected_c.lower().split(' ')
-                if(isDebug == False):
-                    if splitted[0] == '!m':
-                        # focus dota
-                        # subprocess.run(['xdotool', 'search', dota2WindowID, 'windowactivate'])
-                        time.sleep(.02)
-                        # execute command
-                        movePiece(splitted[1], splitted[2])
-                    if splitted[0] == '!b':
-                        # focus dota
-                        time.sleep(.02)
-                        # execute command
-                        benchPiece(splitted[1])
-                    if splitted[0] == '!s':
-                        # focus dota
-                        time.sleep(.02)
-                        # execute command
-                        sellPiece(splitted[1])
-                    if splitted[0] == '!r':
-                        # focus dota
-                        time.sleep(.02)
-                        # execute command
-                        rerollPieces()
-                    if splitted[0] == '!x':
-                        # focus dota
-                        time.sleep(.02)
-                        # execute command
-                        buyXP(splitted[1])
-                    if splitted[0] == '!shop':
-                        # focus dota
-                        time.sleep(.02)
-                        # execute command
-                        showSelection(splitted[0])
-                    if splitted[0] == '!b':
-                        # focus dota
-                        time.sleep(.02)
-                        # execute command
-                        pickPiece(splitted[1])
-                    if splitted[0] == '!l':
-                        # focus dota
-                        time.sleep(.02)
-                        # execute command
-                        lockSelection()
+                findAndExecute(splitted)
         else:
             with open("lastsaid.txt", "w") as f:
                 f.write("Selected %s\n" % selected_c)
@@ -761,47 +799,7 @@ if mode.lower() == "anarchy":
             if(commandExtractor(out.lower())):
                 addtofile()
                 splitted = out.lower().split(' ')
-                if splitted[0] == '!m':
-                    # focus dota
-                    # subprocess.run(['xdotool', 'search', dota2WindowID, 'windowactivate'])
-                    time.sleep(.02)
-                    # execute command
-                    movePiece(splitted[1], splitted[2])
-                if splitted[0] == '!b':
-                    # focus dota
-                    time.sleep(.02)
-                    # execute command
-                    benchPiece(splitted[1])
-                if splitted[0] == '!s':
-                    # focus dota
-                    time.sleep(.02)
-                    # execute command
-                    sellPiece(splitted[1])
-                if splitted[0] == '!r':
-                    # focus dota
-                    time.sleep(.02)
-                    # execute command
-                    rerollPieces()
-                if splitted[0] == '!x':
-                    # focus dota
-                    time.sleep(.02)
-                    # execute command
-                    buyXP(splitted[1])
-                if splitted[0] == '!shop':
-                    # focus dota
-                    time.sleep(.02)
-                    # execute command
-                    showSelection(splitted[0])
-                if splitted[0] == '!b':
-                    # focus dota
-                    time.sleep(.02)
-                    # execute command
-                    pickPiece(splitted[1])
-                if splitted[0] == '!l':
-                    # focus dota
-                    time.sleep(.02)
-                    # execute command
-                    lockSelection()
+                findAndExecute(splitted)
 
             # Write to file for stream view
             with open("commands.txt", "w") as f:
