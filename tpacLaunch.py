@@ -1,0 +1,757 @@
+#!/usr/bin/env python3
+
+# tpacLaunch.py
+# Copyright (C) 2019 : Carsten Demming
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+
+import configparser
+import os
+import subprocess
+import sys
+import string
+import time
+import socket
+import re
+from enum import Enum
+from threading import Thread
+
+
+settings = []
+commands = []
+delayBetweenActions = 0.2
+dota2WindowID = ''
+readbuffer = ""
+isDebug = False
+
+COORDMAP = {
+    'a1': {'x': 674, 'y': 447},
+    'a2': {'x': 688, 'y': 396},
+    'a3': {'x': 702, 'y': 317},
+    'a4': {'x': 710, 'y': 275},
+    'b1': {'x': 759, 'y': 447},
+    'b2': {'x': 767, 'y': 375},
+    'b3': {'x': 779, 'y': 322},
+    'b4': {'x': 783, 'y': 270},
+    'c1': {'x': 838, 'y': 444},
+    'c2': {'x': 843, 'y': 376},
+    'c3': {'x': 850, 'y': 321},
+    'c4': {'x': 854, 'y': 270},
+    'd1': {'x': 916, 'y': 450},
+    'd2': {'x': 922, 'y': 383},
+    'd3': {'x': 924, 'y': 326},
+    'd4': {'x': 928, 'y': 270},
+    'e1': {'x': 1006, 'y': 449},
+    'e2': {'x': 1001, 'y': 378},
+    'e3': {'x': 996, 'y': 320},
+    'e4': {'x': 998, 'y': 270},
+    'f1': {'x': 1084, 'y': 439},
+    'f2': {'x': 1078, 'y': 379},
+    'f3': {'x': 1074, 'y': 325},
+    'f4': {'x': 1071, 'y': 271},
+    'g1': {'x': 1165, 'y': 441},
+    'g2': {'x': 1153, 'y': 373},
+    'g3': {'x': 1145, 'y': 320},
+    'g4': {'x': 1139, 'y': 266},
+    'h1': {'x': 1231, 'y': 374},
+    'h2': {'x': 1231, 'y': 374},
+    'h3': {'x': 1219, 'y': 313},
+    'h4': {'x': 1207, 'y': 264},
+
+    'aa': {'x': 645, 'y': 576},
+    'bb': {'x': 736, 'y': 578},
+    'cc': {'x': 825, 'y': 577},
+    'dd': {'x': 911, 'y': 578},
+    'ee': {'x': 1004, 'y': 578},
+    'ff': {'x': 1096, 'y': 578},
+    'gg': {'x': 1184, 'y': 581},
+    'hh': {'x': 1277, 'y': 578},
+
+    'pick1': {'x': 464, 'y': 276},
+    'pick2': {'x': 712, 'y': 257},
+    'pick3': {'x': 973, 'y': 265},
+    'pick4': {'x': 1220, 'y': 271},
+    'pick5': {'x': 1458, 'y': 256},
+    'lock': {'x': 313, 'y': 445},
+    'close': {'x': 1610, 'y': 344},
+    'dotaMenu': {'x': 32, 'y': 27},
+    'dotaDisconnectBtn': {'x': 1627, 'y': 1035},
+    'dotaLeaveBtn': {'x': 1648, 'y': 985},
+    'dotaLeaveAcceptBtn': {'x': 874, 'y': 603},
+    'dotaSearchBtn': {'x': 1493, 'y': 872},
+    'dotaAcceptBtn': {'x': 901, 'y': 529}
+}
+
+def searchNextGame():
+    pass
+
+def searchGame():
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP['dotaSearchBtn']['x']),
+                    str(COORDMAP['dotaSearchBtn']['y']),
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '1'])
+    time.sleep(5)
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP['dotaAcceptBtn']['x']),
+                    str(COORDMAP['dotaAcceptBtn']['y']),
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '1'])
+
+
+def leaveGame():
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP['dotaMenu']['x']),
+                    str(COORDMAP['dotaMenu']['y']),
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '1'])
+
+    time.sleep(delayBetweenActions)
+
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP['dotaDisconnectBtn']['x']),
+                    str(COORDMAP['dotaDisconnectBtn']['y']),
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '1'])
+
+    time.sleep(delayBetweenActions)
+
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP['dotaLeaveBtn']['x']),
+                    str(COORDMAP['dotaLeaveBtn']['y']),
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '1'])
+
+    time.sleep(delayBetweenActions)
+
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP['dotaLeaveAcceptBtn']['x']),
+                    str(COORDMAP['dotaLeaveAcceptBtn']['y']),
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '1'])
+
+# !p 4
+
+
+def pickPiece(target):
+    pickString = 'pick'+str(target)
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP[pickString]['x']),
+                    str(COORDMAP[pickString]['y']),
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '1'])
+
+# !toggle
+
+
+# def toggleSelection():
+#     subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'space'])
+
+# !showSelection
+
+
+def showSelection(isOn):
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP['close']['x']),
+                    str(COORDMAP['close']['y']),
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '1'])
+    time.sleep(delayBetweenActions)
+    if(isOn == 'on'):
+        subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'space'])
+
+# !l
+
+
+def lockSelection():
+    # first open selection
+    showSelection('on')
+    time.sleep(delayBetweenActions)
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP['lock']['x']),
+                    str(COORDMAP['lock']['y']),
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '1'])
+    # optionally close selection afterwards
+    # xdotool key space
+
+# !q AA F4
+
+
+def movePiece(source, target):
+    # make sure selection is closed
+    showSelection('off')
+    time.sleep(delayBetweenActions)
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP[source]['x']),
+                    str(COORDMAP[source]['y']),
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '1'])
+    time.sleep(delayBetweenActions)
+    subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'q'])
+    time.sleep(delayBetweenActions)
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP[target]['x']),
+                    str(COORDMAP[target]['y']),
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '1'])
+
+# !w F5
+
+
+def benchPiece(target):
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP[target]['x']),
+                    str(COORDMAP[target]['y']),
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '1'])
+    time.sleep(delayBetweenActions)
+    subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'w'])
+
+# !e F6
+
+
+def sellPiece(target):
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    str(COORDMAP[target]['x']),
+                    str(COORDMAP[target]['y']),
+                    'click', '1'])
+    time.sleep(delayBetweenActions)
+    subprocess.run(['xdotool', 'key', 'e'])
+
+# !x null
+
+
+def rerollPieces():
+    subprocess.run(['xdotool', 'key', 'x'])
+
+# !c null
+
+
+def buyXP(amount):
+    for i in range(amount):
+        subprocess.run(['xdotool', 'key', 'c'])
+        time.sleep(delayBetweenActions)
+
+
+def addtofile():
+    if len(commands) >= command_length:
+        del commands[0]
+        commands.extend([user[1:] + out.lower()])
+        if mode.lower() == "democracy":
+            list_commands.extend([out.lower()])
+    else:
+        commands.extend([user[1:] + out.lower()])
+        if mode.lower() == "democracy":
+            list_commands.extend([out.lower()])
+
+
+def most_common(lst):
+    # Write to file for stream view
+    tempList = lst
+    maxList = []
+    if(len(lst) > 5):
+        for i in range(5):
+            if(len(tempList) > 0):
+                tempMax = max(tempList, key=tempList.count)
+                maxList.append(tempMax)
+                tempList = list(filter(lambda a: a != tempMax, tempList))
+            else:
+                break
+
+    else:
+        for i in range(len(lst)):
+            if(len(tempList) > 0):
+                tempMax = max(tempList, key=tempList.count)
+                maxList.append(tempMax)
+                tempList = list(filter(lambda a: a != tempMax, tempList))
+            else:
+                break
+
+    with open("most_common_commands.txt", "w") as f:
+        f.write('Ranking:\n')
+        for item in maxList:
+            f.write(item + '\n')
+    return maxList[0]
+
+# TODO: sort/reorder same solution for move (!q A3 F2 == !q F2 A3)
+
+
+def commandExtractor(incomingString):
+    # not a command
+    if(incomingString[:1] != '!'):
+        return None
+
+    # starts with keywords?
+    if(incomingString.startswith('!q')):
+        print('!q command to check: %s' % incomingString)
+        # check for valid move; ref example !q AA F4
+        movePattern = r'^!q ([a-hA-H][a-hA-H1-4]{1}) (?!\1)([a-hA-H][a-hA-H1-4]{1})$'
+        if(re.match(movePattern, incomingString)):
+            return True
+        else:
+            return None
+
+    elif incomingString.startswith('!w'):
+        print('!w command to check: %s' % incomingString)
+        # check for valid bench; ref example !w A3
+        benchPattern = r'^!w ([a-hA-H][1-4])$'
+        if(re.match(benchPattern, incomingString)):
+            return True
+        else:
+            return None
+
+    elif incomingString.startswith('!e'):
+        print('!e command to check: %s' % incomingString)
+        # check for valid delete; ref example !e A3
+        benchPattern = r'^!e ([a-hA-H][1-4])$'
+        if(re.match(benchPattern, incomingString)):
+            return True
+        else:
+            return None
+
+    elif incomingString.startswith('!x'):
+        print('!x command to check: %s' % incomingString)
+        # check for valid reroll; ref example !x
+        rerollPattern = r'^!x$'
+        if(re.match(rerollPattern, incomingString)):
+            return True
+        else:
+            return None
+
+    elif incomingString.startswith('!c'):
+        print('!c command to check: %s' % incomingString)
+        # check for valid xp; ref example !c
+        buyXPPattern = r'^!c [1-4]$'
+        if(re.match(buyXPPattern, incomingString)):
+            return True
+        else:
+            return None
+
+    elif incomingString.startswith('!s'):
+        print('!s command to check: %s' % incomingString)
+        # check for valid xp; ref example !s
+        showSelectionPattern = r'^!s (on|off)$'
+        if(re.match(showSelectionPattern, incomingString)):
+            return True
+        else:
+            return None
+
+    elif incomingString.startswith('!l'):
+        print('!l command to check: %s' % incomingString)
+        # check for valid lock; ref example !l
+        lockPattern = r'^!l$'
+        if(re.match(lockPattern, incomingString)):
+            return True
+        else:
+            return None
+
+    elif incomingString.startswith('!p'):
+        print('!p command to check: %s' % incomingString)
+        # check for valid pick; ref example !p 1
+        pickPattern = r'^!p [1-5]$'
+        if(re.match(pickPattern, incomingString)):
+            return True
+        else:
+            return None
+
+    else:
+        return None
+
+
+def democracy():
+    global list_commands
+    list_commands = []
+    last_command = time.time()
+    selected_c = "None"
+
+    while True:
+        if time.time() > last_command + democracy_time:
+            last_command = time.time()
+            if(len(list_commands) > 0):
+                selected_c = most_common(list_commands)
+                print('selected_c: %s' % selected_c)
+            else:
+                selected_c = 'None'
+            with open("lastsaid.txt", "w") as f:
+                f.write("Selected %s\n" % selected_c)
+                f.write("Time left: %s" % str(democracy_time)[0:1])
+            list_commands = []
+            if(selected_c != 'None'):
+                splitted = selected_c.lower().split(' ')
+                if(isDebug == False):
+                    if splitted[0] == '!q':
+                        # focus dota
+                        # subprocess.run(['xdotool', 'search', dota2WindowID, 'windowactivate'])
+                        time.sleep(.02)
+                        # execute command
+                        movePiece(splitted[1], splitted[2])
+                    if splitted[0] == '!w':
+                        # focus dota
+                        time.sleep(.02)
+                        # execute command
+                        benchPiece(splitted[1])
+                    if splitted[0] == '!e':
+                        # focus dota
+                        time.sleep(.02)
+                        # execute command
+                        sellPiece(splitted[1])
+                    if splitted[0] == '!x':
+                        # focus dota
+                        time.sleep(.02)
+                        # execute command
+                        rerollPieces()
+                    if splitted[0] == '!c':
+                        # focus dota
+                        time.sleep(.02)
+                        # execute command
+                        buyXP(splitted[1])
+                    if splitted[0] == '!s':
+                        # focus dota
+                        time.sleep(.02)
+                        # execute command
+                        showSelection(splitted[0])
+                    if splitted[0] == '!p':
+                        # focus dota
+                        time.sleep(.02)
+                        # execute command
+                        pickPiece(splitted[1])
+                    if splitted[0] == '!l':
+                        # focus dota
+                        time.sleep(.02)
+                        # execute command
+                        lockSelection()
+        else:
+            with open("lastsaid.txt", "w") as f:
+                f.write("Selected %s\n" % selected_c)
+                f.write("Time left: %s" % str(
+                    1.0 + last_command + democracy_time - time.time())[0:1])
+        time.sleep(1)
+
+
+# Generate a config file if one doesn't exist
+while True:
+    if os.path.isfile("settings.txt"):
+        config = configparser.ConfigParser()
+        config.read("settings.txt")
+        HOST = config.get('Settings', 'HOST')
+        PORT = config.getint('Settings', 'PORT')
+        AUTH = config.get('Settings', 'AUTH')
+        NICK = config.get('Settings', 'USERNAME').lower()
+        APP = config.get('Settings', 'APP')
+        CHAT_CHANNEL = config.get('Settings', 'CHAT_CHANNEL').lower()
+        command_length = config.getint('Settings', 'LENGTH')
+        break
+    else:
+        print("Let's make you a config file")
+        settings.append("; Settings for Twitch Plays AutoChess bot")
+        settings.append("; Thanks to sunshinekitty, RDJ, MZ, AP, & Oriax\n")
+
+        settings.append("[Settings]\n")
+
+        settings.append(
+            "; Where you're connecting to, if it's Twitch leave it as is")
+        print("Where you're connecting to, if it's Twitch use irc.twitch.tv")
+        settings_host = input("Hostname: ")
+        settings.append("HOST = " + settings_host + "\n")
+
+        settings.append("; Port number, probably should use 6667")
+        print("Port number, probably should use 6667")
+        settings_port = input("Port: ")
+        settings.append("PORT = " + settings_port + "\n")
+
+        settings.append(
+            "; Auth token, grab this from http://www.twitchapps.com/tmi")
+        print("Auth token, grab this from http://www.twitchapps.com/tmi")
+        settings_auth = input("Auth Token: ")
+        settings.append("AUTH = " + settings_auth + "\n")
+
+        settings.append("; Your Twitch Bot's Username")
+        print("Your Twitch Bot's Username")
+        settings_bot = input("Bot's Username: ")
+        settings.append("USERNAME = " + settings_bot + "\n")
+
+        settings.append(
+            "; Name of the application")
+        print("Name of the application")
+        settings_app = input("Application name: ")
+        settings.append("APP = " + settings_app + "\n")
+
+        settings.append("; Username of who's channel you're connecting to")
+        print("Username of who's channel you're connecting to")
+        settings_chat = input("Username: ")
+        settings.append("CHAT_CHANNEL = " + settings_chat + "\n")
+
+        settings.append(
+            "; The maximum number of lines in commands.txt (Useful for showing commands received in stream)")
+        print("The maximum number of lines in commands.txt (Useful for showing commands received in stream)")
+        settings_length = input("Length: ")
+        settings.append("LENGTH = " + settings_length + "\n")
+
+        with open("settings.txt", "w") as f:
+            for each_setting in settings:
+                f.write(each_setting + '\n')
+
+# Select game type
+while True:
+    while dota2WindowID == '':
+        waitForDota = input("Dota already running? Then press enter")
+        completedProcess = subprocess.run(['xdotool', 'search', '--name',
+                                           'Dota 2'], capture_output=True)
+        dota2WindowID = completedProcess.stdout.decode('UTF-8')
+    print("Currently available: Democracy, Anarchy")
+    mode = input("Game type: ")
+    if mode.lower() == "anarchy":
+        break
+    if mode.lower() == "democracy":
+        print("Takes most said command every X second(s): ")
+        democracy_time = float(input("(must be integer) X="))
+        break
+
+# Democracy Game Mode
+if mode.lower() == "democracy":
+    with open("lastsaid.txt", "w") as f:
+        f.write("")
+
+    count_job = Thread(target=democracy, args=())
+    count_job.start()
+    # count_job.join()
+
+    time.sleep(1)
+
+    # TODO: start dota game here
+
+    s = socket.socket()
+    s.connect((HOST, PORT))
+
+    s.send(bytes("PASS %s\r\n" % AUTH, "UTF-8"))
+    s.send(bytes("NICK %s\r\n" % NICK, "UTF-8"))
+    s.send(bytes("USER %s %s bla :%s\r\n" % (NICK, HOST, NICK), "UTF-8"))
+    s.send(bytes("JOIN #%s\r\n" % CHAT_CHANNEL, "UTF-8"))
+    s.send(bytes("PRIVMSG #%s :Connected\r\n" % CHAT_CHANNEL, "UTF-8"))
+    print("Sent connected message to channel %s" % CHAT_CHANNEL)
+
+    while 1:
+        readbuffer = readbuffer+s.recv(1024).decode("UTF-8", errors="ignore")
+        temp = str.split(readbuffer, "\n")
+        readbuffer = temp.pop()
+
+        for line in temp:
+            x = 0
+            out = ""
+            line = str.rstrip(line)
+            line = str.split(line)
+
+            for index, i in enumerate(line):
+                if x == 0:
+                    user = line[index]
+                    user = user.split('!')[0]
+                    user = user[0:12] + ": "
+                if x == 3:
+                    out += line[index]
+                    out = out[1:]
+                if x >= 4:
+                    out += " " + line[index]
+                x = x + 1
+
+            # Respond to ping, squelch useless feedback given by twitch, print output and read to list
+            if user == "PING: ":
+                s.send(bytes("PONG tmi.twitch.tv\r\n", "UTF-8"))
+            elif user == ":tmi.twitch.tv: ":
+                pass
+            elif user == ":tmi.twitch.: ":
+                pass
+            elif user == ":%s.tmi.twitch.tv: " % NICK:
+                pass
+            else:
+                try:
+                    print(user + out)
+                except UnicodeEncodeError:
+                    print(user)
+
+            # Take in output
+            # sanitize output
+            if(commandExtractor(out.lower())):
+                addtofile()
+
+            # Write to file for stream view
+            with open("commands.txt", "w") as f:
+                for item in commands:
+                    f.write(item + '\n')
+
+# Anarchy Game Mode
+if mode.lower() == "anarchy":
+    with open("lastsaid.txt", "w") as f:
+        f.write("")
+
+    time.sleep(1)
+
+    s = socket.socket()
+    s.connect((HOST, PORT))
+
+    s.send(bytes("PASS %s\r\n" % AUTH, "UTF-8"))
+    s.send(bytes("NICK %s\r\n" % NICK, "UTF-8"))
+    s.send(bytes("USER %s %s bla :%s\r\n" % (NICK, HOST, NICK), "UTF-8"))
+    s.send(bytes("JOIN #%s\r\n" % CHAT_CHANNEL, "UTF-8"))
+    s.send(bytes("PRIVMSG #%s :Connected\r\n" % CHAT_CHANNEL, "UTF-8"))
+    print("Sent connected message to channel %s" % CHAT_CHANNEL)
+
+    while 1:
+        readbuffer = readbuffer+s.recv(1024).decode("UTF-8", errors="ignore")
+        temp = str.split(readbuffer, "\n")
+        readbuffer = temp.pop()
+
+        for line in temp:
+            x = 0
+            out = ""
+            line = str.rstrip(line)
+            line = str.split(line)
+
+            for index, i in enumerate(line):
+                if x == 0:
+                    user = line[index]
+                    user = user.split('!')[0]
+                    user = user[0:12] + ": "
+                if x == 3:
+                    out += line[index]
+                    out = out[1:]
+                if x >= 4:
+                    out += " " + line[index]
+                x = x + 1
+
+            # Respond to ping, squelch useless feedback given by twitch, print output and read to list
+            if user == "PING: ":
+                s.send(bytes("PONG tmi.twitch.tv\r\n", "UTF-8"))
+            elif user == ":tmi.twitch.tv: ":
+                pass
+            elif user == ":tmi.twitch.: ":
+                pass
+            elif user == ":%s.tmi.twitch.tv: " % NICK:
+                pass
+            else:
+                try:
+                    print(user + out)
+                except UnicodeEncodeError:
+                    print(user)
+
+            # Take in output
+            # sanitize output
+            if(commandExtractor(out.lower())):
+                addtofile()
+                splitted = out.lower().split(' ')
+                if splitted[0] == '!q':
+                    # focus dota
+                    # subprocess.run(['xdotool', 'search', dota2WindowID, 'windowactivate'])
+                    time.sleep(.02)
+                    # execute command
+                    movePiece(splitted[1], splitted[2])
+                if splitted[0] == '!w':
+                    # focus dota
+                    time.sleep(.02)
+                    # execute command
+                    benchPiece(splitted[1])
+                if splitted[0] == '!e':
+                    # focus dota
+                    time.sleep(.02)
+                    # execute command
+                    sellPiece(splitted[1])
+                if splitted[0] == '!x':
+                    # focus dota
+                    time.sleep(.02)
+                    # execute command
+                    rerollPieces()
+                if splitted[0] == '!c':
+                    # focus dota
+                    time.sleep(.02)
+                    # execute command
+                    buyXP(splitted[1])
+                if splitted[0] == '!s':
+                    # focus dota
+                    time.sleep(.02)
+                    # execute command
+                    showSelection(splitted[0])
+                if splitted[0] == '!p':
+                    # focus dota
+                    time.sleep(.02)
+                    # execute command
+                    pickPiece(splitted[1])
+                if splitted[0] == '!l':
+                    # focus dota
+                    time.sleep(.02)
+                    # execute command
+                    lockSelection()
+
+            # Write to file for stream view
+            with open("commands.txt", "w") as f:
+                for item in commands:
+                    f.write(item + '\n')

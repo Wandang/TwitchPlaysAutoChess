@@ -1,0 +1,26 @@
+; Settings for Twitch Plays AutoChess bot
+; Thanks to sunshinekitty, RDJ, MZ, AP, & Oriax
+
+[Settings]
+
+; Where you're connecting to, if it's Twitch leave it as is
+HOST = irc.twitch.tv
+
+; Port number, probably should use 6667
+PORT = 6667
+
+; Auth token, grab this from http://www.twitchapps.com/tmi
+AUTH = oauth:waeer53g68n6a0nrot1hfqjh5hfp8e
+
+; Your Twitch Bot's Username
+USERNAME = twitchplaysautochess
+
+; Name of the application
+APP = AutoChess
+
+; Username of who's channel you're connecting to
+CHAT_CHANNEL = twitchplaysautochess
+
+; The maximum number of lines in commands.txt (Useful for showing commands received in stream)
+LENGTH = 10
+
