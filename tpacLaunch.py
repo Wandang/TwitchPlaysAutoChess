@@ -117,6 +117,8 @@ COORDMAP = {
     'pick5': {'x': 1458, 'y': 256},
     'lock': {'x': 313, 'y': 445},
     'close': {'x': 1610, 'y': 344},
+    'resetChicken': {'x': 914, 'y': 712},
+
     'dotaMenu': {'x': 32, 'y': 27},
     'dotaDisconnectBtn': {'x': 1627, 'y': 1035},
     'dotaLeaveBtn': {'x': 1648, 'y': 985},
@@ -124,6 +126,44 @@ COORDMAP = {
     'dotaSearchBtn': {'x': 1493, 'y': 872},
     'dotaAcceptBtn': {'x': 901, 'y': 529}
 }
+
+
+def resetChickenPos():
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP['resetChicken']['x']),
+                    str(COORDMAP['resetChicken']['y']),
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '3'])
+    time.sleep(delayBetweenActions)
+
+def moveItem(slot, target):
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP[slot]['x']),
+                    str(COORDMAP[slot]['y']),
+                    'mousedown',
+                    '--window',
+                    dota2WindowID,
+                    '1'])
+    time.sleep(delayBetweenActions)
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP[target]['x']),
+                    str(COORDMAP[target]['y']),
+                    'mouseup',
+                    '--window',
+                    dota2WindowID,
+                    '1'])
+    time.sleep(delayBetweenActions)
 
 
 def grabItem(target):
@@ -137,6 +177,7 @@ def grabItem(target):
                     '--window',
                     dota2WindowID,
                     '3'])
+    time.sleep(delayBetweenActions)
 
 
 def tabTour():
