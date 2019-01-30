@@ -117,6 +117,17 @@ COORDMAP = {
     'pick5': {'x': 1458, 'y': 256},
     'lock': {'x': 313, 'y': 445},
     'close': {'x': 1610, 'y': 344},
+
+    'chickSlot1': {'x': 1158, 'y': 964},
+    'chickSlot2': {'x': 1224, 'y': 964},
+    'chickSlot3': {'x': 1288, 'y': 965},
+    'chickSlot4': {'x': 1158, 'y': 1012},
+    'chickSlot5': {'x': 1223, 'y': 1010},
+    'chickSlot6': {'x': 1286, 'y': 1010},
+    'chickSlot7': {'x': 1159, 'y': 1057},
+    'chickSlot8': {'x': 1223, 'y': 1057},
+    'chickSlot9': {'x': 1286, 'y': 1057},
+
     'resetChicken': {'x': 914, 'y': 712},
 
     'dotaMenu': {'x': 32, 'y': 27},
@@ -143,12 +154,13 @@ def resetChickenPos():
 
 
 def moveItem(slot, target):
+    slotID = 'chickSlot'+slot
     subprocess.run(['xdotool',
                     'mousemove',
                     '--window',
                     dota2WindowID,
-                    str(COORDMAP[slot]['x']),
-                    str(COORDMAP[slot]['y']),
+                    str(COORDMAP[slotID]['x']),
+                    str(COORDMAP[slotID]['y']),
                     'mousedown',
                     '--window',
                     dota2WindowID,
