@@ -144,7 +144,7 @@ COORDMAP = {
     'dotaDisconnectBtn': {'x': 1627, 'y': 1035},
     'dotaLeaveBtn': {'x': 1648, 'y': 985},
     'dotaLeaveAcceptBtn': {'x': 874, 'y': 603},
-    'dotaSearchBtn': {'x': 1493, 'y': 872},
+    'dotaSearchBtn': {'x': 1530, 'y': 866},
     'dotaAcceptBtn': {'x': 901, 'y': 529}
 }
 
@@ -167,6 +167,8 @@ def moveItem(slot, target):
     '''
     move item from chicken slot to target hero
     '''
+    print('trying to move item: %s' % slot)
+    print('to %s' % target)
     slotID = 'chickSlot'+slot
     subprocess.run(['xdotool',
                     'mousemove',
@@ -178,7 +180,7 @@ def moveItem(slot, target):
                     '--window',
                     dota2WindowID,
                     '1'])
-    time.sleep(delayBetweenActions)
+    time.sleep(0.5)
     subprocess.run(['xdotool',
                     'mousemove',
                     '--window',
@@ -189,11 +191,12 @@ def moveItem(slot, target):
                     '--window',
                     dota2WindowID,
                     '1'])
-    time.sleep(delayBetweenActions)
+    time.sleep(0.5)
     resetChickenPos()
 
 
 def grabItem(target):
+    print('trying to grab item: %s' % target)
     subprocess.run(['xdotool',
                     'mousemove',
                     '--window',
@@ -208,15 +211,19 @@ def grabItem(target):
 
 
 def tabTour():
+    print('tabtour...')
+    clickNothing()
+    time.sleep(delayBetweenActions)
     for i in range(8):
-        subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'tab'])
+        subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'Tab'])
         time.sleep(0.625)
 
 
 def camCalibration():
+    print('calibrating cam...')
+    tabTour()
     global gameState
     gameState = GameStates.gaming
-    subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'tab'])
     time.sleep(delayBetweenActions)
 
 
@@ -224,20 +231,8 @@ def searchNextGame():
     pass
 
 
-def searchGame():
-    global gameState
-    gameState = GameStates.calibration
-    subprocess.run(['xdotool',
-                    'mousemove',
-                    '--window',
-                    dota2WindowID,
-                    str(COORDMAP['dotaSearchBtn']['x']),
-                    str(COORDMAP['dotaSearchBtn']['y']),
-                    'click',
-                    '--window',
-                    dota2WindowID,
-                    '1'])
-    time.sleep(5)
+def acceptGame():
+    print('accepting game...')
     subprocess.run(['xdotool',
                     'mousemove',
                     '--window',
@@ -250,7 +245,28 @@ def searchGame():
                     '1'])
 
 
+def searchGame():
+    print('searching game...')
+    global gameState
+    gameState = GameStates.calibration
+    # subprocess.run(['xdotool', 'search', "Dota 2", 'windowactivate'])
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP['dotaSearchBtn']['x']),
+                    str(COORDMAP['dotaSearchBtn']['y']),
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '1'])
+    time.sleep(5)
+    acceptGame()
+
+
 def leaveGame():
+    print('trying to leave game...')
+
     subprocess.run(['xdotool',
                     'mousemove',
                     '--window',
@@ -338,6 +354,7 @@ def randomAction():
 
 
 def pickPiece(target):
+    print('trying to pick: %s' % target)
     pickString = 'pick'+str(target)
     subprocess.run(['xdotool',
                     'mousemove',
@@ -390,6 +407,7 @@ def closeSelection():
 
 
 def showSelection(isOn):
+    print('trying to show selection: %s' % isOn)
     closeSelection()
     if(isOn == 'on'):
         subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'space'])
@@ -398,6 +416,7 @@ def showSelection(isOn):
 
 
 def lockSelection():
+    print('trying to lock')
     # first open selection
     showSelection('on')
     time.sleep(delayBetweenActions)
@@ -418,6 +437,8 @@ def lockSelection():
 
 
 def movePiece(source, target):
+    print('trying to move: %s' % source)
+    print('to %s' % target)
     # make sure selection is closed
     showSelection('off')
     time.sleep(delayBetweenActions)
@@ -449,6 +470,7 @@ def movePiece(source, target):
 
 
 def benchPiece(target):
+    print('trying to bench: %s' % target)
     subprocess.run(['xdotool',
                     'mousemove',
                     '--window',
@@ -467,6 +489,7 @@ def benchPiece(target):
 
 
 def sellPiece(target):
+    print('trying to sell piece: %s' % target)
     subprocess.run(['xdotool',
                     'mousemove',
                     str(COORDMAP[target]['x']),
@@ -481,6 +504,7 @@ def sellPiece(target):
 
 
 def rerollPieces():
+    print('trying to reroll')
     subprocess.run(['xdotool', 'key', 'r'])
     time.sleep(delayBetweenActions)
     clickNothing()
@@ -488,9 +512,10 @@ def rerollPieces():
 
 
 def buyXP(amount):
-    for i in range(amount):
+    print('trying to buy xp: %s' % amount)
+    for i in range(int(amount)):
         subprocess.run(['xdotool', 'key', 'x'])
-        time.sleep(delayBetweenActions)
+        time.sleep(0.5)
     clickNothing()
 
 
@@ -519,7 +544,7 @@ def findAndExecute(splitted):
         if splitted[0] == '!shop':
             time.sleep(.02)
             # execute command
-            showSelection(splitted[0])
+            showSelection(splitted[1])
         if splitted[0] == '!p':
             time.sleep(.02)
             # execute command
@@ -531,11 +556,11 @@ def findAndExecute(splitted):
         if splitted[0] == '!g':
             time.sleep(.02)
             # execute command
-            grabItem(splitted[0])
+            grabItem(splitted[1])
         if splitted[0] == '!i':
             time.sleep(.02)
             # execute command
-            moveItem(splitted[0], splitted[1])
+            moveItem(splitted[1], splitted[2])
         if splitted[0] == '!tab':
             time.sleep(.02)
             # execute command
@@ -551,6 +576,9 @@ def findAndExecute(splitted):
         if(splitted[0] == '!search'):
             time.sleep(.02)
             searchGame()
+        if(splitted[0] == '!accept'):
+            time.sleep(.02)
+            acceptGame()
     elif(gameState == GameStates.calibration):
         if(splitted[0] == '!calib'):
             time.sleep(.02)
@@ -600,7 +628,7 @@ def most_common(lst):
 # TODO: sort/reorder same solution for move (!m A3 F2 == !m F2 A3)
 
 
-def commandExtractor(incomingString):
+def commandValidator(incomingString):
     '''
     Validate incoming commands
     '''
@@ -609,7 +637,7 @@ def commandExtractor(incomingString):
         return None
 
     # starts with keywords?
-    if(incomingString.startswith('!m')):
+    if(incomingString.startswith('!m ')):
         print('!m command to check: %s' % incomingString)
         # check for valid move; ref example !m AA F4
         movePattern = r'^!m ([a-hA-H][a-hA-H1-4]{1}) (?!\1)([a-hA-H][a-hA-H1-4]{1})$'
@@ -618,16 +646,16 @@ def commandExtractor(incomingString):
         else:
             return None
 
-    elif(incomingString.startswith('!g')):
+    elif(incomingString.startswith('!g ')):
         print('!g command to check: %s' % incomingString)
         # check for valid grab; ref example !g AA
-        grabPattern = r'^!g ([a-hA-H][a-hA-H1-8]{1}) (?!\1)([a-hA-H][a-hA-H1-8]{1})$'
+        grabPattern = r'^!g ([a-hA-H][a-hA-H1-8])$'
         if(re.match(grabPattern, incomingString)):
             return True
         else:
             return None
 
-    elif incomingString.startswith('!b'):
+    elif incomingString.startswith('!b '):
         print('!b command to check: %s' % incomingString)
         # check for valid bench; ref example !b A3
         benchPattern = r'^!b ([a-hA-H][1-4])$'
@@ -636,11 +664,20 @@ def commandExtractor(incomingString):
         else:
             return None
 
-    elif incomingString.startswith('!s'):
+    elif incomingString.startswith('!s '):
         print('!s command to check: %s' % incomingString)
         # check for valid delete; ref example !s A3
-        benchPattern = r'^!s ([a-hA-H][1-4])$'
+        benchPattern = r'^!s ([a-hA-H][a-hA-H1-4])$'
         if(re.match(benchPattern, incomingString)):
+            return True
+        else:
+            return None
+
+    elif incomingString.startswith('!rq'):
+        print('!rq command to check: %s' % incomingString)
+        # check for valid rq; ref example !rq
+        pattern = r'^!rq$'
+        if(re.match(pattern, incomingString)):
             return True
         else:
             return None
@@ -654,7 +691,7 @@ def commandExtractor(incomingString):
         else:
             return None
 
-    elif incomingString.startswith('!x'):
+    elif incomingString.startswith('!x '):
         print('!x command to check: %s' % incomingString)
         # check for valid xp; ref example !x
         buyXPPattern = r'^!x [1-4]$'
@@ -663,7 +700,7 @@ def commandExtractor(incomingString):
         else:
             return None
 
-    elif incomingString.startswith('!shop'):
+    elif incomingString.startswith('!shop '):
         print('!shop command to check: %s' % incomingString)
         # check for valid space; ref example !shop
         showSelectionPattern = r'^!shop (on|off)$'
@@ -681,7 +718,7 @@ def commandExtractor(incomingString):
         else:
             return None
 
-    elif incomingString.startswith('!p'):
+    elif incomingString.startswith('!p '):
         print('!p command to check: %s' % incomingString)
         # check for valid pick; ref example !p 1
         pickPattern = r'^!p [1-5]$'
@@ -717,20 +754,12 @@ def commandExtractor(incomingString):
         else:
             return None
 
-    elif incomingString.startswith('!rq'):
-        print('!rq command to check: %s' % incomingString)
-        # check for valid tab; ref example !rq
-        pattern = r'^!rq$'
-        if(re.match(pattern, incomingString)):
-            return True
-        else:
-            return None
-
     elif incomingString.startswith('!search'):
         print('!search command to check: %s' % incomingString)
         # check for valid search; ref example !search
         pattern = r'^!search$'
         if(re.match(pattern, incomingString)):
+            print('!search accepted')
             return True
         else:
             return None
@@ -744,9 +773,17 @@ def commandExtractor(incomingString):
         else:
             return None
 
+    elif incomingString.startswith('!accept'):
+        print('!accept command to check: %s' % incomingString)
+        # check for valid accept; ref example !accept
+        pattern = r'^!accept$'
+        if(re.match(pattern, incomingString)):
+            return True
+        else:
+            return None
+
     else:
         return None
-
 
 def democracy():
     global list_commands
@@ -848,7 +885,8 @@ while True:
                                            'Dota 2'], capture_output=True)
         dota2WindowID = completedProcess.stdout.decode('UTF-8')
     print("Currently available: Democracy, Anarchy")
-    mode = input("Game type: ")
+    # mode = input("Game type: ")
+    mode = 'anarchy'
     if mode.lower() == "anarchy":
         break
     if mode.lower() == "democracy":
@@ -919,7 +957,7 @@ if mode.lower() == "democracy":
 
             # Take in output
             # sanitize output
-            if(commandExtractor(out.lower())):
+            if(commandValidator(out.lower())):
                 addtofile()
 
             # Write to file for stream view
@@ -984,7 +1022,7 @@ if mode.lower() == "anarchy":
 
             # Take in output
             # sanitize output
-            if(commandExtractor(out.lower())):
+            if(commandValidator(out.lower())):
                 addtofile()
                 splitted = out.lower().split(' ')
                 findAndExecute(splitted)
