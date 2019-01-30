@@ -22,6 +22,7 @@ import string
 import time
 import socket
 import re
+import random
 from enum import Enum
 from threading import Thread
 
@@ -125,6 +126,7 @@ COORDMAP = {
     'pick5': {'x': 1458, 'y': 256},
     'lock': {'x': 313, 'y': 445},
     'close': {'x': 1610, 'y': 344},
+    'nothing': {'x': 1547, 'y': 77},
 
     'chickSlot1': {'x': 1158, 'y': 964},
     'chickSlot2': {'x': 1224, 'y': 964},
@@ -297,7 +299,38 @@ def leaveGame():
     global gameState
     gameState = GameStates.searching
 
-# !b 4
+
+def randomAction():
+    randomNumber = random.randint(0, 4)
+    if(randomNumber == 0):
+        # pick random piece
+        pickPiece(random.randint(1, 5))
+    elif(randomNumber == 1):
+        # sell random unit on bench
+        charNr = random.randint(0, 7)
+        sellChar = chr(charNr+ord('a'))
+        sellChar += sellChar
+        sellPiece(sellChar)
+    elif(randomNumber == 2):
+        # move random unit to random pos
+        rand1X = random.randint(0, 7)  # A-H
+        rand1Y = random.randint(1, 8)  # 1-8
+        rand2X = random.randint(0, 7)
+        rand2Y = random.randint(1, 8)
+        source = chr(rand1X + ord('a')) + rand1Y
+        target = chr(rand2X + ord('a')) + rand2Y
+        movePiece(source, target)
+        # bench reroll
+    elif(randomNumber == 3):
+        # bench random unit
+        rand1X = random.randint(0, 7)  # A-H
+        rand1Y = random.randint(1, 8)  # 1-8
+        target = chr(rand1X + ord('a')) + rand1Y
+        benchPiece(target)
+
+    elif(randomNumber == 4):
+        # reroll
+        rerollPieces()
 
 
 def pickPiece(target):
@@ -312,11 +345,33 @@ def pickPiece(target):
                     '--window',
                     dota2WindowID,
                     '1'])
+    time.sleep(delayBetweenActions)
+    clickNothing()
+
+
+def clickNothing():
+    '''
+    can be used to click empty space as well for resetting commandchain (autochess bug)
+    '''
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP['nothing']['x']),
+                    str(COORDMAP['nothing']['y']),
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '1'])
+    time.sleep(delayBetweenActions)
+
 
 # !shophowSelection
 
-
-def showSelection(isOn):
+def closeSelection():
+    '''
+    closes Selection via X button
+    '''
     subprocess.run(['xdotool',
                     'mousemove',
                     '--window',
@@ -328,6 +383,10 @@ def showSelection(isOn):
                     dota2WindowID,
                     '1'])
     time.sleep(delayBetweenActions)
+
+
+def showSelection(isOn):
+    closeSelection()
     if(isOn == 'on'):
         subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'space'])
 
@@ -381,7 +440,7 @@ def movePiece(source, target):
                     '--window',
                     dota2WindowID,
                     '1'])
-
+    clickNothing()
 # !b F5
 
 
@@ -398,7 +457,8 @@ def benchPiece(target):
                     '1'])
     time.sleep(delayBetweenActions)
     subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'b'])
-
+    time.sleep(delayBetweenActions)
+    clickNothing()
 # !s F6
 
 
@@ -410,13 +470,16 @@ def sellPiece(target):
                     'click', '1'])
     time.sleep(delayBetweenActions)
     subprocess.run(['xdotool', 'key', 's'])
+    time.sleep(delayBetweenActions)
+    clickNothing()
 
 # !r null
 
 
 def rerollPieces():
     subprocess.run(['xdotool', 'key', 'r'])
-
+    time.sleep(delayBetweenActions)
+    clickNothing()
 # !x null
 
 
@@ -424,66 +487,59 @@ def buyXP(amount):
     for i in range(amount):
         subprocess.run(['xdotool', 'key', 'x'])
         time.sleep(delayBetweenActions)
+    clickNothing()
 
 
 def findAndExecute(splitted):
     if(gameState == GameStates.gaming):
         if splitted[0] == '!m':
-
-            # subprocess.run(['xdotool', 'search', dota2WindowID, 'windowactivate'])
             time.sleep(.02)
             # execute command
             movePiece(splitted[1], splitted[2])
         if splitted[0] == '!b':
-
             time.sleep(.02)
             # execute command
             benchPiece(splitted[1])
         if splitted[0] == '!s':
-
             time.sleep(.02)
             # execute command
             sellPiece(splitted[1])
         if splitted[0] == '!r':
-
             time.sleep(.02)
             # execute command
             rerollPieces()
         if splitted[0] == '!x':
-
             time.sleep(.02)
             # execute command
             buyXP(splitted[1])
         if splitted[0] == '!shop':
-
             time.sleep(.02)
             # execute command
             showSelection(splitted[0])
         if splitted[0] == '!p':
-
             time.sleep(.02)
             # execute command
             pickPiece(splitted[1])
         if splitted[0] == '!l':
-
             time.sleep(.02)
             # execute command
             lockSelection()
         if splitted[0] == '!g':
-
             time.sleep(.02)
             # execute command
             grabItem(splitted[0])
         if splitted[0] == '!i':
-
             time.sleep(.02)
             # execute command
             moveItem(splitted[0], splitted[1])
         if splitted[0] == '!tab':
-
             time.sleep(.02)
             # execute command
             tabTour()
+        if splitted[0] == '!random':
+            time.sleep(.02)
+            # execute command
+            randomAction()
         if splitted[0] == '!rq':
             time.sleep(.02)
             leaveGame()
@@ -642,8 +698,44 @@ def commandExtractor(incomingString):
     elif incomingString.startswith('!tab'):
         print('!tab command to check: %s' % incomingString)
         # check for valid tab; ref example !tab
-        lockPattern = r'^!tab$'
-        if(re.match(lockPattern, incomingString)):
+        pattern = r'^!tab$'
+        if(re.match(pattern, incomingString)):
+            return True
+        else:
+            return None
+
+    elif incomingString.startswith('!random'):
+        print('!random command to check: %s' % incomingString)
+        # check for valid random; ref example !random
+        pattern = r'^!random$'
+        if(re.match(pattern, incomingString)):
+            return True
+        else:
+            return None
+
+    elif incomingString.startswith('!rq'):
+        print('!rq command to check: %s' % incomingString)
+        # check for valid tab; ref example !rq
+        pattern = r'^!rq$'
+        if(re.match(pattern, incomingString)):
+            return True
+        else:
+            return None
+
+    elif incomingString.startswith('!search'):
+        print('!search command to check: %s' % incomingString)
+        # check for valid search; ref example !search
+        pattern = r'^!search$'
+        if(re.match(pattern, incomingString)):
+            return True
+        else:
+            return None
+
+    elif incomingString.startswith('!calib'):
+        print('!calib command to check: %s' % incomingString)
+        # check for valid calib; ref example !calib
+        pattern = r'^!calib$'
+        if(re.match(pattern, incomingString)):
             return True
         else:
             return None
