@@ -26,11 +26,19 @@ from enum import Enum
 from threading import Thread
 
 
+class GameStates(Enum):
+    searching = 0
+    calibration = 1
+    gaming = 2
+    tabTour = 3
+
+
 settings = []
 commands = []
 delayBetweenActions = 0.2
 dota2WindowID = ''
 readbuffer = ""
+gameState = GameStates.searching
 isCamCalibrated = False
 isDebug = False
 
@@ -200,8 +208,9 @@ def tabTour():
 
 
 def camCalibration():
+    global gameState
+    gameState = GameStates.gaming
     subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'tab'])
-    isCamCalibrated = True
     time.sleep(delayBetweenActions)
 
 
@@ -210,7 +219,8 @@ def searchNextGame():
 
 
 def searchGame():
-    isCamCalibrated = False
+    global gameState
+    gameState = GameStates.calibration
     subprocess.run(['xdotool',
                     'mousemove',
                     '--window',
@@ -284,6 +294,8 @@ def leaveGame():
                     '--window',
                     dota2WindowID,
                     '1'])
+    global gameState
+    gameState = GameStates.searching
 
 # !b 4
 
@@ -415,62 +427,74 @@ def buyXP(amount):
 
 
 def findAndExecute(splitted):
-    if splitted[0] == '!m':
-        # focus dota
-        # subprocess.run(['xdotool', 'search', dota2WindowID, 'windowactivate'])
-        time.sleep(.02)
-        # execute command
-        movePiece(splitted[1], splitted[2])
-    if splitted[0] == '!b':
-        # focus dota
-        time.sleep(.02)
-        # execute command
-        benchPiece(splitted[1])
-    if splitted[0] == '!s':
-        # focus dota
-        time.sleep(.02)
-        # execute command
-        sellPiece(splitted[1])
-    if splitted[0] == '!r':
-        # focus dota
-        time.sleep(.02)
-        # execute command
-        rerollPieces()
-    if splitted[0] == '!x':
-        # focus dota
-        time.sleep(.02)
-        # execute command
-        buyXP(splitted[1])
-    if splitted[0] == '!shop':
-        # focus dota
-        time.sleep(.02)
-        # execute command
-        showSelection(splitted[0])
-    if splitted[0] == '!p':
-        # focus dota
-        time.sleep(.02)
-        # execute command
-        pickPiece(splitted[1])
-    if splitted[0] == '!l':
-        # focus dota
-        time.sleep(.02)
-        # execute command
-        lockSelection()
-    if splitted[0] == '!g':
-        # focus dota
-        time.sleep(.02)
-        # execute command
-        grabItem(splitted[0])
-    if splitted[0] == '!i':
-        # focus dota
-        time.sleep(.02)
-        # execute command
-        moveItem(splitted[0], splitted[1])
-    if splitted[0] == '!tab':
-        # focus dota
-        time.sleep(.02)
-        # execute command
-        tabTour()
+    if(gameState == GameStates.gaming):
+        if splitted[0] == '!m':
+
+            # subprocess.run(['xdotool', 'search', dota2WindowID, 'windowactivate'])
+            time.sleep(.02)
+            # execute command
+            movePiece(splitted[1], splitted[2])
+        if splitted[0] == '!b':
+
+            time.sleep(.02)
+            # execute command
+            benchPiece(splitted[1])
+        if splitted[0] == '!s':
+
+            time.sleep(.02)
+            # execute command
+            sellPiece(splitted[1])
+        if splitted[0] == '!r':
+
+            time.sleep(.02)
+            # execute command
+            rerollPieces()
+        if splitted[0] == '!x':
+
+            time.sleep(.02)
+            # execute command
+            buyXP(splitted[1])
+        if splitted[0] == '!shop':
+
+            time.sleep(.02)
+            # execute command
+            showSelection(splitted[0])
+        if splitted[0] == '!p':
+
+            time.sleep(.02)
+            # execute command
+            pickPiece(splitted[1])
+        if splitted[0] == '!l':
+
+            time.sleep(.02)
+            # execute command
+            lockSelection()
+        if splitted[0] == '!g':
+
+            time.sleep(.02)
+            # execute command
+            grabItem(splitted[0])
+        if splitted[0] == '!i':
+
+            time.sleep(.02)
+            # execute command
+            moveItem(splitted[0], splitted[1])
+        if splitted[0] == '!tab':
+
+            time.sleep(.02)
+            # execute command
+            tabTour()
+        if splitted[0] == '!rq':
+            time.sleep(.02)
+            leaveGame()
+    elif(gameState == GameStates.searching):
+        if(splitted[0] == '!search'):
+            time.sleep(.02)
+            searchGame()
+    elif(gameState == GameStates.calibration):
+        if(splitted[0] == '!calib'):
+            time.sleep(.02)
+            camCalibration()
 
 
 def addtofile():
