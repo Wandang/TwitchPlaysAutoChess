@@ -44,24 +44,24 @@ isCamCalibrated = False
 isDebug = False
 
 PATTERNS = {
-    'move' : r'^!m ([a-hA-H][a-hA-H1-4]{1}) (?!\1)([a-hA-H][a-hA-H1-4]{1})$',
-    'grab' : r'^!g ([a-hA-H][a-hA-H1-8])$',
-    'bench' : r'^!b ([a-hA-H][1-4])$',
-    'sell' : r'^!s ([a-hA-H][a-hA-H1-4])$',
-    'rq' : r'^!rq$',
-    'reroll' : r'^!r$',
-    'buyxp' : r'^!x [1-4]$',
-    'shop' : r'^!shop (on|off)$',
-    'lock' : r'^!l$',
-    'pick' : r'^!p [1-5]$',
-    'itemtohero' : r'^!i ([1-9]) ([a-hA-H][a-hA-H1-8]{1})$',
-    'tab' : r'^!tab$',
-    'random' : r'^!random$',
-    'search' : r'^!search$',
-    'accept' : r'^!accept$',
-    'calib' : r'^!calib$',
-    'run': r'^!run$',
-    'lockitem': r'^!i ([1-9])$',
+    'move' : r'^!m ([a-hA-H][a-hA-H1-4]{1}) (?!\1)([a-hA-H][a-hA-H1-4]{1})($| +)',
+    'grab' : r'^!g ([a-hA-H][a-hA-H1-8])($| +)',
+    'bench' : r'^!b ([a-hA-H][1-4])($| +)',
+    'sell' : r'^!s ([a-hA-H][a-hA-H1-4])($| +)',
+    'rq' : r'^!rq($| +)',
+    'reroll' : r'^!r($| +)',
+    'buyxp' : r'^!x [1-4]($| +)',
+    'shop' : r'^!shop (on|off)($| +)',
+    'lock' : r'^!l($| +)',
+    'pick' : r'^!p [1-5]($| +)',
+    'itemtohero' : r'^!i ([1-9]) ([a-hA-H][a-hA-H1-8]{1})($| +)',
+    'tab' : r'^!tab($| +)',
+    'random' : r'^!random($| +)',
+    'search' : r'^!search($| +)',
+    'accept' : r'^!accept($| +)',
+    'calib' : r'^!calib($| +)',
+    'run': r'^!run($| +)',
+    'lockitem': r'^!iu?l ([1-9])($| +)'
 }
 
 COORDMAP = {
