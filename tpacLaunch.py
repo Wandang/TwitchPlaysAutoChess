@@ -43,6 +43,27 @@ readbuffer = ""
 isCamCalibrated = False
 isDebug = False
 
+PATTERNS = {
+    'move' : r'^!m ([a-hA-H][a-hA-H1-4]{1}) (?!\1)([a-hA-H][a-hA-H1-4]{1})$',
+    'grab' : r'^!g ([a-hA-H][a-hA-H1-8])$',
+    'bench' : r'^!b ([a-hA-H][1-4])$',
+    'sell' : r'^!s ([a-hA-H][a-hA-H1-4])$',
+    'rq' : r'^!rq$',
+    'reroll' : r'^!r$',
+    'buyxp' : r'^!x [1-4]$',
+    'shop' : r'^!shop (on|off)$',
+    'lock' : r'^!l$',
+    'pick' : r'^!p [1-5]$',
+    'itemtohero' : r'^!i ([1-9]) ([a-hA-H][a-hA-H1-8]{1})$',
+    'tab' : r'^!tab$',
+    'random' : r'^!random$',
+    'search' : r'^!search$',
+    'accept' : r'^!accept$',
+    'calib' : r'^!calib$',
+    'run': r'^!run$',
+    'lockitem': r'^!i ([1-9])$',
+}
+
 COORDMAP = {
     'a1': {'x': 633, 'y': 620},
     'a2': {'x': 651, 'y': 548},
@@ -654,6 +675,15 @@ def findAndExecute(splitted):
     if splitted[0] == '!rq':
         time.sleep(.02)
         leaveGame()
+    if splitted[0] == '!li':
+        time.sleep(.02)
+        toggleLockItem(splitted[1])
+    if splitted[0] == '!uli':
+        time.sleep(.02)
+        toggleLockItem(splitted[1])
+    if splitted[0] == '!run':
+        time.sleep(.02)
+        grabItemChickenloop()
     # elif(gameState == GameStates.searching):
     if(splitted[0] == '!search'):
         time.sleep(.02)
@@ -719,156 +749,12 @@ def commandValidator(incomingString):
     if(incomingString[:1] != '!'):
         return None
 
-    # starts with keywords?
-    if(incomingString.startswith('!m ')):
-        print('!m command to check: %s' % incomingString)
-        # check for valid move; ref example !m AA F4
-        movePattern = r'^!m ([a-hA-H][a-hA-H1-4]{1}) (?!\1)([a-hA-H][a-hA-H1-4]{1})$'
-        if(re.match(movePattern, incomingString)):
-            return True
-        else:
-            return None
-
-    elif(incomingString.startswith('!g ')):
-        print('!g command to check: %s' % incomingString)
-        # check for valid grab; ref example !g AA
-        grabPattern = r'^!g ([a-hA-H][a-hA-H1-8])$'
-        if(re.match(grabPattern, incomingString)):
-            return True
-        else:
-            return None
-
-    elif incomingString.startswith('!b '):
-        print('!b command to check: %s' % incomingString)
-        # check for valid bench; ref example !b A3
-        benchPattern = r'^!b ([a-hA-H][1-4])$'
-        if(re.match(benchPattern, incomingString)):
-            return True
-        else:
-            return None
-
-    elif incomingString.startswith('!s '):
-        print('!s command to check: %s' % incomingString)
-        # check for valid delete; ref example !s A3
-        benchPattern = r'^!s ([a-hA-H][a-hA-H1-4])$'
-        if(re.match(benchPattern, incomingString)):
-            return True
-        else:
-            return None
-
-    elif incomingString.startswith('!rq'):
-        print('!rq command to check: %s' % incomingString)
-        # check for valid rq; ref example !rq
-        pattern = r'^!rq$'
+    # does it match any pattern?
+    for pattern in PATTERNS:
         if(re.match(pattern, incomingString)):
-            return True
-        else:
-            return None
+                return True
 
-    elif incomingString.startswith('!r'):
-        print('!r command to check: %s' % incomingString)
-        # check for valid reroll; ref example !r
-        rerollPattern = r'^!r$'
-        if(re.match(rerollPattern, incomingString)):
-            return True
-        else:
-            return None
-
-    elif incomingString.startswith('!x '):
-        print('!x command to check: %s' % incomingString)
-        # check for valid xp; ref example !x
-        buyXPPattern = r'^!x [1-4]$'
-        if(re.match(buyXPPattern, incomingString)):
-            return True
-        else:
-            return None
-
-    elif incomingString.startswith('!shop '):
-        print('!shop command to check: %s' % incomingString)
-        # check for valid space; ref example !shop
-        showSelectionPattern = r'^!shop (on|off)$'
-        if(re.match(showSelectionPattern, incomingString)):
-            return True
-        else:
-            return None
-
-    elif incomingString.startswith('!l'):
-        print('!l command to check: %s' % incomingString)
-        # check for valid lock; ref example !l
-        lockPattern = r'^!l$'
-        if(re.match(lockPattern, incomingString)):
-            return True
-        else:
-            return None
-
-    elif incomingString.startswith('!p '):
-        print('!p command to check: %s' % incomingString)
-        # check for valid pick; ref example !p 1
-        pickPattern = r'^!p [1-5]$'
-        if(re.match(pickPattern, incomingString)):
-            return True
-        else:
-            return None
-
-    elif incomingString.startswith('!i'):
-        print('!i command to check: %s' % incomingString)
-        # check for valid item to hero command; ref example !i 2 A5
-        pattern = r'^!i ([1-9]) ([a-hA-H][a-hA-H1-8]{1})$'
-        if(re.match(pattern, incomingString)):
-            return True
-        else:
-            return None
-
-    elif incomingString.startswith('!tab'):
-        print('!tab command to check: %s' % incomingString)
-        # check for valid tab; ref example !tab
-        pattern = r'^!tab$'
-        if(re.match(pattern, incomingString)):
-            return True
-        else:
-            return None
-
-    elif incomingString.startswith('!random'):
-        print('!random command to check: %s' % incomingString)
-        # check for valid random; ref example !random
-        pattern = r'^!random$'
-        if(re.match(pattern, incomingString)):
-            return True
-        else:
-            return None
-
-    elif incomingString.startswith('!search'):
-        print('!search command to check: %s' % incomingString)
-        # check for valid search; ref example !search
-        pattern = r'^!search$'
-        if(re.match(pattern, incomingString)):
-            print('!search accepted')
-            return True
-        else:
-            return None
-
-    elif incomingString.startswith('!calib'):
-        print('!calib command to check: %s' % incomingString)
-        # check for valid calib; ref example !calib
-        pattern = r'^!calib$'
-        if(re.match(pattern, incomingString)):
-            return True
-        else:
-            return None
-
-    elif incomingString.startswith('!accept'):
-        print('!accept command to check: %s' % incomingString)
-        # check for valid accept; ref example !accept
-        pattern = r'^!accept$'
-        if(re.match(pattern, incomingString)):
-            print('accept is valid!')
-            return True
-        else:
-            return None
-
-    else:
-        return None
-
+    return False
 
 def democracy():
     global list_commands
