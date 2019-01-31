@@ -493,6 +493,8 @@ def randomAction():
 
 
 def pickPiece(target):
+    showSelection('on')
+    time.sleep(delayBetweenActions)
     print('trying to pick: %s' % target)
     pickString = 'pick'+str(target)
     subprocess.run(['xdotool',
@@ -606,10 +608,14 @@ def movePiece(source, target):
                     '1'])
     time.sleep(delayBetweenActions)
     clickNothing()
+    time.sleep(delayBetweenActions)
+    showSelection('on')
 # !b F5
 
 
 def benchPiece(target):
+    showSelection('off')
+    time.sleep(delayBetweenActions)
     print('trying to bench: %s' % target)
     subprocess.run(['xdotool',
                     'mousemove',
@@ -625,10 +631,14 @@ def benchPiece(target):
     subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'b'])
     time.sleep(delayBetweenActions)
     clickNothing()
+    time.sleep(delayBetweenActions)
+    showSelection('on')
 # !s F6
 
 
 def sellPiece(target):
+    showSelection('off')
+    time.sleep(delayBetweenActions)
     print('trying to sell piece: %s' % target)
     subprocess.run(['xdotool',
                     'mousemove',
@@ -639,15 +649,20 @@ def sellPiece(target):
     subprocess.run(['xdotool', 'key', 's'])
     time.sleep(delayBetweenActions)
     clickNothing()
-
+    time.sleep(delayBetweenActions)
+    showSelection('on')
 # !r null
 
 
 def rerollPieces():
+    showSelection('off')
+    time.sleep(delayBetweenActions)
     print('trying to reroll')
     subprocess.run(['xdotool', 'key', 'r'])
     time.sleep(delayBetweenActions)
     clickNothing()
+    time.sleep(delayBetweenActions)
+    showSelection('on')
 # !x null
 
 
