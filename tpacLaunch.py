@@ -411,7 +411,7 @@ def rageQuitProcess():
                         dota2WindowID,
                         '1'])
 
-        time.sleep(0.5)
+        time.sleep(1)
 
         subprocess.run(['xdotool',
                         'mousemove',
@@ -424,7 +424,7 @@ def rageQuitProcess():
                         dota2WindowID,
                         '1'])
 
-        time.sleep(0.5)
+        time.sleep(1)
 
         subprocess.run(['xdotool',
                         'mousemove',
