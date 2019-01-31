@@ -23,6 +23,7 @@ import time
 import socket
 import re
 import random
+from collections import OrderedDict
 from enum import Enum
 from threading import Thread
 
@@ -146,46 +147,63 @@ COORDMAP = {
     'dotaAcceptBtn': {'x': 901, 'y': 529}
 }
 
-CHICKENLOOP = {
-    'A1L': {'x': 565, 'y': 612},
-    'A2L': {'x': 583, 'y': 541},
-    'A3L': {'x': 603, 'y': 463},
-    'A4L': {'x': 617, 'y': 404},
-    'A5L': {'x': 633, 'y': 340},
-    'A6L': {'x': 645, 'y': 284},
-    'A7L': {'x': 660, 'y': 236},
-    'A8L': {'x': 670, 'y': 192},
-    'A8U': {'x': 735, 'y': 149},
-    'B8U': {'x': 798, 'y': 145},
-    'C8U': {'x': 866, 'y': 144},
-    'D8U': {'x': 928, 'y': 141},
-    'E8U': {'x': 994, 'y': 142},
-    'F8U': {'x': 1059, 'y': 143},
-    'G8U': {'x': 1131, 'y': 137},
-    'H8U': {'x': 1190, 'y': 151},
-    'H8R': {'x': 1255, 'y': 191},
-    'H7R': {'x': 1269, 'y': 238},
-    'H6R': {'x': 1283, 'y': 293},
-    'H5R': {'x': 1293, 'y': 345},
-    'H4R': {'x': 1310, 'y': 403},
-    'H3R': {'x': 1320, 'y': 474},
-    'H2R': {'x': 1338, 'y': 542},
-    'H1R': {'x': 1355, 'y': 616},
-    'H1D': {'x': 1287, 'y': 698},
-    'G1D': {'x': 1194, 'y': 692},
-    'F1D': {'x': 1093, 'y': 695},
-    'E1D': {'x': 1001, 'y': 691},
-    'D1D': {'x': 913, 'y': 693},
-    'C1D': {'x': 820, 'y': 689},
-    'B1D': {'x': 728, 'y': 689},
-    'A1D': {'x': 630, 'y': 689}
-}
+CHICKENLOOP = OrderedDict([
+    ('A1L', {'x': 565, 'y': 612}),
+    ('A2L', {'x': 583, 'y': 541}),
+    ('A3L', {'x': 603, 'y': 463}),
+    ('A4L', {'x': 617, 'y': 404}),
+    ('A5L', {'x': 633, 'y': 340}),
+    ('A6L', {'x': 645, 'y': 284}),
+    ('A7L', {'x': 660, 'y': 236}),
+    ('A8L', {'x': 670, 'y': 192}),
+    ('A8U', {'x': 735, 'y': 149}),
+    ('B8U', {'x': 798, 'y': 145}),
+    ('C8U', {'x': 866, 'y': 144}),
+    ('D8U', {'x': 928, 'y': 141}),
+    ('E8U', {'x': 994, 'y': 142}),
+    ('F8U', {'x': 1059, 'y': 143}),
+    ('G8U', {'x': 1131, 'y': 137}),
+    ('H8U', {'x': 1190, 'y': 151}),
+    ('H8R', {'x': 1255, 'y': 191}),
+    ('H7R', {'x': 1269, 'y': 238}),
+    ('H6R', {'x': 1283, 'y': 293}),
+    ('H5R', {'x': 1293, 'y': 345}),
+    ('H4R', {'x': 1310, 'y': 403}),
+    ('H3R', {'x': 1320, 'y': 474}),
+    ('H2R', {'x': 1338, 'y': 542}),
+    ('H1R', {'x': 1355, 'y': 616}),
+    ('H1D', {'x': 1287, 'y': 698}),
+    ('G1D', {'x': 1194, 'y': 692}),
+    ('F1D', {'x': 1093, 'y': 695}),
+    ('E1D', {'x': 1001, 'y': 691}),
+    ('D1D', {'x': 913, 'y': 693}),
+    ('C1D', {'x': 820, 'y': 689}),
+    ('B1D', {'x': 728, 'y': 689}),
+    ('A1D', {'x': 630, 'y': 689})
+])
+
 
 
 def grabItemChickenloop():
-    for target_list in CHICKENLOOP.keys():
-        CHICKENLOOP.get
-        pass
+    # pos chicken at A1 first
+    rightClickAtCoord(COORDMAP['A1'])
+    time.sleep(3)
+    for coord in CHICKENLOOP:
+        rightClickAtCoord(CHICKENLOOP[coord])
+        time.sleep(1)
+
+def rightClickAtCoord(coord):
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(coord['x']),
+                    str(coord['y']),
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '3'])
+    time.sleep(delayBetweenActions)
 
 def resetChickenPos():
     subprocess.run(['xdotool',
@@ -233,18 +251,7 @@ def moveItem(slot, target):
 
 def grabItem(target):
     print('trying to grab item: %s' % target)
-    subprocess.run(['xdotool',
-                    'mousemove',
-                    '--window',
-                    dota2WindowID,
-                    str(COORDMAP[target]['x']),
-                    str(COORDMAP[target]['y']),
-                    'click',
-                    '--window',
-                    dota2WindowID,
-                    '3'])
-    time.sleep(delayBetweenActions)
-
+    rightClickAtCoord(COORDMAP[target])
 
 def tabTour():
     print('tabtour...')
