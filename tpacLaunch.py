@@ -369,6 +369,7 @@ def abortRagequit():
     global allowRagequit
     allowRagequit = False
 
+
 def rageQuitProcess():
     targetTime = 20
     global allowRagequit
@@ -913,6 +914,8 @@ if mode.lower() == "democracy":
         f.write("")
     with open("most_common_commands.txt", "w") as f:
         f.write("")
+    with open("ragequit.txt", "w") as f:
+        f.write("")
     count_job = Thread(target=democracy, args=())
     count_job.start()
     # count_job.join()
@@ -984,6 +987,8 @@ if mode.lower() == "anarchy":
     with open("lastsaid.txt", "w") as f:
         f.write("")
     with open("most_common_commands.txt", "w") as f:
+        f.write("")
+    with open("ragequit.txt", "w") as f:
         f.write("")
     time.sleep(1)
 
