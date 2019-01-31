@@ -231,11 +231,8 @@ def moveItem(slot, target):
                     '--window',
                     dota2WindowID,
                     str(COORDMAP[slotID]['x']),
-                    str(COORDMAP[slotID]['y']),
-                    'click',
-                    '--window',
-                    dota2WindowID,
-                    '1'])
+                    str(COORDMAP[slotID]['y'])])
+    time.sleep(1)
     subprocess.run(['xdotool', 'mousedown', '--window', dota2WindowID, '1'])
     time.sleep(0.5)
     subprocess.run(['xdotool',
@@ -244,8 +241,10 @@ def moveItem(slot, target):
                     dota2WindowID,
                     str(COORDMAP[target]['x']),
                     str(COORDMAP[target]['y'])])
+    time.sleep(1)
     subprocess.run(['xdotool', 'mouseup', '--window', dota2WindowID, '1'])
-    time.sleep(0.5)
+    # give chicken time to run to the destination
+    time.sleep(5)
     resetChickenPos()
 
 
