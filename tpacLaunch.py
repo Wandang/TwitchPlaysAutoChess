@@ -182,15 +182,48 @@ CHICKENLOOP = OrderedDict([
     ('A1D', {'x': 630, 'y': 689})
 ])
 
+itemoffsetFirstRowX = 54
+itemoffsetFirstRowy = 31
+itemoffsetSecondRowX = 75
+itemoffsetSecondRowy = 0 #6 old
 
+def toggleLockItem(slot):
+    slotID = 'chickSlot'+slot
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP[slotID]['x']),
+                    str(COORDMAP[slotID]['y']),
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '3'])
+    time.sleep(0.5)
+    lockLabelPosX = str(COORDMAP[slotID]['x']+itemoffsetFirstRowX)
+    lockLabelPosY = str(COORDMAP[slotID]['y']+itemoffsetFirstRowy)
+    if(int(slot) > 3):
+        lockLabelPosX = str(COORDMAP[slotID]['x']+itemoffsetSecondRowX)
+        lockLabelPosY = str(COORDMAP[slotID]['y']+itemoffsetSecondRowy)
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    lockLabelPosX,
+                    lockLabelPosY,
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '1'])
 
 def grabItemChickenloop():
     # pos chicken at A1 first
-    rightClickAtCoord(COORDMAP['A1'])
+    rightClickAtCoord(COORDMAP['a1'])
     time.sleep(3)
     for coord in CHICKENLOOP:
         rightClickAtCoord(CHICKENLOOP[coord])
-        time.sleep(1)
+        time.sleep(0.3)
+    resetChickenPos()
 
 def rightClickAtCoord(coord):
     subprocess.run(['xdotool',
