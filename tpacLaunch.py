@@ -675,10 +675,7 @@ def findAndExecute(splitted):
     if splitted[0] == '!rq':
         time.sleep(.02)
         leaveGame()
-    if splitted[0] == '!li':
-        time.sleep(.02)
-        toggleLockItem(splitted[1])
-    if splitted[0] == '!uli':
+    if splitted[0] == '!li' or splitted[0] == '!uli':
         time.sleep(.02)
         toggleLockItem(splitted[1])
     if splitted[0] == '!run':
