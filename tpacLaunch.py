@@ -117,7 +117,6 @@ COORDMAP = {
     'gg': {'x': 1224, 'y': 805},
     'hh': {'x': 1329, 'y': 806},
 
-
     'pick1': {'x': 464, 'y': 276},
     'pick2': {'x': 712, 'y': 257},
     'pick3': {'x': 973, 'y': 265},
@@ -147,6 +146,46 @@ COORDMAP = {
     'dotaAcceptBtn': {'x': 901, 'y': 529}
 }
 
+CHICKENLOOP = {
+    'A1L': {'x': 565, 'y': 612},
+    'A2L': {'x': 583, 'y': 541},
+    'A3L': {'x': 603, 'y': 463},
+    'A4L': {'x': 617, 'y': 404},
+    'A5L': {'x': 633, 'y': 340},
+    'A6L': {'x': 645, 'y': 284},
+    'A7L': {'x': 660, 'y': 236},
+    'A8L': {'x': 670, 'y': 192},
+    'A8U': {'x': 735, 'y': 149},
+    'B8U': {'x': 798, 'y': 145},
+    'C8U': {'x': 866, 'y': 144},
+    'D8U': {'x': 928, 'y': 141},
+    'E8U': {'x': 994, 'y': 142},
+    'F8U': {'x': 1059, 'y': 143},
+    'G8U': {'x': 1131, 'y': 137},
+    'H8U': {'x': 1190, 'y': 151},
+    'H8R': {'x': 1255, 'y': 191},
+    'H7R': {'x': 1269, 'y': 238},
+    'H6R': {'x': 1283, 'y': 293},
+    'H5R': {'x': 1293, 'y': 345},
+    'H4R': {'x': 1310, 'y': 403},
+    'H3R': {'x': 1320, 'y': 474},
+    'H2R': {'x': 1338, 'y': 542},
+    'H1R': {'x': 1355, 'y': 616},
+    'H1D': {'x': 1287, 'y': 698},
+    'G1D': {'x': 1194, 'y': 692},
+    'F1D': {'x': 1093, 'y': 695},
+    'E1D': {'x': 1001, 'y': 691},
+    'D1D': {'x': 913, 'y': 693},
+    'C1D': {'x': 820, 'y': 689},
+    'B1D': {'x': 728, 'y': 689},
+    'A1D': {'x': 630, 'y': 689}
+}
+
+
+def grabItemChickenloop():
+    for target_list in CHICKENLOOP.keys():
+        CHICKENLOOP.get
+        pass
 
 def resetChickenPos():
     subprocess.run(['xdotool',
@@ -468,6 +507,7 @@ def movePiece(source, target):
                     '--window',
                     dota2WindowID,
                     '1'])
+    time.sleep(delayBetweenActions)
     clickNothing()
 # !b F5
 
@@ -518,7 +558,7 @@ def buyXP(amount):
     print('trying to buy xp: %s' % amount)
     for i in range(int(amount)):
         subprocess.run(['xdotool', 'key', 'x'])
-        time.sleep(0.5)
+        time.sleep(0.8)
     clickNothing()
 
 
@@ -624,7 +664,7 @@ def most_common(lst):
                 break
 
     with open("most_common_commands.txt", "w") as f:
-        f.write('Ranking:\n')
+        f.write('Top commands:\n')
         for item in maxList:
             f.write(item + '\n')
     return maxList[0]
@@ -890,7 +930,7 @@ while True:
         completedProcess = subprocess.run(['xdotool', 'search', '--name',
                                            'Dota 2'], capture_output=True)
         dota2WindowID = completedProcess.stdout.decode('UTF-8')
-    aMode = input('Adminmode? y/n')
+    aMode = input('Adminmode? y/n: ')
     if(aMode.lower() == 'y'):
         adminMode = True
     else:
@@ -909,7 +949,8 @@ while True:
 if mode.lower() == "democracy":
     with open("lastsaid.txt", "w") as f:
         f.write("")
-
+    with open("most_common_commands.txt", "w") as f:
+        f.write("")
     count_job = Thread(target=democracy, args=())
     count_job.start()
     # count_job.join()
@@ -980,7 +1021,8 @@ if mode.lower() == "democracy":
 if mode.lower() == "anarchy":
     with open("lastsaid.txt", "w") as f:
         f.write("")
-
+    with open("most_common_commands.txt", "w") as f:
+        f.write("")
     time.sleep(1)
 
     s = socket.socket()
