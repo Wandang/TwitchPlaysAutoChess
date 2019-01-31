@@ -39,29 +39,29 @@ commands = []
 delayBetweenActions = 0.3
 dota2WindowID = ''
 readbuffer = ""
+allowRagequit = False
 #gameState = GameStates.searching
-isCamCalibrated = False
-isDebug = False
 
 PATTERNS = {
-    'move' : r'^!m ([a-hA-H][a-hA-H1-4]{1}) (?!\1)([a-hA-H][a-hA-H1-4]{1})($| +)',
-    'grab' : r'^!g ([a-hA-H][a-hA-H1-8])($| +)',
-    'bench' : r'^!b ([a-hA-H][1-4])($| +)',
-    'sell' : r'^!s ([a-hA-H][a-hA-H1-4])($| +)',
-    'rq' : r'^!rq($| +)',
-    'reroll' : r'^!r($| +)',
-    'buyxp' : r'^!x [1-4]($| +)',
-    'shop' : r'^!shop (on|off)($| +)',
-    'lock' : r'^!l($| +)',
-    'pick' : r'^!p [1-5]($| +)',
-    'itemtohero' : r'^!i ([1-9]) ([a-hA-H][a-hA-H1-8]{1})($| +)',
-    'tab' : r'^!tab($| +)',
-    'random' : r'^!random($| +)',
-    'search' : r'^!search($| +)',
-    'accept' : r'^!accept($| +)',
-    'calib' : r'^!calib($| +)',
+    'move': r'^!m ([a-hA-H][a-hA-H1-4]{1}) (?!\1)([a-hA-H][a-hA-H1-4]{1})($| +)',
+    'grab': r'^!g ([a-hA-H][a-hA-H1-8])($| +)',
+    'bench': r'^!b ([a-hA-H][1-4])($| +)',
+    'sell': r'^!s ([a-hA-H][a-hA-H1-4])($| +)',
+    'rq': r'^!rq($| +)',
+    'reroll': r'^!r($| +)',
+    'buyxp': r'^!x [1-4]($| +)',
+    'shop': r'^!shop (on|off)($| +)',
+    'lock': r'^!l($| +)',
+    'pick': r'^!p [1-5]($| +)',
+    'itemtohero': r'^!i ([1-9]) ([a-hA-H][a-hA-H1-8]{1})($| +)',
+    'tab': r'^!tab($| +)',
+    'random': r'^!random($| +)',
+    'search': r'^!search($| +)',
+    'accept': r'^!accept($| +)',
+    'calib': r'^!calib($| +)',
     'run': r'^!run($| +)',
-    'lockitem': r'^!iu?l ([1-9])($| +)'
+    'lockitem': r'^!iu?l ([1-9])($| +)',
+    'stay': r'^!stay($| +)'
 }
 
 COORDMAP = {
@@ -206,7 +206,8 @@ CHICKENLOOP = OrderedDict([
 itemoffsetFirstRowX = 54
 itemoffsetFirstRowy = 31
 itemoffsetSecondRowX = 75
-itemoffsetSecondRowy = 0 #6 old
+itemoffsetSecondRowy = 0  # 6 old
+
 
 def toggleLockItem(slot):
     slotID = 'chickSlot'+slot
@@ -237,6 +238,7 @@ def toggleLockItem(slot):
                     dota2WindowID,
                     '1'])
 
+
 def grabItemChickenloop():
     # pos chicken at A1 first
     rightClickAtCoord(COORDMAP['a1'])
@@ -245,6 +247,7 @@ def grabItemChickenloop():
         rightClickAtCoord(CHICKENLOOP[coord])
         time.sleep(0.3)
     resetChickenPos()
+
 
 def rightClickAtCoord(coord):
     subprocess.run(['xdotool',
@@ -258,6 +261,7 @@ def rightClickAtCoord(coord):
                     dota2WindowID,
                     '3'])
     time.sleep(delayBetweenActions)
+
 
 def resetChickenPos():
     subprocess.run(['xdotool',
@@ -305,6 +309,7 @@ def moveItem(slot, target):
 def grabItem(target):
     print('trying to grab item: %s' % target)
     rightClickAtCoord(COORDMAP[target])
+
 
 def tabTour():
     print('tabtour...')
@@ -360,10 +365,27 @@ def searchGame():
     acceptGame()
 
 
-def leaveGame():
-    print('trying to leave game...')
-    # global gameState
-    if(adminMode == False):
+def abortRagequit():
+    global allowRagequit
+    allowRagequit = False
+
+def rageQuitProcess():
+    targetTime = 20
+    global allowRagequit
+    starttime = time.time()
+    # do nothing till 20s passed
+    # time.sleep(20)
+    while True:
+        if(time.time() - starttime < targetTime):
+            # write for chat
+            with open("ragequit.txt", "w") as f:
+                f.write("Time left till ragequit!: %s \n" % str(
+                        targetTime - (time.time() - starttime)).split('.')[0])
+                f.write("To abort write '!stay'")
+                time.sleep(1)
+
+    if(allowRagequit):
+        print('trying to leave game...')
         # gameState = GameStates.searching
         subprocess.run(['xdotool',
                         'mousemove',
@@ -414,6 +436,20 @@ def leaveGame():
                         '--window',
                         dota2WindowID,
                         '1'])
+
+    allowRagequit = False
+
+
+def leaveGame():
+    global allowRagequit
+    if(allowRagequit):
+        return
+    allowRagequit = True
+    # global gameState
+    if(adminMode == False):
+        # start counter in seperate thread
+        rageQuitJob = Thread(target=rageQuitProcess, args=())
+        rageQuitJob.start()
 
     else:
         pass
@@ -681,6 +717,9 @@ def findAndExecute(splitted):
     if splitted[0] == '!run':
         time.sleep(.02)
         grabItemChickenloop()
+    if splitted[0] == '!stay':
+        time.sleep(.02)
+        abortRagequit()
     # elif(gameState == GameStates.searching):
     if(splitted[0] == '!search'):
         time.sleep(.02)
@@ -749,9 +788,10 @@ def commandValidator(incomingString):
     # does it match any pattern?
     for pattern in PATTERNS:
         if(re.match(pattern, incomingString)):
-                return True
+            return True
 
     return False
+
 
 def democracy():
     global list_commands
