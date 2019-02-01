@@ -250,6 +250,7 @@ def toggleLockItem(slot):
 
 
 def grabItemChickenloop(side):
+    showSelection('off')
     if(side == 'left'):
         # pos chicken at A1 first
         rightClickAtCoord(COORDMAP['a1'])
@@ -564,7 +565,6 @@ def randomAction():
 
 def pickPiece(target):
     showSelection('on')
-    time.sleep(delayBetweenActions)
     print('trying to pick: %s' % target)
     pickString = 'pick'+str(target)
     subprocess.run(['xdotool',
@@ -622,7 +622,7 @@ def showSelection(isOn):
     closeSelection()
     if(isOn == 'on'):
         subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'space'])
-
+    time.sleep(delayBetweenActions)
 # !l
 
 
@@ -630,7 +630,6 @@ def lockSelection():
     print('trying to lock')
     # first open selection
     showSelection('on')
-    time.sleep(delayBetweenActions)
     subprocess.run(['xdotool',
                     'mousemove',
                     '--window',
@@ -781,7 +780,6 @@ def movePiece(source, target):
     print('to %s' % target)
     # make sure selection is closed
     showSelection('off')
-    time.sleep(delayBetweenActions)
     subprocess.run(['xdotool',
                     'mousemove',
                     '--window',
@@ -814,7 +812,6 @@ def movePiece(source, target):
 
 def benchPiece(target):
     showSelection('off')
-    time.sleep(delayBetweenActions)
     print('trying to bench: %s' % target)
     subprocess.run(['xdotool',
                     'mousemove',
@@ -837,7 +834,6 @@ def benchPiece(target):
 
 def sellPiece(target):
     showSelection('off')
-    time.sleep(delayBetweenActions)
     print('trying to sell piece: %s' % target)
     subprocess.run(['xdotool',
                     'mousemove',
@@ -855,7 +851,6 @@ def sellPiece(target):
 
 def rerollPieces():
     showSelection('off')
-    time.sleep(delayBetweenActions)
     print('trying to reroll')
     subprocess.run(['xdotool', 'key', 'r'])
     time.sleep(delayBetweenActions)
