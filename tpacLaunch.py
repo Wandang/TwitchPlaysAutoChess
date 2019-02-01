@@ -36,6 +36,7 @@ class GameStates(Enum):
 
 settings = []
 commands = []
+commandStack = []
 delayBetweenActions = 0.3
 dota2WindowID = ''
 readbuffer = ""
@@ -60,9 +61,11 @@ PATTERNS = {
     'search': r'^!search($| +)',
     'accept': r'^!accept($| +)',
     'calib': r'^!calib($| +)',
-    'run': r'^!run($| +)',
+    'run': r'^!run (left|right|top|bot)($| +)',
     'lockitem': r'^!iu?l ([1-9])($| +)',
-    'stay': r'^!stay($| +)'
+    'stay': r'^!stay($| +)',
+    'exec': r'^!exec($| +)',
+    'stack': r'^!stack (!m|!g|!b|!s|!rq|!r|!x|!shop|!l|!p|!i|!tab|!random|!search|!accept|!calib|!run|!iu?l|!stay)'
 }
 
 COORDMAP = {
@@ -169,7 +172,7 @@ COORDMAP = {
     'dotaAcceptBtn': {'x': 901, 'y': 529}
 }
 
-CHICKENLOOP = OrderedDict([
+CHICKENLEFT = OrderedDict([
     ('A1L', {'x': 565, 'y': 612}),
     ('A2L', {'x': 583, 'y': 541}),
     ('A3L', {'x': 603, 'y': 463}),
@@ -177,15 +180,20 @@ CHICKENLOOP = OrderedDict([
     ('A5L', {'x': 633, 'y': 340}),
     ('A6L', {'x': 645, 'y': 284}),
     ('A7L', {'x': 660, 'y': 236}),
-    ('A8L', {'x': 670, 'y': 192}),
-    ('A8U', {'x': 735, 'y': 149}),
-    ('B8U', {'x': 798, 'y': 145}),
-    ('C8U', {'x': 866, 'y': 144}),
-    ('D8U', {'x': 928, 'y': 141}),
-    ('E8U', {'x': 994, 'y': 142}),
-    ('F8U', {'x': 1059, 'y': 143}),
-    ('G8U', {'x': 1131, 'y': 137}),
-    ('H8U', {'x': 1190, 'y': 151}),
+    ('A8L', {'x': 670, 'y': 192})
+])
+
+CHICKENTOP = OrderedDict([
+    ('A8T', {'x': 735, 'y': 149}),
+    ('B8T', {'x': 798, 'y': 145}),
+    ('C8T', {'x': 866, 'y': 144}),
+    ('D8T', {'x': 928, 'y': 141}),
+    ('E8T', {'x': 994, 'y': 142}),
+    ('F8T', {'x': 1059, 'y': 143}),
+    ('G8T', {'x': 1131, 'y': 137}),
+    ('H8T', {'x': 1190, 'y': 151})])
+
+CHICKENRIGHT = OrderedDict([
     ('H8R', {'x': 1255, 'y': 191}),
     ('H7R', {'x': 1269, 'y': 238}),
     ('H6R', {'x': 1283, 'y': 293}),
@@ -193,16 +201,17 @@ CHICKENLOOP = OrderedDict([
     ('H4R', {'x': 1310, 'y': 403}),
     ('H3R', {'x': 1320, 'y': 474}),
     ('H2R', {'x': 1338, 'y': 542}),
-    ('H1R', {'x': 1355, 'y': 616}),
-    ('H1D', {'x': 1287, 'y': 698}),
-    ('G1D', {'x': 1194, 'y': 692}),
-    ('F1D', {'x': 1093, 'y': 695}),
-    ('E1D', {'x': 1001, 'y': 691}),
-    ('D1D', {'x': 913, 'y': 693}),
-    ('C1D', {'x': 820, 'y': 689}),
-    ('B1D', {'x': 728, 'y': 689}),
-    ('A1D', {'x': 630, 'y': 689})
-])
+    ('H1R', {'x': 1355, 'y': 616})])
+
+CHICKENBOT = OrderedDict([
+    ('H1B', {'x': 1287, 'y': 698}),
+    ('G1B', {'x': 1194, 'y': 692}),
+    ('F1B', {'x': 1093, 'y': 695}),
+    ('E1B', {'x': 1001, 'y': 691}),
+    ('D1B', {'x': 913, 'y': 693}),
+    ('C1B', {'x': 820, 'y': 689}),
+    ('B1B', {'x': 728, 'y': 689}),
+    ('A1B', {'x': 630, 'y': 689})])
 
 itemoffsetFirstRowX = 54
 itemoffsetFirstRowy = 31
@@ -240,14 +249,39 @@ def toggleLockItem(slot):
                     '1'])
 
 
-def grabItemChickenloop():
-    # pos chicken at A1 first
-    rightClickAtCoord(COORDMAP['a1'])
-    time.sleep(3)
-    for coord in CHICKENLOOP:
-        rightClickAtCoord(CHICKENLOOP[coord])
-        time.sleep(0.3)
-    resetChickenPos()
+def grabItemChickenloop(side):
+    if(side == 'left'):
+        # pos chicken at A1 first
+        rightClickAtCoord(COORDMAP['a1'])
+        time.sleep(3)
+        for coord in CHICKENLEFT:
+            rightClickAtCoord(CHICKENLEFT[coord])
+            time.sleep(0.3)
+        resetChickenPos()
+    elif(side == 'top'):
+        # pos chicken at A1 first
+        rightClickAtCoord(COORDMAP['a8'])
+        time.sleep(3)
+        for coord in CHICKENTOP:
+            rightClickAtCoord(CHICKENTOP[coord])
+            time.sleep(0.3)
+        resetChickenPos()
+    elif(side == 'right'):
+        # pos chicken at A1 first
+        rightClickAtCoord(COORDMAP['h8'])
+        time.sleep(3)
+        for coord in CHICKENRIGHT:
+            rightClickAtCoord(CHICKENRIGHT[coord])
+            time.sleep(0.3)
+        resetChickenPos()
+    elif(side == 'bot'):
+        # pos chicken at A1 first
+        rightClickAtCoord(COORDMAP['h1'])
+        time.sleep(3)
+        for coord in CHICKENBOT:
+            rightClickAtCoord(CHICKENBOT[coord])
+            time.sleep(0.3)
+        resetChickenPos()
 
 
 def rightClickAtCoord(coord):
@@ -610,6 +644,7 @@ def lockSelection():
     # optionally close selection afterwards
     # xdotool key space
 
+
 def moveBot():
     subprocess.run(['xdotool',
                     'mousemove',
@@ -638,6 +673,7 @@ def moveBot():
     clickNothing()
     time.sleep(delayBetweenActions)
     showSelection('on')
+
 
 def moveTop():
     subprocess.run(['xdotool',
@@ -668,6 +704,7 @@ def moveTop():
     time.sleep(delayBetweenActions)
     showSelection('on')
 
+
 def moveRight():
     subprocess.run(['xdotool',
                     'mousemove',
@@ -696,6 +733,7 @@ def moveRight():
     clickNothing()
     time.sleep(delayBetweenActions)
     showSelection('on')
+
 
 def moveLeft():
     subprocess.run(['xdotool',
@@ -727,48 +765,50 @@ def moveLeft():
     showSelection('on')
 
 
+def movePieceDirection(direction):
+    if direction == 'left':
+        moveLeft()
+    elif direction == 'right':
+        moveRight()
+    elif direction == 'top':
+        moveTop()
+    elif direction == 'bot':
+        moveBot()
+
+
 def movePiece(source, target):
     print('trying to move: %s' % source)
     print('to %s' % target)
     # make sure selection is closed
     showSelection('off')
     time.sleep(delayBetweenActions)
-    if source == 'left':
-        moveLeft()
-    elif source == 'right':
-        moveRight()
-    elif source == 'top':
-        moveTop()
-    elif source == 'bot':
-        moveBot()
-    else:
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        '--window',
-                        dota2WindowID,
-                        str(COORDMAP[source]['x']),
-                        str(COORDMAP[source]['y']),
-                        'click',
-                        '--window',
-                        dota2WindowID,
-                        '1'])
-        time.sleep(delayBetweenActions)
-        subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'm'])
-        time.sleep(delayBetweenActions)
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        '--window',
-                        dota2WindowID,
-                        str(COORDMAP[target]['x']),
-                        str(COORDMAP[target]['y']),
-                        'click',
-                        '--window',
-                        dota2WindowID,
-                        '1'])
-        time.sleep(delayBetweenActions)
-        clickNothing()
-        time.sleep(delayBetweenActions)
-        showSelection('on')
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP[source]['x']),
+                    str(COORDMAP[source]['y']),
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '1'])
+    time.sleep(delayBetweenActions)
+    subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'm'])
+    time.sleep(delayBetweenActions)
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP[target]['x']),
+                    str(COORDMAP[target]['y']),
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '1'])
+    time.sleep(delayBetweenActions)
+    clickNothing()
+    time.sleep(delayBetweenActions)
+    showSelection('on')
 # !b F5
 
 
@@ -838,7 +878,11 @@ def findAndExecute(splitted):
     if splitted[0] == '!m':
         time.sleep(.02)
         # execute command
-        movePiece(splitted[1], splitted[2])
+        print(splitted)
+        if(len(splitted) > 2):
+            movePiece(splitted[1], splitted[2])
+        else:
+            movePieceDirection(splitted[1])
     if splitted[0] == '!b':
         time.sleep(.02)
         # execute command
@@ -891,10 +935,16 @@ def findAndExecute(splitted):
         toggleLockItem(splitted[1])
     if splitted[0] == '!run':
         time.sleep(.02)
-        grabItemChickenloop()
+        grabItemChickenloop(splitted[1])
     if splitted[0] == '!stay':
         time.sleep(.02)
         abortRagequit()
+    if splitted[0] == '!stack':
+        time.sleep(.02)
+        stackCommand(splitted)
+    if splitted[0] == '!exec':
+        time.sleep(.02)
+        executeStack()
     # elif(gameState == GameStates.searching):
     if(splitted[0] == '!search'):
         time.sleep(.02)
@@ -907,6 +957,29 @@ def findAndExecute(splitted):
     if(splitted[0] == '!calib'):
         time.sleep(.02)
         camCalibration()
+
+
+def executeStack():
+    global commandStack
+    for command in commandStack:
+        findAndExecute(command.split(' '))
+    commandStack = []
+
+
+def addToStack(commandForStack):
+    # TODO: set a limit on stack
+    global commandStack
+    commandStack.append(commandForStack)
+
+
+def stackCommand(commandArray):
+    patchedCommand = ''
+    for i in range(1, len(commandArray)):
+        patchedCommand += commandArray[i] + ' '
+    patchedCommand = patchedCommand[:-1]
+    if commandValidator(patchedCommand):
+        # valid, add to stack
+        addToStack(patchedCommand)
 
 
 def addtofile():
@@ -1094,6 +1167,8 @@ if mode.lower() == "democracy":
         f.write("")
     with open("ragequit.txt", "w") as f:
         f.write("")
+    with open("commands.txt", "w") as f:
+        f.write("")
     count_job = Thread(target=democracy, args=())
     count_job.start()
     # count_job.join()
@@ -1165,6 +1240,8 @@ if mode.lower() == "anarchy" or mode.lower() == "":
     with open("lastsaid.txt", "w") as f:
         f.write("")
     with open("most_common_commands.txt", "w") as f:
+        f.write("")
+    with open("commands.txt", "w") as f:
         f.write("")
     with open("ragequit.txt", "w") as f:
         f.write("")
