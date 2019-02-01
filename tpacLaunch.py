@@ -283,6 +283,8 @@ def moveItem(slot, target):
     '''
     print('trying to move item: %s' % slot)
     print('to %s' % target)
+    # close shop b4
+    showSelection('off')
     slotID = 'chickSlot'+slot
     subprocess.run(['xdotool',
                     'mousemove',
@@ -322,7 +324,8 @@ def tabTour():
 
 def camCalibration():
     print('calibrating cam...')
-    tabTour()
+    # tabTour()
+    subprocess.run(['xdotool', 'key', '--window', dota2WindowID, '1'])
     # global gameState
     # gameState = GameStates.gaming
     time.sleep(delayBetweenActions)
@@ -366,11 +369,16 @@ def searchGame():
 
 
 def abortRagequit():
+    # print('aborting ragequit by setting flag to false')
     global allowRagequit
     allowRagequit = False
+    # print('writing empty file')
+    with open("ragequit.txt", "w") as f:
+        f.write("")
 
 
 def rageQuitProcess():
+    # print('in rq process')
     targetTime = 20
     global allowRagequit
     starttime = time.time()
@@ -378,15 +386,25 @@ def rageQuitProcess():
     # time.sleep(20)
     while True:
         if(time.time() - starttime < targetTime):
-            # write for chat
-            with open("ragequit.txt", "w") as f:
-                f.write("Time left till ragequit!: %s \n" % str(
-                        targetTime - (time.time() - starttime)).split('.')[0])
-                f.write("To abort write '!stay'")
+            if(allowRagequit):
+                # print('allowRagequit: %s ' % allowRagequit)
+                # write for chat
+                with open("ragequit.txt", "w") as f:
+                    f.write("Time left till ragequit!: %s \n" % str(
+                            1.0 + targetTime - (time.time() - starttime)).split('.')[0])
+                    f.write("To abort write !stay")
                 time.sleep(1)
+            else:
+                # print('in rq process: allowRagequit = False, therefore aborting rq, cleaning file')
+                with open("ragequit.txt", "w") as f:
+                    f.write('')
+                break
+        else:
+            # times up
+            break
 
     if(allowRagequit):
-        print('trying to leave game...')
+        # print('trying to leave game...')
         # gameState = GameStates.searching
         subprocess.run(['xdotool',
                         'mousemove',
@@ -413,14 +431,24 @@ def rageQuitProcess():
                         '1'])
 
         time.sleep(1)
+        clickNothing()
+
+        time.sleep(1)
 
         subprocess.run(['xdotool',
                         'mousemove',
                         '--window',
                         dota2WindowID,
                         str(COORDMAP['dotaLeaveBtn']['x']),
-                        str(COORDMAP['dotaLeaveBtn']['y']),
-                        'click',
+                        str(COORDMAP['dotaLeaveBtn']['y'])])
+        time.sleep(2)
+        subprocess.run(['xdotool', 'click',
+                        '--window',
+                        dota2WindowID,
+                        '1'])
+
+        time.sleep(1)
+        subprocess.run(['xdotool', 'click',
                         '--window',
                         dota2WindowID,
                         '1'])
@@ -432,11 +460,16 @@ def rageQuitProcess():
                         '--window',
                         dota2WindowID,
                         str(COORDMAP['dotaLeaveAcceptBtn']['x']),
-                        str(COORDMAP['dotaLeaveAcceptBtn']['y']),
-                        'click',
+                        str(COORDMAP['dotaLeaveAcceptBtn']['y'])])
+        time.sleep(1)
+
+        subprocess.run(['xdotool', 'click',
                         '--window',
                         dota2WindowID,
                         '1'])
+
+        with open("ragequit.txt", "w") as f:
+            f.write("")
 
     allowRagequit = False
 
@@ -444,11 +477,13 @@ def rageQuitProcess():
 def leaveGame():
     global allowRagequit
     if(allowRagequit):
+        print('ragequit already in process, aborting another thread')
         return
     allowRagequit = True
     # global gameState
     if(adminMode == False):
         # start counter in seperate thread
+        print('starting rq thread')
         rageQuitJob = Thread(target=rageQuitProcess, args=())
         rageQuitJob.start()
 
@@ -803,7 +838,8 @@ def commandValidator(incomingString):
 
     # does it match any pattern?
     for pattern in PATTERNS:
-        if(re.match(pattern, incomingString)):
+        if(re.match(PATTERNS[pattern], incomingString)):
+            print('found pattern for: %s' % pattern)
             return True
 
     return False
@@ -908,7 +944,7 @@ while True:
         completedProcess = subprocess.run(['xdotool', 'search', '--name',
                                            'Dota 2'], capture_output=True)
         dota2WindowID = completedProcess.stdout.decode('UTF-8')
-    aMode = input('Adminmode? y/n: ')
+    aMode = input('Adminmode? y/n (default n): ')
     if(aMode.lower() == 'y'):
         adminMode = True
     else:
@@ -916,12 +952,15 @@ while True:
     print("Currently available: Democracy, Anarchy")
     mode = input("Game type: ")
     #mode = 'anarchy'
-    if mode.lower() == "anarchy":
-        break
+    # if mode.lower() == "anarchy":
+    #     break
     if mode.lower() == "democracy":
         print("Takes most said command every X second(s): ")
         democracy_time = float(input("(must be integer) X="))
         break
+    else:
+        break
+
 
 # Democracy Game Mode
 if mode.lower() == "democracy":
@@ -991,14 +1030,14 @@ if mode.lower() == "democracy":
             # sanitize output
             if(commandValidator(out.lower())):
                 addtofile()
+                # Write to file for stream view
+                with open("commands.txt", "w") as f:
+                    for item in commands:
+                        f.write(item + '\n')
 
-            # Write to file for stream view
-            with open("commands.txt", "w") as f:
-                for item in commands:
-                    f.write(item + '\n')
 
 # Anarchy Game Mode
-if mode.lower() == "anarchy":
+if mode.lower() == "anarchy" or mode.lower() == "":
     with open("lastsaid.txt", "w") as f:
         f.write("")
     with open("most_common_commands.txt", "w") as f:
@@ -1059,10 +1098,9 @@ if mode.lower() == "anarchy":
             # sanitize output
             if(commandValidator(out.lower())):
                 addtofile()
+                # Write to file for stream view
+                with open("commands.txt", "w") as f:
+                    for item in commands:
+                        f.write(item + '\n')
                 splitted = out.lower().split(' ')
                 findAndExecute(splitted)
-
-            # Write to file for stream view
-            with open("commands.txt", "w") as f:
-                for item in commands:
-                    f.write(item + '\n')
