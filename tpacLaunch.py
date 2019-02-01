@@ -44,6 +44,7 @@ allowRagequit = False
 
 PATTERNS = {
     'move': r'^!m ([a-hA-H][a-hA-H1-4]{1}) (?!\1)([a-hA-H][a-hA-H1-4]{1})($| +)',
+    'movedirection': r'^!m (left|right|top|bot)($| +)',
     'grab': r'^!g ([a-hA-H][a-hA-H1-8])($| +)',
     'bench': r'^!b ([a-hA-H][1-4])($| +)',
     'sell': r'^!s ([a-hA-H][a-hA-H1-4])($| +)',
@@ -609,21 +610,13 @@ def lockSelection():
     # optionally close selection afterwards
     # xdotool key space
 
-# !m AA F4
-
-
-def movePiece(source, target):
-    print('trying to move: %s' % source)
-    print('to %s' % target)
-    # make sure selection is closed
-    showSelection('off')
-    time.sleep(delayBetweenActions)
+def moveBot():
     subprocess.run(['xdotool',
                     'mousemove',
                     '--window',
                     dota2WindowID,
-                    str(COORDMAP[source]['x']),
-                    str(COORDMAP[source]['y']),
+                    str(COORDMAP['aa']['x']),
+                    str(COORDMAP['aa']['y']),
                     'click',
                     '--window',
                     dota2WindowID,
@@ -635,8 +628,8 @@ def movePiece(source, target):
                     'mousemove',
                     '--window',
                     dota2WindowID,
-                    str(COORDMAP[target]['x']),
-                    str(COORDMAP[target]['y']),
+                    str(COORDMAP['e1']['x']),
+                    str(COORDMAP['e1']['y']),
                     'click',
                     '--window',
                     dota2WindowID,
@@ -645,6 +638,137 @@ def movePiece(source, target):
     clickNothing()
     time.sleep(delayBetweenActions)
     showSelection('on')
+
+def moveTop():
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP['aa']['x']),
+                    str(COORDMAP['aa']['y']),
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '1'])
+    time.sleep(delayBetweenActions)
+    subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'm'])
+    time.sleep(delayBetweenActions)
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP['d4']['x']),
+                    str(COORDMAP['d4']['y']),
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '1'])
+    time.sleep(delayBetweenActions)
+    clickNothing()
+    time.sleep(delayBetweenActions)
+    showSelection('on')
+
+def moveRight():
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP['aa']['x']),
+                    str(COORDMAP['aa']['y']),
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '1'])
+    time.sleep(delayBetweenActions)
+    subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'm'])
+    time.sleep(delayBetweenActions)
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP['g3']['x']),
+                    str(COORDMAP['g3']['y']),
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '1'])
+    time.sleep(delayBetweenActions)
+    clickNothing()
+    time.sleep(delayBetweenActions)
+    showSelection('on')
+
+def moveLeft():
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP['aa']['x']),
+                    str(COORDMAP['aa']['y']),
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '1'])
+    time.sleep(delayBetweenActions)
+    subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'm'])
+    time.sleep(delayBetweenActions)
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP['b3']['x']),
+                    str(COORDMAP['b3']['y']),
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '1'])
+    time.sleep(delayBetweenActions)
+    clickNothing()
+    time.sleep(delayBetweenActions)
+    showSelection('on')
+
+
+def movePiece(source, target):
+    print('trying to move: %s' % source)
+    print('to %s' % target)
+    # make sure selection is closed
+    showSelection('off')
+    time.sleep(delayBetweenActions)
+    if source == 'left':
+        moveLeft()
+    elif source == 'right':
+        moveRight()
+    elif source == 'top':
+        moveTop()
+    elif source == 'bot':
+        moveBot()
+    else:
+        subprocess.run(['xdotool',
+                        'mousemove',
+                        '--window',
+                        dota2WindowID,
+                        str(COORDMAP[source]['x']),
+                        str(COORDMAP[source]['y']),
+                        'click',
+                        '--window',
+                        dota2WindowID,
+                        '1'])
+        time.sleep(delayBetweenActions)
+        subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'm'])
+        time.sleep(delayBetweenActions)
+        subprocess.run(['xdotool',
+                        'mousemove',
+                        '--window',
+                        dota2WindowID,
+                        str(COORDMAP[target]['x']),
+                        str(COORDMAP[target]['y']),
+                        'click',
+                        '--window',
+                        dota2WindowID,
+                        '1'])
+        time.sleep(delayBetweenActions)
+        clickNothing()
+        time.sleep(delayBetweenActions)
+        showSelection('on')
 # !b F5
 
 
