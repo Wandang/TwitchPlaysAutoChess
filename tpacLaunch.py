@@ -44,7 +44,9 @@ allowRagequit = False
 #gameState = GameStates.searching
 
 PATTERNS = {
-    'move': r'^!(m|move) ([a-hA-H][a-hA-H1-4]{1}) (?!\1)([a-hA-H][a-hA-H1-4]{1})($| +)',
+    # ! + m or move + (a-H + a-H(same a-H as b4) or number 1-4) + 
+    # (must be different then b4 =>)(a-H + a-H(same a-H as b4) or number 1-4) + ending or + ' trash'
+    'move': r'^!(m|move) (([a-hA-H])((?=\3)[a-hA-H]|[1-4])) (?!\2)(([a-hA-H])((?=\3)[a-hA-H]|[1-4]))($| +)',
     'movedirection': r'^!(m|move) (left|right|top|bot)($| +)',
     'grab': r'^!(g|grab) ([a-hA-H][a-hA-H1-8])($| +)',
     'bench': r'^!(b|bench) ([a-hA-H][1-4])($| +)',
@@ -1030,7 +1032,7 @@ def commandValidator(incomingString):
 
     # does it match any pattern?
     for pattern in PATTERNS:
-        if(re.match(PATTERNS[pattern], incomingString)):
+        if(re.match(PATTERNS[pattern], incomingString, re.IGNORECASE)):
             print('found pattern for: %s' % pattern)
             return True
 
