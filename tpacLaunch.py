@@ -872,7 +872,7 @@ def buyXP(amount):
 
 def findAndExecute(splitted):
     # if(gameState == GameStates.gaming):
-    if splitted[0] == '!m':
+    if splitted[0] == '!m' or splitted[0] == '!move':
         time.sleep(.02)
         # execute command
         print(splitted)
@@ -880,19 +880,19 @@ def findAndExecute(splitted):
             movePiece(splitted[1], splitted[2])
         else:
             movePieceDirection(splitted[1])
-    if splitted[0] == '!b':
+    if splitted[0] == '!b' or splitted[0] == '!bench':
         time.sleep(.02)
         # execute command
         benchPiece(splitted[1])
-    if splitted[0] == '!s':
+    if splitted[0] == '!s' or splitted[0] == '!sell':
         time.sleep(.02)
         # execute command
         sellPiece(splitted[1])
-    if splitted[0] == '!r':
+    if splitted[0] == '!r' or splitted[0] == '!reroll':
         time.sleep(.02)
         # execute command
         rerollPieces()
-    if splitted[0] == '!x':
+    if splitted[0] == '!x' or splitted[0] == '!xp':
         time.sleep(.02)
         # execute command
         buyXP(splitted[1])
@@ -900,19 +900,19 @@ def findAndExecute(splitted):
         time.sleep(.02)
         # execute command
         showSelection(splitted[1])
-    if splitted[0] == '!p':
+    if splitted[0] == '!p' or splitted[0] == '!pick':
         time.sleep(.02)
         # execute command
         pickPiece(splitted[1])
-    if splitted[0] == '!l':
+    if splitted[0] == '!l' or splitted[0] == '!lock':
         time.sleep(.02)
         # execute command
         lockSelection()
-    if splitted[0] == '!g':
+    if splitted[0] == '!g' or splitted[0] == '!grab':
         time.sleep(.02)
         # execute command
         grabItem(splitted[1])
-    if splitted[0] == '!i':
+    if splitted[0] == '!i' or splitted[0] == '!item':
         time.sleep(.02)
         # execute command
         moveItem(splitted[1], splitted[2])
@@ -927,7 +927,7 @@ def findAndExecute(splitted):
     if splitted[0] == '!rq':
         time.sleep(.02)
         leaveGame()
-    if splitted[0] == '!li' or splitted[0] == '!uli':
+    if splitted[0] == '!li' or splitted[0] == '!uli' or splitted[0] == '!itemlock':
         time.sleep(.02)
         toggleLockItem(splitted[1])
     if splitted[0] == '!run':
