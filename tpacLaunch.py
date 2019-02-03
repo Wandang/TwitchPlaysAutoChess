@@ -67,9 +67,13 @@ PATTERNS = {
     'run': r'^!run (left|right|top|bot)($| +)',
     'lockitem': r'^!(iu?l|itemlock) ([1-9])($| +)',
     'stay': r'^!stay($| +)',
+    'write': r'^!write($| +)',
     'exec': r'^!exec($| +)',
     'stack': r'^!stack (!m|!g|!b|!s|!rq|!r|!x|!shop|!l|!p|!i|!tab|!random|!search|!accept|!calib|!run|!iu?l|!stay)'
 }
+
+TWITCHEMOTES = ['monkaS', '4Head', 'FailFish', 'DansGame', 'LUL', 'Kappa', 'NotLikeThis',
+                'OSFrog', 'PJSalt', 'WutFace', 'cmonBruh', 'TriHard', 'PogChamp', 'ResidentSleeper']
 
 COORDMAP = {
     'a1': {'x': 633, 'y': 620},
@@ -372,6 +376,8 @@ def tabTour(playerPlacementID=-1):
     if(playerPlacementID != -1):
         timeToStayOnPlayer = 3
         placementKey = 'playerPos'+playerPlacementID
+        allChatMessage = 'Chat wants to inspect the current position: '+playerPlacementID
+        writeAllChat(allChatMessage)
         subprocess.run(['xdotool',
                         'mousemove',
                         '--window',
@@ -386,6 +392,9 @@ def tabTour(playerPlacementID=-1):
         # move mouse away from avatars so the popovertext is not blocking the view
         clickNothing()
         time.sleep(timeToStayOnPlayer)
+        allChatMessage2 = 'Chat judgement: ' + \
+            TWITCHEMOTES[random.randint(0, len(TWITCHEMOTES))]
+        writeAllChat(allChatMessage2)
         camCalibration()
     else:
         print('tabtour...')
@@ -397,16 +406,23 @@ def tabTour(playerPlacementID=-1):
             time.sleep(0.625)
 
 
-def camCalibration():
+def writeAllChat(message):
+    subprocess.run(['xdotool', 'key', '--window',
+                    dota2WindowID, 'shift+Return'])
+    time.sleep(delayBetweenActions)
+    subprocess.run(['xdotool', 'type', '--window', dota2WindowID, message])
+    time.sleep(0.5)
+    subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'Return'])
+    time.sleep(delayBetweenActions)
+
+
+def camCalibration(promote=False):
     print('calibrating cam...')
     subprocess.run(['xdotool', 'key', '--window', dota2WindowID, '1'])
     # shoutout in allchat to promote the bot
-    subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'shift+Return'])
-    time.sleep(delayBetweenActions)
-    subprocess.run(['xdotool', 'type', '--window', dota2WindowID, 'Chat is playing right now on https://www.twitch.tv/twitchplaysautochess'])
-    time.sleep(delayBetweenActions)
-    subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'Return'])
-    time.sleep(delayBetweenActions)
+    if(promote):
+        writeAllChat(
+            'Chat is playing right now on https://www.twitch.tv/twitchplaysautochess')
     # global gameState
     # gameState = GameStates.gaming
     time.sleep(delayBetweenActions)
@@ -1022,6 +1038,12 @@ def findAndExecute(splitted):
     if splitted[0] == '!stay':
         time.sleep(.02)
         abortRagequit()
+    if splitted[0] == '!write':
+        time.sleep(.02)
+        tempword = ''
+        for i in range(1, len(splitted)):
+            tempword += splitted[i] + ' '
+        writeAllChat(tempword)
     if splitted[0] == '!stack':
         time.sleep(.02)
         stackCommand(splitted)
@@ -1052,7 +1074,7 @@ def findAndExecute(splitted):
     # elif(gameState == GameStates.calibration):
     if(splitted[0] == '!calib'):
         time.sleep(.02)
-        camCalibration()
+        camCalibration(True)
 
 
 def executeStack():
