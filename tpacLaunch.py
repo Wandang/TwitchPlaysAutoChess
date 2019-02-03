@@ -44,7 +44,7 @@ allowRagequit = False
 #gameState = GameStates.searching
 
 PATTERNS = {
-    # ! + m or move + (a-H + a-H(same a-H as b4) or number 1-4) + 
+    # ! + m or move + (a-H + a-H(same a-H as b4) or number 1-4) +
     # (must be different then b4 =>)(a-H + a-H(same a-H as b4) or number 1-4) + ending or + ' trash'
     'move': r'^!(m|move) (([a-hA-H])((?=\3)[a-hA-H]|[1-4])) (?!\2)(([a-hA-H])((?=\3)[a-hA-H]|[1-4]))($| +)',
     'movedirection': r'^!(m|move) (left|right|top|bot)($| +)',
@@ -166,12 +166,14 @@ COORDMAP = {
 
     'resetChicken': {'x': 914, 'y': 712},
 
-    'dotaMenu': {'x': 32, 'y': 27},
+    'dotaArrowBtn': {'x': 32, 'y': 27},
     'dotaDisconnectBtn': {'x': 1627, 'y': 1035},
     'dotaLeaveBtn': {'x': 1648, 'y': 985},
     'dotaLeaveAcceptBtn': {'x': 874, 'y': 603},
-    'dotaSearchBtn': {'x': 1530, 'y': 866},
-    'dotaAcceptBtn': {'x': 901, 'y': 529}
+    'dotaPlayAutoChessBtn': {'x': 1530, 'y': 866},
+    'dotaAcceptBtn': {'x': 901, 'y': 529},
+    'dotaMainMenuBtn': {'x': 286, 'y': 32},
+    'dotaAutoChessBtn': {'x': 780, 'y': 478}
 }
 
 CHICKENLEFT = OrderedDict([
@@ -392,12 +394,39 @@ def acceptGame():
 def searchGame():
     print('searching game...')
     # subprocess.run(['xdotool', 'search', "Dota 2", 'windowactivate'])
+    # go to main menu first
     subprocess.run(['xdotool',
                     'mousemove',
                     '--window',
                     dota2WindowID,
-                    str(COORDMAP['dotaSearchBtn']['x']),
-                    str(COORDMAP['dotaSearchBtn']['y']),
+                    str(COORDMAP['dotaMainMenuBtn']['x']),
+                    str(COORDMAP['dotaMainMenuBtn']['y']),
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '1'])
+    time.sleep(delayBetweenActions)
+
+    # navigate to autochess
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP['dotaAutoChessBtn']['x']),
+                    str(COORDMAP['dotaAutoChessBtn']['y']),
+                    'click',
+                    '--window',
+                    dota2WindowID,
+                    '1'])
+    time.sleep(delayBetweenActions)
+
+    # start autochess search
+    subprocess.run(['xdotool',
+                    'mousemove',
+                    '--window',
+                    dota2WindowID,
+                    str(COORDMAP['dotaPlayAutoChessBtn']['x']),
+                    str(COORDMAP['dotaPlayAutoChessBtn']['y']),
                     'click',
                     '--window',
                     dota2WindowID,
@@ -448,8 +477,8 @@ def rageQuitProcess():
                         'mousemove',
                         '--window',
                         dota2WindowID,
-                        str(COORDMAP['dotaMenu']['x']),
-                        str(COORDMAP['dotaMenu']['y']),
+                        str(COORDMAP['dotaArrowBtn']['x']),
+                        str(COORDMAP['dotaArrowBtn']['y']),
                         'click',
                         '--window',
                         dota2WindowID,
