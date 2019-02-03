@@ -58,7 +58,7 @@ PATTERNS = {
     'lock': r'^!(l|lock)($| +)',
     'pick': r'^!(p|pick) [1-5]($| +)',
     'itemtohero': r'^!(i|item) ([1-9]) (([a-hA-H])((?=\4)[a-hA-H]|[1-8]))($| +)',
-    'tab': r'^!tab($| +)',
+    'tab': r'^!tab( [1-8])?($| +)',
     'random': r'^!random($| +)',
     'search': r'^!search($| +)',
     'accept': r'^!accept($| +)',
@@ -173,7 +173,16 @@ COORDMAP = {
     'dotaPlayAutoChessBtn': {'x': 1530, 'y': 866},
     'dotaAcceptBtn': {'x': 901, 'y': 529},
     'dotaMainMenuBtn': {'x': 286, 'y': 32},
-    'dotaAutoChessBtn': {'x': 780, 'y': 478}
+    'dotaAutoChessBtn': {'x': 780, 'y': 478},
+
+    'playerPos1': {'x': 1737, 'y': 155},
+    'playerPos2': {'x': 1737, 'y': 255},
+    'playerPos3': {'x': 1737, 'y': 355},
+    'playerPos4': {'x': 1737, 'y': 455},
+    'playerPos5': {'x': 1737, 'y': 555},
+    'playerPos6': {'x': 1737, 'y': 655},
+    'playerPos7': {'x': 1737, 'y': 755},
+    'playerPos8': {'x': 1737, 'y': 855}
 }
 
 CHICKENLEFT = OrderedDict([
@@ -353,14 +362,35 @@ def grabItem(target):
     rightClickAtCoord(COORDMAP[target])
 
 
-def tabTour():
-    print('tabtour...')
-    clickNothing()
-    time.sleep(delayBetweenActions)
-    for i in range(8):
-        subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'Tab'])
-        time.sleep(0.625)
-
+def tabTour(playerPlacementID = -1):
+    '''
+    Show chessboard of player x or if no player is given show every chessboard in 5s
+    '''
+    if(playerPlacementID != -1):
+        timeToStayOnPlayer = 3
+        placementKey = 'playerPos'+playerPlacementID
+        subprocess.run(['xdotool',
+                        'mousemove',
+                        '--window',
+                        dota2WindowID,
+                        str(COORDMAP[placementKey]['x']),
+                        str(COORDMAP[placementKey]['y']),
+                        'click',
+                        '--window',
+                        dota2WindowID,
+                        '1'])
+        time.sleep(delayBetweenActions)
+        # move mouse away from avatars so the popovertext is not blocking the view
+        clickNothing()
+        time.sleep(timeToStayOnPlayer)
+        camCalibration()
+    else:
+        print('tabtour...')
+        clickNothing()
+        time.sleep(delayBetweenActions)
+        for i in range(8):
+            subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'Tab'])
+            time.sleep(0.625)
 
 def camCalibration():
     print('calibrating cam...')
@@ -948,7 +978,10 @@ def findAndExecute(splitted):
     if splitted[0] == '!tab':
         time.sleep(.02)
         # execute command
-        tabTour()
+        if(len(splitted) > 1):
+            tabTour(splitted[1])
+        else: 
+            tabTour()
     if splitted[0] == '!random':
         time.sleep(.02)
         # execute command
