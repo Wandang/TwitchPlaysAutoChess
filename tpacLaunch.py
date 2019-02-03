@@ -48,6 +48,7 @@ PATTERNS = {
     # (must be different then b4 =>)(a-H + a-H(same a-H as b4) or number 1-4) + ending or + ' trash'
     'move': r'^!(m|move) (([a-hA-H])((?=\3)[a-hA-H]|[1-4])) (?!\2)(([a-hA-H])((?=\3)[a-hA-H]|[1-4]))($| +)',
     'movedirection': r'^!(m|move) (left|right|top|bot)($| +)',
+    'movefromslots': r'^!(aa|bb|cc|dd|ee|ff|gg|hh)( (left|right|top|bot))?($| +)',
     'grab': r'^!(g|grab) (([a-hA-H])((?=\3)[a-hA-H]|[1-8]))($| +)',
     'bench': r'^!(b|bench) ([a-hA-H][1-4])($| +)',
     'sell': r'^!(s|sell) (([a-hA-H])((?=\3)[a-hA-H]|[1-8]))($| +)',
@@ -364,7 +365,7 @@ def grabItem(target):
     rightClickAtCoord(COORDMAP[target])
 
 
-def tabTour(playerPlacementID = -1):
+def tabTour(playerPlacementID=-1):
     '''
     Show chessboard of player x or if no player is given show every chessboard in 5s
     '''
@@ -391,20 +392,24 @@ def tabTour(playerPlacementID = -1):
         clickNothing()
         time.sleep(delayBetweenActions)
         for i in range(8):
-            subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'Tab'])
+            subprocess.run(
+                ['xdotool', 'key', '--window', dota2WindowID, 'Tab'])
             time.sleep(0.625)
+
 
 def camCalibration():
     print('calibrating cam...')
-    # tabTour()
     subprocess.run(['xdotool', 'key', '--window', dota2WindowID, '1'])
+    # shoutout in allchat to promote the bot
+    subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'shift+Return'])
+    time.sleep(delayBetweenActions)
+    subprocess.run(['xdotool', 'type', '--window', dota2WindowID, 'Chat is playing right now on https://www.twitch.tv/twitchplaysautochess'])
+    time.sleep(delayBetweenActions)
+    subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'Return'])
+    time.sleep(delayBetweenActions)
     # global gameState
     # gameState = GameStates.gaming
     time.sleep(delayBetweenActions)
-
-
-def searchNextGame():
-    pass
 
 
 def acceptGame():
@@ -426,6 +431,8 @@ def acceptGame():
 def searchGame():
     print('searching game...')
     # subprocess.run(['xdotool', 'search', "Dota 2", 'windowactivate'])
+    # press esc to close any info windows (for example due to not accepting b4)
+    subprocess.run(['xdotool', 'key', '--window', dota2WindowID, 'Escape'])
     # go to main menu first
     subprocess.run(['xdotool',
                     'mousemove',
@@ -827,6 +834,20 @@ def moveLeft():
     showSelection('on')
 
 
+def movePieceFromSlot(slot, direction=''):
+    if direction == 'left':
+        movePiece(slot, 'b3')
+    elif direction == 'right':
+        movePiece(slot, 'g3')
+    elif direction == 'top':
+        movePiece(slot, 'd4')
+    elif direction == 'bot':
+        movePiece(slot, 'e1')
+    else:
+        movePiece(slot, 'd3')
+
+
+# probably obsolete
 def movePieceDirection(direction):
     if direction == 'left':
         moveLeft()
@@ -932,6 +953,7 @@ def buyXP(amount):
 
 
 def findAndExecute(splitted):
+    # todo reuse patterns on unsplitted string to reduce redundance
     # if(gameState == GameStates.gaming):
     if splitted[0] == '!m' or splitted[0] == '!move':
         time.sleep(.02)
@@ -982,7 +1004,7 @@ def findAndExecute(splitted):
         # execute command
         if(len(splitted) > 1):
             tabTour(splitted[1])
-        else: 
+        else:
             tabTour()
     if splitted[0] == '!random':
         time.sleep(.02)
@@ -1006,6 +1028,19 @@ def findAndExecute(splitted):
     if splitted[0] == '!exec':
         time.sleep(.02)
         executeStack()
+    if (splitted[0] == '!aa'
+        or splitted[0] == '!bb'
+        or splitted[0] == '!cc'
+        or splitted[0] == '!dd'
+        or splitted[0] == '!ee'
+        or splitted[0] == '!ff'
+        or splitted[0] == '!gg'
+            or splitted[0] == '!hh'):
+        time.sleep(.02)
+        if len(splitted) > 1:
+            movePieceFromSlot(splitted[0][1:], splitted[1])
+        else:
+            movePieceFromSlot(splitted[0][1:], 'd3')
     # elif(gameState == GameStates.searching):
     if(splitted[0] == '!search'):
         time.sleep(.02)
