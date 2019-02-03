@@ -358,6 +358,8 @@ def moveItem(slot, target):
 
 
 def grabItem(target):
+    # close shop first
+    showSelection('off')
     print('trying to grab item: %s' % target)
     rightClickAtCoord(COORDMAP[target])
 
