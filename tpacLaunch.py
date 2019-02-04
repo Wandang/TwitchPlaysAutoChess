@@ -367,6 +367,8 @@ def grabItem(target):
     showSelection('off')
     print('trying to grab item: %s' % target)
     rightClickAtCoord(COORDMAP[target])
+    time.sleep(5)
+    resetChickenPos()
 
 
 def tabTour(playerPlacementID=-1):
