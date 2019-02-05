@@ -358,6 +358,7 @@ def moveItem(slot, target):
     time.sleep(1)
     subprocess.run(['xdotool', 'mouseup', '--window', dota2WindowID, '1'])
     # give chicken time to run to the destination
+    # TODO: dynamic time depending on target location
     time.sleep(5)
     resetChickenPos()
 
@@ -367,6 +368,7 @@ def grabItem(target):
     showSelection('off')
     print('trying to grab item: %s' % target)
     rightClickAtCoord(COORDMAP[target])
+    # TODO: dynamic time depending on target location
     time.sleep(5)
     resetChickenPos()
 
