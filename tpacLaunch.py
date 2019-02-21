@@ -404,7 +404,7 @@ def tabTour(playerPlacementID=-1):
         print('tabtour...')
         clickNothing()
         time.sleep(delayBetweenActions)
-        for i in range(8):
+        for dummy in range(8):
             subprocess.run(
                 ['xdotool', 'key', '--window', dota2WindowID, 'Tab'])
             time.sleep(0.625)
@@ -966,7 +966,7 @@ def rerollPieces():
 
 def buyXP(amount):
     print('trying to buy xp: %s' % amount)
-    for i in range(int(amount)):
+    for dummy in range(int(amount)):
         subprocess.run(['xdotool', 'key', 'x'])
         time.sleep(0.8)
     clickNothing()
@@ -1121,7 +1121,7 @@ def most_common(lst):
     tempList = lst
     maxList = []
     if(len(lst) > 5):
-        for i in range(5):
+        for dummy in range(5):
             if(len(tempList) > 0):
                 tempMax = max(tempList, key=tempList.count)
                 maxList.append(tempMax)
@@ -1130,7 +1130,7 @@ def most_common(lst):
                 break
 
     else:
-        for i in range(len(lst)):
+        for dummy in range(len(lst)):
             if(len(tempList) > 0):
                 tempMax = max(tempList, key=tempList.count)
                 maxList.append(tempMax)
@@ -1269,7 +1269,7 @@ while True:
     else:
         adminMode = False
     print("Currently available: Democracy, Anarchy")
-    mode = input("Game type: ")
+    mode = input("Game type (default Anarchy): ")
     #mode = 'anarchy'
     # if mode.lower() == "anarchy":
     #     break
