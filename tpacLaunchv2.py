@@ -27,55 +27,10 @@ from collections import OrderedDict
 from enum import Enum
 from threading import Thread
 
-
-class Validator:
-    PATTERNS = {
-                # ! + m or move + (a-H + a-H(same a-H as b4) or number 1-4) +
-                # (must be different then b4 =>)(a-H + a-H(same a-H as b4) or number 1-4) + ending or + ' trash'
-                'move': r'^!(m|move) (([a-hA-H])((?=\3)[a-hA-H]|[1-4])) (?!\2)(([a-hA-H])((?=\3)[a-hA-H]|[1-4]))($| +)',
-                'movedirection': r'^!(m|move) (left|right|top|bot)($| +)',
-                'movefromslots': r'^!(aa|bb|cc|dd|ee|ff|gg|hh)( (left|right|top|bot))?($| +)',
-                'grab': r'^!(g|grab) (([a-hA-H])((?=\3)[a-hA-H]|[1-8]))($| +)',
-                'bench': r'^!(b|bench) ([a-hA-H][1-4])($| +)',
-                'sell': r'^!(s|sell) (([a-hA-H])((?=\3)[a-hA-H]|[1-8]))($| +)',
-                'rq': r'^!rq($| +)',
-                'reroll': r'^!(r|reroll)($| +)',
-                'buyxp': r'^!(x|xp) [1-4]($| +)',
-                'shop': r'^!shop (on|off)($| +)',
-                'lock': r'^!(l|lock)($| +)',
-                'pick': r'^!(p|pick) [1-5]($| +)',
-                'itemtohero': r'^!(i|item) ([1-9]) (([a-hA-H])((?=\4)[a-hA-H]|[1-8]))($| +)',
-                'tab': r'^!tab( [1-8])?($| +)',
-                'random': r'^!random($| +)',
-                'search': r'^!search($| +)',
-                'accept': r'^!accept($| +)',
-                'calib': r'^!calib($| +)',
-                'run': r'^!run (left|right|top|bot)($| +)',
-                'lockitem': r'^!(iu?l|itemlock) ([1-9])($| +)',
-                'stay': r'^!stay($| +)',
-                'write': r'^!write($| +)',
-                'exec': r'^!exec($| +)',
-                'stack': r'^!stack (!m|!g|!b|!s|!rq|!r|!x|!shop|!l|!p|!i|!tab|!random|!search|!accept|!calib|!run|!iu?l|!stay)'
-            }
-
-    def validateCommand(self, incomingString):
-        '''
-        Validate incoming commands
-        '''
-        # not a command
-        if(incomingString[:1] != '!'):
-            return None
-
-        # does it match any pattern?
-        for pattern in self.PATTERNS:
-            if(re.match(self.PATTERNS[pattern], incomingString, re.IGNORECASE)):
-                print('found pattern for: %s' % pattern)
-                return True
-
-        return False
+import validator
+import io
 
 class GameController:
-    validator = Validator()
     commandStack = []
     delayBetweenActions = 0.3
     dota2WindowID = ''
@@ -273,7 +228,7 @@ class GameController:
                         self.dota2WindowID,
                         '1'])
 
-
+    # TODO: optimize, reduce redundancy
     def grabItemChickenloop(self, side):
         self.showSelection('off')
         if(side == 'left'):
@@ -403,9 +358,9 @@ class GameController:
             # move mouse away from avatars so the popovertext is not blocking the view
             self.clickNothing()
             time.sleep(timeToStayOnPlayer)
-            allChatMessage2 = 'Chat judgement: ' + \
+            allChatMessage = 'Chat judgement: ' + \
                 self.TWITCHEMOTES[random.randint(0, len(self.TWITCHEMOTES))]
-            self.writeAllChat(allChatMessage2)
+            self.writeAllChat(allChatMessage)
             self.camCalibration()
         else:
             print('tabtour...')
@@ -520,6 +475,7 @@ class GameController:
                 if(self.allowRagequit):
                     # print('self.allowRagequit: %s ' % self.allowRagequit)
                     # write for chat
+                    # TODO: explain code
                     with open("ragequit.txt", "w") as f:
                         f.write("Time left till ragequit!: %s \n" % str(
                                 1.0 + targetTime - (time.time() - starttime)).split('.')[0])
@@ -531,7 +487,7 @@ class GameController:
                         f.write('')
                     break
             else:
-                # times up
+                # time's up
                 break
 
         if(self.allowRagequit):
@@ -562,6 +518,7 @@ class GameController:
                             '1'])
 
             time.sleep(1)
+            # circumvent dac rating popup
             self.clickNothing()
 
             time.sleep(1)
@@ -617,6 +574,7 @@ class GameController:
         rageQuitJob.start()
 
 
+    # TODO: check working or not?
     def randomAction(self):
         randomNumber = random.randint(0, 4)
         if(randomNumber == 0):
@@ -984,7 +942,7 @@ class GameController:
         for i in range(1, len(commandArray)):
             patchedCommand += commandArray[i] + ' '
         patchedCommand = patchedCommand[:-1]
-        if self.validator.validateCommand(patchedCommand):
+        if validator.validateCommand(patchedCommand):
             # valid, add to stack
             self.addToStack(patchedCommand)
 
@@ -1098,15 +1056,6 @@ class GameController:
             time.sleep(.02)
             self.camCalibration(True)
 
-class IO:
-    def __init__(self):
-        pass
-    def writeFile(self, ):
-        pass
-
-    def readFile(self):
-        pass
-
 # class Controller
 
 class Setup:
@@ -1114,8 +1063,8 @@ class Setup:
     commands = []
     list_commands = []
     gc = GameController()
-    # TODO: 2 instanzen von validator -> singleton
-    validator = Validator()
+    myIO = io.IO()
+
     def __init__(self):
         # self.dota2WindowID = ''
         self.config()
@@ -1210,7 +1159,7 @@ class Setup:
         self.startMode()
 
     def startMode(self):
-        self.resetFiles()
+        self.myIO.resetFiles()
         # Democracy Game Mode?
         if self.mode.lower() == "democracy":
             
@@ -1248,16 +1197,6 @@ class Setup:
                         1.0 + last_command + self.democracy_time - time.time())[0:1])
             time.sleep(1)
 
-    def resetFiles(self):
-        with open("lastsaid.txt", "w") as f:
-            f.write("")
-        with open("most_common_commands.txt", "w") as f:
-            f.write("")
-        with open("ragequit.txt", "w") as f:
-            f.write("")
-        with open("commands.txt", "w") as f:
-            f.write("")
-
     def connectToTwitch(self):
         s = socket.socket()
         s.connect((self.HOST, self.PORT))
@@ -1272,7 +1211,7 @@ class Setup:
     
     def handleTwitchResponse(self, s):
         readbuffer = ''
-        while 1:
+        while True:
             readbuffer = readbuffer+s.recv(1024).decode("UTF-8", errors="ignore")
             temp = str.split(readbuffer, "\n")
             readbuffer = temp.pop()
@@ -1313,7 +1252,7 @@ class Setup:
                 # Take in output
                 # sanitize output
                 # TODO: transfer command logic outside setup logic/ use another class
-                if(self.validator.validateCommand(out.lower())):
+                if(validator.validateCommand(out.lower())):
                     self.addToCommandList(user, out)
                     # Write to file for stream view
                     with open("commands.txt", "w") as f:
@@ -1362,8 +1301,8 @@ class Setup:
                 f.write(item + '\n')
         return maxList[0]
 
-if __name__ == "__main__":
-    print('starting v2...')
-    setup = Setup()
-    setup.start()
-    # gc = GameController()
+#if __name__ == "__main__":
+print('starting v2...')
+setup = Setup()
+setup.start()
+# gc = GameController()
