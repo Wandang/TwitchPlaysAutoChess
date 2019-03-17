@@ -1209,7 +1209,7 @@ while True:
     else:
         print("Let's make you a config file")
         settings.append("; Settings for Twitch Plays AutoChess bot")
-        settings.append("; Thanks to sunshinekitty, RDJ, MZ, AP, & Oriax\n")
+        settings.append("; Thanks to TwitchPlaysPokemon developers: sunshinekitty, RDJ, MZ, AP, & Oriax\n")
 
         settings.append("[Settings]\n")
 
