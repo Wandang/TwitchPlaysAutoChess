@@ -28,177 +28,221 @@ from enum import Enum
 from threading import Thread
 
 
+class Validator:
+    PATTERNS = {
+                # ! + m or move + (a-H + a-H(same a-H as b4) or number 1-4) +
+                # (must be different then b4 =>)(a-H + a-H(same a-H as b4) or number 1-4) + ending or + ' trash'
+                'move': r'^!(m|move) (([a-hA-H])((?=\3)[a-hA-H]|[1-4])) (?!\2)(([a-hA-H])((?=\3)[a-hA-H]|[1-4]))($| +)',
+                'movedirection': r'^!(m|move) (left|right|top|bot)($| +)',
+                'movefromslots': r'^!(aa|bb|cc|dd|ee|ff|gg|hh)( (left|right|top|bot))?($| +)',
+                'grab': r'^!(g|grab) (([a-hA-H])((?=\3)[a-hA-H]|[1-8]))($| +)',
+                'bench': r'^!(b|bench) ([a-hA-H][1-4])($| +)',
+                'sell': r'^!(s|sell) (([a-hA-H])((?=\3)[a-hA-H]|[1-8]))($| +)',
+                'rq': r'^!rq($| +)',
+                'reroll': r'^!(r|reroll)($| +)',
+                'buyxp': r'^!(x|xp) [1-4]($| +)',
+                'shop': r'^!shop (on|off)($| +)',
+                'lock': r'^!(l|lock)($| +)',
+                'pick': r'^!(p|pick) [1-5]($| +)',
+                'itemtohero': r'^!(i|item) ([1-9]) (([a-hA-H])((?=\4)[a-hA-H]|[1-8]))($| +)',
+                'tab': r'^!tab( [1-8])?($| +)',
+                'random': r'^!random($| +)',
+                'search': r'^!search($| +)',
+                'accept': r'^!accept($| +)',
+                'calib': r'^!calib($| +)',
+                'run': r'^!run (left|right|top|bot)($| +)',
+                'lockitem': r'^!(iu?l|itemlock) ([1-9])($| +)',
+                'stay': r'^!stay($| +)',
+                'write': r'^!write($| +)',
+                'exec': r'^!exec($| +)',
+                'stack': r'^!stack (!m|!g|!b|!s|!rq|!r|!x|!shop|!l|!p|!i|!tab|!random|!search|!accept|!calib|!run|!iu?l|!stay)'
+            }
+
+    def validateCommand(self, incomingString):
+        '''
+        Validate incoming commands
+        '''
+        # not a command
+        if(incomingString[:1] != '!'):
+            return None
+
+        # does it match any pattern?
+        for pattern in self.PATTERNS:
+            if(re.match(self.PATTERNS[pattern], incomingString, re.IGNORECASE)):
+                print('found pattern for: %s' % pattern)
+                return True
+
+        return False
+
 class GameController:
-    def __init__(self):
-        self.validator = Validator()
-        self.commandStack = []
-        self.delayBetweenActions = 0.3
-        self.dota2WindowID = ''
-        self.allowRagequit = False
+    validator = Validator()
+    commandStack = []
+    delayBetweenActions = 0.3
+    dota2WindowID = ''
+    allowRagequit = False
+    TWITCHEMOTES = ['monkaS', '4Head', 'FailFish', 'DansGame', 'LUL', 'Kappa', 'NotLikeThis',
+                    'OSFrog', 'PJSalt', 'WutFace', 'cmonBruh', 'TriHard', 'PogChamp', 'ResidentSleeper']
 
-        self.TWITCHEMOTES = ['monkaS', '4Head', 'FailFish', 'DansGame', 'LUL', 'Kappa', 'NotLikeThis',
-                        'OSFrog', 'PJSalt', 'WutFace', 'cmonBruh', 'TriHard', 'PogChamp', 'ResidentSleeper']
+    COORDMAP = {
+        'a1': {'x': 633, 'y': 620},
+        'a2': {'x': 651, 'y': 548},
+        'a3': {'x': 669, 'y': 471},
+        'a4': {'x': 683, 'y': 402},
+        'a5': {'x': 695, 'y': 346},
+        'a6': {'x': 708, 'y': 293},
+        'a7': {'x': 715, 'y': 240},
+        'a8': {'x': 727, 'y': 194},
+        'b1': {'x': 734, 'y': 624},
+        'b2': {'x': 744, 'y': 545},
+        'b3': {'x': 750, 'y': 472},
+        'b4': {'x': 761, 'y': 408},
+        'b5': {'x': 769, 'y': 347},
+        'b6': {'x': 778, 'y': 292},
+        'b7': {'x': 783, 'y': 241},
+        'b8': {'x': 793, 'y': 195},
+        'c1': {'x': 824, 'y': 625},
+        'c2': {'x': 831, 'y': 542},
+        'c3': {'x': 835, 'y': 475},
+        'c4': {'x': 842, 'y': 409},
+        'c5': {'x': 846, 'y': 348},
+        'c6': {'x': 853, 'y': 290},
+        'c7': {'x': 856, 'y': 240},
+        'c8': {'x': 862, 'y': 192},
+        'd1': {'x': 913, 'y': 621},
+        'd2': {'x': 917, 'y': 542},
+        'd3': {'x': 919, 'y': 473},
+        'd4': {'x': 920, 'y': 405},
+        'd5': {'x': 923, 'y': 346},
+        'd6': {'x': 926, 'y': 289},
+        'd7': {'x': 928, 'y': 238},
+        'd8': {'x': 927, 'y': 189},
+        'e1': {'x': 1006, 'y': 621},
+        'e2': {'x': 1004, 'y': 546},
+        'e3': {'x': 1000, 'y': 476},
+        'e4': {'x': 999, 'y': 409},
+        'e5': {'x': 998, 'y': 346},
+        'e6': {'x': 996, 'y': 288},
+        'e7': {'x': 994, 'y': 240},
+        'e8': {'x': 994, 'y': 188},
+        'f1': {'x': 1098, 'y': 621},
+        'f2': {'x': 1091, 'y': 541},
+        'f3': {'x': 1084, 'y': 471},
+        'f4': {'x': 1081, 'y': 404},
+        'f5': {'x': 1072, 'y': 342},
+        'f6': {'x': 1069, 'y': 288},
+        'f7': {'x': 1066, 'y': 238},
+        'f8': {'x': 1061, 'y': 192},
+        'g1': {'x': 1193, 'y': 620},
+        'g2': {'x': 1180, 'y': 543},
+        'g3': {'x': 1167, 'y': 469},
+        'g4': {'x': 1159, 'y': 405},
+        'g5': {'x': 1149, 'y': 344},
+        'g6': {'x': 1142, 'y': 293},
+        'g7': {'x': 1137, 'y': 241},
+        'g8': {'x': 1134, 'y': 191},
+        'h1': {'x': 1278, 'y': 619},
+        'h2': {'x': 1265, 'y': 539},
+        'h3': {'x': 1248, 'y': 468},
+        'h4': {'x': 1235, 'y': 405},
+        'h5': {'x': 1227, 'y': 346},
+        'h6': {'x': 1213, 'y': 290},
+        'h7': {'x': 1204, 'y': 241},
+        'h8': {'x': 1195, 'y': 194},
 
-        self.COORDMAP = {
-            'a1': {'x': 633, 'y': 620},
-            'a2': {'x': 651, 'y': 548},
-            'a3': {'x': 669, 'y': 471},
-            'a4': {'x': 683, 'y': 402},
-            'a5': {'x': 695, 'y': 346},
-            'a6': {'x': 708, 'y': 293},
-            'a7': {'x': 715, 'y': 240},
-            'a8': {'x': 727, 'y': 194},
-            'b1': {'x': 734, 'y': 624},
-            'b2': {'x': 744, 'y': 545},
-            'b3': {'x': 750, 'y': 472},
-            'b4': {'x': 761, 'y': 408},
-            'b5': {'x': 769, 'y': 347},
-            'b6': {'x': 778, 'y': 292},
-            'b7': {'x': 783, 'y': 241},
-            'b8': {'x': 793, 'y': 195},
-            'c1': {'x': 824, 'y': 625},
-            'c2': {'x': 831, 'y': 542},
-            'c3': {'x': 835, 'y': 475},
-            'c4': {'x': 842, 'y': 409},
-            'c5': {'x': 846, 'y': 348},
-            'c6': {'x': 853, 'y': 290},
-            'c7': {'x': 856, 'y': 240},
-            'c8': {'x': 862, 'y': 192},
-            'd1': {'x': 913, 'y': 621},
-            'd2': {'x': 917, 'y': 542},
-            'd3': {'x': 919, 'y': 473},
-            'd4': {'x': 920, 'y': 405},
-            'd5': {'x': 923, 'y': 346},
-            'd6': {'x': 926, 'y': 289},
-            'd7': {'x': 928, 'y': 238},
-            'd8': {'x': 927, 'y': 189},
-            'e1': {'x': 1006, 'y': 621},
-            'e2': {'x': 1004, 'y': 546},
-            'e3': {'x': 1000, 'y': 476},
-            'e4': {'x': 999, 'y': 409},
-            'e5': {'x': 998, 'y': 346},
-            'e6': {'x': 996, 'y': 288},
-            'e7': {'x': 994, 'y': 240},
-            'e8': {'x': 994, 'y': 188},
-            'f1': {'x': 1098, 'y': 621},
-            'f2': {'x': 1091, 'y': 541},
-            'f3': {'x': 1084, 'y': 471},
-            'f4': {'x': 1081, 'y': 404},
-            'f5': {'x': 1072, 'y': 342},
-            'f6': {'x': 1069, 'y': 288},
-            'f7': {'x': 1066, 'y': 238},
-            'f8': {'x': 1061, 'y': 192},
-            'g1': {'x': 1193, 'y': 620},
-            'g2': {'x': 1180, 'y': 543},
-            'g3': {'x': 1167, 'y': 469},
-            'g4': {'x': 1159, 'y': 405},
-            'g5': {'x': 1149, 'y': 344},
-            'g6': {'x': 1142, 'y': 293},
-            'g7': {'x': 1137, 'y': 241},
-            'g8': {'x': 1134, 'y': 191},
-            'h1': {'x': 1278, 'y': 619},
-            'h2': {'x': 1265, 'y': 539},
-            'h3': {'x': 1248, 'y': 468},
-            'h4': {'x': 1235, 'y': 405},
-            'h5': {'x': 1227, 'y': 346},
-            'h6': {'x': 1213, 'y': 290},
-            'h7': {'x': 1204, 'y': 241},
-            'h8': {'x': 1195, 'y': 194},
+        'aa': {'x': 592, 'y': 807},
+        'bb': {'x': 699, 'y': 809},
+        'cc': {'x': 804, 'y': 809},
+        'dd': {'x': 908, 'y': 808},
+        'ee': {'x': 1014, 'y': 807},
+        'ff': {'x': 1115, 'y': 809},
+        'gg': {'x': 1224, 'y': 805},
+        'hh': {'x': 1329, 'y': 806},
 
-            'aa': {'x': 592, 'y': 807},
-            'bb': {'x': 699, 'y': 809},
-            'cc': {'x': 804, 'y': 809},
-            'dd': {'x': 908, 'y': 808},
-            'ee': {'x': 1014, 'y': 807},
-            'ff': {'x': 1115, 'y': 809},
-            'gg': {'x': 1224, 'y': 805},
-            'hh': {'x': 1329, 'y': 806},
+        'pick1': {'x': 464, 'y': 276},
+        'pick2': {'x': 712, 'y': 257},
+        'pick3': {'x': 973, 'y': 265},
+        'pick4': {'x': 1220, 'y': 271},
+        'pick5': {'x': 1458, 'y': 256},
+        'lock': {'x': 313, 'y': 445},
+        'close': {'x': 1610, 'y': 344},
+        'nothing': {'x': 1547, 'y': 77},
 
-            'pick1': {'x': 464, 'y': 276},
-            'pick2': {'x': 712, 'y': 257},
-            'pick3': {'x': 973, 'y': 265},
-            'pick4': {'x': 1220, 'y': 271},
-            'pick5': {'x': 1458, 'y': 256},
-            'lock': {'x': 313, 'y': 445},
-            'close': {'x': 1610, 'y': 344},
-            'nothing': {'x': 1547, 'y': 77},
+        'chickSlot1': {'x': 1158, 'y': 964},
+        'chickSlot2': {'x': 1224, 'y': 964},
+        'chickSlot3': {'x': 1288, 'y': 965},
+        'chickSlot4': {'x': 1158, 'y': 1012},
+        'chickSlot5': {'x': 1223, 'y': 1010},
+        'chickSlot6': {'x': 1286, 'y': 1010},
+        'chickSlot7': {'x': 1159, 'y': 1057},
+        'chickSlot8': {'x': 1223, 'y': 1057},
+        'chickSlot9': {'x': 1286, 'y': 1057},
 
-            'chickSlot1': {'x': 1158, 'y': 964},
-            'chickSlot2': {'x': 1224, 'y': 964},
-            'chickSlot3': {'x': 1288, 'y': 965},
-            'chickSlot4': {'x': 1158, 'y': 1012},
-            'chickSlot5': {'x': 1223, 'y': 1010},
-            'chickSlot6': {'x': 1286, 'y': 1010},
-            'chickSlot7': {'x': 1159, 'y': 1057},
-            'chickSlot8': {'x': 1223, 'y': 1057},
-            'chickSlot9': {'x': 1286, 'y': 1057},
+        'resetChicken': {'x': 914, 'y': 712},
 
-            'resetChicken': {'x': 914, 'y': 712},
+        'dotaArrowBtn': {'x': 32, 'y': 27},
+        'dotaDisconnectBtn': {'x': 1627, 'y': 1035},
+        'dotaLeaveBtn': {'x': 1648, 'y': 985},
+        'dotaLeaveAcceptBtn': {'x': 874, 'y': 603},
+        'dotaPlayAutoChessBtn': {'x': 1530, 'y': 866},
+        'dotaAcceptBtn': {'x': 901, 'y': 529},
+        'dotaMainMenuBtn': {'x': 286, 'y': 32},
+        'dotaAutoChessBtn': {'x': 780, 'y': 478},
 
-            'dotaArrowBtn': {'x': 32, 'y': 27},
-            'dotaDisconnectBtn': {'x': 1627, 'y': 1035},
-            'dotaLeaveBtn': {'x': 1648, 'y': 985},
-            'dotaLeaveAcceptBtn': {'x': 874, 'y': 603},
-            'dotaPlayAutoChessBtn': {'x': 1530, 'y': 866},
-            'dotaAcceptBtn': {'x': 901, 'y': 529},
-            'dotaMainMenuBtn': {'x': 286, 'y': 32},
-            'dotaAutoChessBtn': {'x': 780, 'y': 478},
+        'playerPos1': {'x': 1737, 'y': 155},
+        'playerPos2': {'x': 1737, 'y': 255},
+        'playerPos3': {'x': 1737, 'y': 355},
+        'playerPos4': {'x': 1737, 'y': 455},
+        'playerPos5': {'x': 1737, 'y': 555},
+        'playerPos6': {'x': 1737, 'y': 655},
+        'playerPos7': {'x': 1737, 'y': 755},
+        'playerPos8': {'x': 1737, 'y': 855}
+    }
 
-            'playerPos1': {'x': 1737, 'y': 155},
-            'playerPos2': {'x': 1737, 'y': 255},
-            'playerPos3': {'x': 1737, 'y': 355},
-            'playerPos4': {'x': 1737, 'y': 455},
-            'playerPos5': {'x': 1737, 'y': 555},
-            'playerPos6': {'x': 1737, 'y': 655},
-            'playerPos7': {'x': 1737, 'y': 755},
-            'playerPos8': {'x': 1737, 'y': 855}
-        }
-        self.CHICKENLEFT = OrderedDict([
-            ('A1L', {'x': 565, 'y': 612}),
-            ('A2L', {'x': 583, 'y': 541}),
-            ('A3L', {'x': 603, 'y': 463}),
-            ('A4L', {'x': 617, 'y': 404}),
-            ('A5L', {'x': 633, 'y': 340}),
-            ('A6L', {'x': 645, 'y': 284}),
-            ('A7L', {'x': 660, 'y': 236}),
-            ('A8L', {'x': 670, 'y': 192})
-        ])
+    CHICKENLEFT = OrderedDict([
+        ('A1L', {'x': 565, 'y': 612}),
+        ('A2L', {'x': 583, 'y': 541}),
+        ('A3L', {'x': 603, 'y': 463}),
+        ('A4L', {'x': 617, 'y': 404}),
+        ('A5L', {'x': 633, 'y': 340}),
+        ('A6L', {'x': 645, 'y': 284}),
+        ('A7L', {'x': 660, 'y': 236}),
+        ('A8L', {'x': 670, 'y': 192})
+    ])
 
-        self.CHICKENTOP = OrderedDict([
-            ('A8T', {'x': 735, 'y': 149}),
-            ('B8T', {'x': 798, 'y': 145}),
-            ('C8T', {'x': 866, 'y': 144}),
-            ('D8T', {'x': 928, 'y': 141}),
-            ('E8T', {'x': 994, 'y': 142}),
-            ('F8T', {'x': 1059, 'y': 143}),
-            ('G8T', {'x': 1131, 'y': 137}),
-            ('H8T', {'x': 1190, 'y': 151})])
+    CHICKENTOP = OrderedDict([
+        ('A8T', {'x': 735, 'y': 149}),
+        ('B8T', {'x': 798, 'y': 145}),
+        ('C8T', {'x': 866, 'y': 144}),
+        ('D8T', {'x': 928, 'y': 141}),
+        ('E8T', {'x': 994, 'y': 142}),
+        ('F8T', {'x': 1059, 'y': 143}),
+        ('G8T', {'x': 1131, 'y': 137}),
+        ('H8T', {'x': 1190, 'y': 151})])
 
-        self.CHICKENRIGHT = OrderedDict([
-            ('H8R', {'x': 1255, 'y': 191}),
-            ('H7R', {'x': 1269, 'y': 238}),
-            ('H6R', {'x': 1283, 'y': 293}),
-            ('H5R', {'x': 1293, 'y': 345}),
-            ('H4R', {'x': 1310, 'y': 403}),
-            ('H3R', {'x': 1320, 'y': 474}),
-            ('H2R', {'x': 1338, 'y': 542}),
-            ('H1R', {'x': 1355, 'y': 616})])
+    CHICKENRIGHT = OrderedDict([
+        ('H8R', {'x': 1255, 'y': 191}),
+        ('H7R', {'x': 1269, 'y': 238}),
+        ('H6R', {'x': 1283, 'y': 293}),
+        ('H5R', {'x': 1293, 'y': 345}),
+        ('H4R', {'x': 1310, 'y': 403}),
+        ('H3R', {'x': 1320, 'y': 474}),
+        ('H2R', {'x': 1338, 'y': 542}),
+        ('H1R', {'x': 1355, 'y': 616})])
 
-        self.CHICKENBOT = OrderedDict([
-            ('H1B', {'x': 1287, 'y': 698}),
-            ('G1B', {'x': 1194, 'y': 692}),
-            ('F1B', {'x': 1093, 'y': 695}),
-            ('E1B', {'x': 1001, 'y': 691}),
-            ('D1B', {'x': 913, 'y': 693}),
-            ('C1B', {'x': 820, 'y': 689}),
-            ('B1B', {'x': 728, 'y': 689}),
-            ('A1B', {'x': 630, 'y': 689})])
+    CHICKENBOT = OrderedDict([
+        ('H1B', {'x': 1287, 'y': 698}),
+        ('G1B', {'x': 1194, 'y': 692}),
+        ('F1B', {'x': 1093, 'y': 695}),
+        ('E1B', {'x': 1001, 'y': 691}),
+        ('D1B', {'x': 913, 'y': 693}),
+        ('C1B', {'x': 820, 'y': 689}),
+        ('B1B', {'x': 728, 'y': 689}),
+        ('A1B', {'x': 630, 'y': 689})])
 
-        self.itemoffsetFirstRowX = 54
-        self.itemoffsetFirstRowy = 31
-        self.itemoffsetSecondRowX = 75
-        self.itemoffsetSecondRowy = 0  # 6 old
-
+    itemoffsetFirstRowX = 54
+    itemoffsetFirstRowy = 31
+    itemoffsetSecondRowX = 75
+    itemoffsetSecondRowy = 0  # 6 old
 
     def toggleLockItem(self, slot):
         slotID = 'chickSlot'+slot
@@ -946,6 +990,7 @@ class GameController:
 
     
     def findAndExecute(self, splitted):
+        print('findAndExecute %s' % splitted)
         # todo reuse patterns on unsplitted string to reduce redundance
         # if(gameState == GameStates.gaming):
         if splitted[0] == '!m' or splitted[0] == '!move':
@@ -1065,16 +1110,18 @@ class IO:
 # class Controller
 
 class Setup:
+    mode = ''
+    commands = []
+    list_commands = []
+    gc = GameController()
+    # TODO: 2 instanzen von validator -> singleton
+    validator = Validator()
     def __init__(self):
-        self.commands = []
-        self.list_commands = []
-        self.gc = GameController()
-        # TODO: 2 instanzen von validator -> singleton
-        self.validator = Validator()
         # self.dota2WindowID = ''
         self.config()
         
     def config(self):
+        print('in config')
         # Generate a config file if one doesn't exist
         # TODO: exclude settings and configs outside of controlling programflow -> move programflow to controller class
         while True:
@@ -1272,7 +1319,7 @@ class Setup:
                     with open("commands.txt", "w") as f:
                         for item in self.commands:
                             f.write(item + '\n')
-                    if(self.mode == "anarchy"):
+                    if(self.mode != "democracy"):
                         splitted = out.lower().split(' ')
                         self.gc.findAndExecute(splitted)
 
@@ -1315,54 +1362,8 @@ class Setup:
                 f.write(item + '\n')
         return maxList[0]
 
-class Validator:
-    def __init__(self):
-        self.PATTERNS = {
-            # ! + m or move + (a-H + a-H(same a-H as b4) or number 1-4) +
-            # (must be different then b4 =>)(a-H + a-H(same a-H as b4) or number 1-4) + ending or + ' trash'
-            'move': r'^!(m|move) (([a-hA-H])((?=\3)[a-hA-H]|[1-4])) (?!\2)(([a-hA-H])((?=\3)[a-hA-H]|[1-4]))($| +)',
-            'movedirection': r'^!(m|move) (left|right|top|bot)($| +)',
-            'movefromslots': r'^!(aa|bb|cc|dd|ee|ff|gg|hh)( (left|right|top|bot))?($| +)',
-            'grab': r'^!(g|grab) (([a-hA-H])((?=\3)[a-hA-H]|[1-8]))($| +)',
-            'bench': r'^!(b|bench) ([a-hA-H][1-4])($| +)',
-            'sell': r'^!(s|sell) (([a-hA-H])((?=\3)[a-hA-H]|[1-8]))($| +)',
-            'rq': r'^!rq($| +)',
-            'reroll': r'^!(r|reroll)($| +)',
-            'buyxp': r'^!(x|xp) [1-4]($| +)',
-            'shop': r'^!shop (on|off)($| +)',
-            'lock': r'^!(l|lock)($| +)',
-            'pick': r'^!(p|pick) [1-5]($| +)',
-            'itemtohero': r'^!(i|item) ([1-9]) (([a-hA-H])((?=\4)[a-hA-H]|[1-8]))($| +)',
-            'tab': r'^!tab( [1-8])?($| +)',
-            'random': r'^!random($| +)',
-            'search': r'^!search($| +)',
-            'accept': r'^!accept($| +)',
-            'calib': r'^!calib($| +)',
-            'run': r'^!run (left|right|top|bot)($| +)',
-            'lockitem': r'^!(iu?l|itemlock) ([1-9])($| +)',
-            'stay': r'^!stay($| +)',
-            'write': r'^!write($| +)',
-            'exec': r'^!exec($| +)',
-            'stack': r'^!stack (!m|!g|!b|!s|!rq|!r|!x|!shop|!l|!p|!i|!tab|!random|!search|!accept|!calib|!run|!iu?l|!stay)'
-        }
-
-    # TODO: validator als eigene klasse mit PATTERNs attribut
-    def validateCommand(self, incomingString):
-        '''
-        Validate incoming commands
-        '''
-        # not a command
-        if(incomingString[:1] != '!'):
-            return None
-
-        # does it match any pattern?
-        for pattern in self.PATTERNS:
-            if(re.match(self.PATTERNS[pattern], incomingString, re.IGNORECASE)):
-                print('found pattern for: %s' % pattern)
-                return True
-
-        return False
-
 if __name__ == "__main__":
+    print('starting v2...')
     setup = Setup()
-    gc = GameController()
+    setup.start()
+    # gc = GameController()
