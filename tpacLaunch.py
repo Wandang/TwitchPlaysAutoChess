@@ -28,7 +28,7 @@ from enum import Enum
 from threading import Thread
 
 import validator
-import io
+import iocontroller
 import gamecontroller
 
 # TODO: split setup/configuration from controller flow
@@ -40,7 +40,7 @@ class Setup:
     commands = []
     list_commands = []
     gc = gamecontroller.GameController()
-    myIO = io.IO()
+    myIO = iocontroller.IOController()
 
     def __init__(self):
         self.config()
