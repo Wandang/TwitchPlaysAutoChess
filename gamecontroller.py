@@ -198,7 +198,6 @@ class GameController:
     itemoffsetSecondRowX = 75
     itemoffsetSecondRowy = 0  # 6 old
 
-    # TODO: Test if None is correctly detected
     def moveMouse(self,x,y,clickType = None):
         """Move the mouse to the desired coordinates and optionally click at that location.
         ClickType can be 1: leftclick, 2: middleclick, 3: rightclick"""
@@ -332,6 +331,7 @@ class GameController:
             # cheeky message to be displayed to make it feel more interactive with the other players
             allChatMessage = 'Chat wants to inspect the current position: '+playerPlacementID
             self.writeAllChat(allChatMessage)
+            # clicking on the avatar of the specific player leads us to their camposition
             self.moveMouse(self.COORDMAP[placementKey]['x'],self.COORDMAP[placementKey]['y'], '1')
             time.sleep(self.delayBetweenActions)
             # move mouse away from avatars so the popovertext is not blocking the view
@@ -465,7 +465,7 @@ class GameController:
         rageQuitJob.start()
 
 
-    # TODO: check working or not?
+    # TODO: recheck entire function
     def randomAction(self):
         """Execute a random action to confuse everyone and yourself."""
         randomNumber = random.randint(0, 4)
@@ -537,10 +537,10 @@ class GameController:
 
     def moveBot(self):
         """Shortcut command: Moves the first piece to the backline"""
-        self.moveMouse(self.COORDMAP['aa']['x'],self.COORDMAP['aa']['y'],'1')
+        self.moveMouse(self.COORDMAP['aa']['x'],self.COORDMAP['aa']['y'])
         self.pressKey('m')
         time.sleep(self.delayBetweenActions)
-        self.moveMouse(self.COORDMAP['e1']['x'],self.COORDMAP['e1']['y'],'1')
+        self.moveMouse(self.COORDMAP['e1']['x'],self.COORDMAP['e1']['y'])
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
         self.showSelection('on')
@@ -548,10 +548,10 @@ class GameController:
 
     def moveTop(self):
         """Shortcut command: Moves the first piece to the frontline"""
-        self.moveMouse(self.COORDMAP['aa']['x'],self.COORDMAP['aa']['y'],'1')
+        self.moveMouse(self.COORDMAP['aa']['x'],self.COORDMAP['aa']['y'])
         self.pressKey('m')
         time.sleep(self.delayBetweenActions)
-        self.moveMouse(self.COORDMAP['d4']['x'],self.COORDMAP['d4']['y'],'1')
+        self.moveMouse(self.COORDMAP['d4']['x'],self.COORDMAP['d4']['y'])
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
         self.showSelection('on')
@@ -559,10 +559,10 @@ class GameController:
 
     def moveRight(self):
         """Shortcut command: Moves the first piece to the right side"""
-        self.moveMouse(self.COORDMAP['aa']['x'],self.COORDMAP['aa']['y'],'1')
+        self.moveMouse(self.COORDMAP['aa']['x'],self.COORDMAP['aa']['y'])
         self.pressKey('m')
         time.sleep(self.delayBetweenActions)
-        self.moveMouse(self.COORDMAP['g3']['x'],self.COORDMAP['g3']['y'],'1')
+        self.moveMouse(self.COORDMAP['g3']['x'],self.COORDMAP['g3']['y'])
         time.sleep(self.delayBetweenActions)
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
@@ -571,10 +571,10 @@ class GameController:
 
     def moveLeft(self):
         """Shortcut command: Moves the first piece to the left side"""
-        self.moveMouse(self.COORDMAP['aa']['x'],self.COORDMAP['aa']['y'],'1')
+        self.moveMouse(self.COORDMAP['aa']['x'],self.COORDMAP['aa']['y'])
         self.pressKey('m')
         time.sleep(self.delayBetweenActions)
-        self.moveMouse(self.COORDMAP['b3']['x'],self.COORDMAP['b3']['y'],'1')
+        self.moveMouse(self.COORDMAP['b3']['x'],self.COORDMAP['b3']['y'])
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
         self.showSelection('on')
@@ -613,7 +613,7 @@ class GameController:
         Source and target locations are fields on the chessboard or on the bench"""
         # make sure shop is closed while moving pieces
         self.showSelection('off')
-        self.moveMouse(self.COORDMAP[source]['x'],self.COORDMAP[source]['y'],'1')
+        self.moveMouse(self.COORDMAP[source]['x'],self.COORDMAP[source]['y'])
         self.pressKey('m')
         time.sleep(self.delayBetweenActions)
         self.moveMouse(self.COORDMAP[target]['x'],self.COORDMAP[target]['y'],'1')
@@ -627,7 +627,7 @@ class GameController:
         Target is a field on the chessboard"""
         self.showSelection('off')
         # TODO: Check if click should not be done because of quickcast
-        self.moveMouse(self.COORDMAP[target]['x'],self.COORDMAP[target]['y'],'1')
+        self.moveMouse(self.COORDMAP[target]['x'],self.COORDMAP[target]['y'])
         self.pressKey('b')
         time.sleep(self.delayBetweenActions)
         self.clickNothing()
@@ -638,7 +638,7 @@ class GameController:
         """Sells a piece.
         Target is a field on the chessboard and on the bench"""
         self.showSelection('off')
-        self.moveMouse(self.COORDMAP[target]['x'],self.COORDMAP[target]['y'],'1')
+        self.moveMouse(self.COORDMAP[target]['x'],self.COORDMAP[target]['y'])
         self.pressKey('s')
         time.sleep(self.delayBetweenActions)
         self.clickNothing()
