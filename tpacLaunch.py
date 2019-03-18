@@ -17,14 +17,8 @@
 import configparser
 import os
 import subprocess
-import sys
-import string
 import time
 import socket
-import re
-import random
-from collections import OrderedDict
-from enum import Enum
 from threading import Thread
 
 import validator

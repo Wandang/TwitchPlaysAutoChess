@@ -13,16 +13,7 @@
 # GNU General Public License for more details.
 #
 
-import configparser
 import os
-import subprocess
-import sys
-import string
-import time
-import socket
-import re
-import random
-
 
 class Singleton(type):
     """Singleton pattern metaclass"""

@@ -16,9 +16,9 @@
 
 
 import subprocess
-import string
+#import string
 import time
-import re
+#import re
 import random
 from collections import OrderedDict
 from threading import Thread
