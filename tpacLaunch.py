@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# tpacLaunchv2.py
+# tpacLaunch.py
 # Copyright (C) 2019 : Carsten Demming
 #
 # This program is free software; you can redistribute it and/or modify
@@ -118,9 +118,6 @@ class Setup:
                 self.gc.dota2WindowID = completedProcess.stdout.decode('UTF-8')
             print("Currently available: Democracy, Anarchy")
             self.mode = input("Game type (default Anarchy): ")
-            #mode = 'anarchy'
-            # if mode.lower() == "anarchy":
-            #     break
             if self.mode.lower() == "democracy":
                 print("Takes most said command every X second(s): ")
                 self.democracy_time = float(input("(must be integer) X="))
@@ -273,8 +270,6 @@ class Setup:
                 f.write(item + '\n')
         return maxList[0]
 
-#if __name__ == "__main__":
 print('starting v2...')
 setup = Setup()
 setup.start()
-# gc = GameController()

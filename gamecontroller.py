@@ -1,3 +1,20 @@
+#!/usr/bin/env python3
+
+# tpacLaunch.py
+# Copyright (C) 2019 : Carsten Demming
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+
+
 import subprocess
 import string
 import time
@@ -357,16 +374,12 @@ class GameController:
 
 
     def abortRagequit(self):
-        # print('aborting ragequit by setting flag to false')
-        # 
         self.allowRagequit = False
-        # print('writing empty file')
         with open("ragequit.txt", "w") as f:
             f.write("")
 
 
     def rageQuitProcess(self):
-        # print('in rq process')
         targetTime = 20
         # 
         starttime = time.time()
@@ -393,8 +406,6 @@ class GameController:
                 break
 
         if(self.allowRagequit):
-            # print('trying to leave game...')
-            # gameState = GameStates.searching
             self.moveMouse(self.COORDMAP['dotaArrowBtn']['x'],self.COORDMAP['dotaArrowBtn']['y'], '1')
             time.sleep(0.5)
             self.moveMouse(self.COORDMAP['dotaDisconnectBtn']['x'],self.COORDMAP['dotaDisconnectBtn']['y'], '1')
@@ -419,7 +430,6 @@ class GameController:
 
 
     def leaveGame(self):
-        # 
         if(self.allowRagequit):
             print('ragequit already in process, aborting another thread')
             return
@@ -479,8 +489,6 @@ class GameController:
         '''
         self.moveMouse(self.COORDMAP['nothing']['x'],self.COORDMAP['nothing']['y'], '1')
 
-    # !shophowSelection
-
     def closeSelection(self):
         '''
         closes Selection via X button
@@ -493,17 +501,12 @@ class GameController:
         if(isOn == 'on'):
             self.pressKey('space')
         time.sleep(self.delayBetweenActions)
-    # !l
-
 
     def lockSelection(self):
         print('trying to lock')
         # first open selection
         self.showSelection('on')
         self.moveMouse(self.COORDMAP['lock']['x'],self.COORDMAP['lock']['y'],'1')
-        # optionally close selection afterwards
-        # xdotool key space
-
 
     def moveBot(self):
         self.moveMouse(self.COORDMAP['aa']['x'],self.COORDMAP['aa']['y'],'1')
@@ -583,8 +586,6 @@ class GameController:
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
         self.showSelection('on')
-    # !b F5
-
 
     def benchPiece(self, target):
         self.showSelection('off')
@@ -596,8 +597,6 @@ class GameController:
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
         self.showSelection('on')
-    # !s F6
-
 
     def sellPiece(self, target):
         self.showSelection('off')
@@ -608,8 +607,6 @@ class GameController:
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
         self.showSelection('on')
-    # !r null
-
 
     def rerollPieces(self):
         self.showSelection('off')
@@ -619,8 +616,6 @@ class GameController:
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
         self.showSelection('on')
-    # !x null
-
 
     def buyXP(self, amount):
         print('trying to buy xp: %s' % amount)
@@ -653,7 +648,6 @@ class GameController:
     def findAndExecute(self, splitted):
         print('findAndExecute %s' % splitted)
         # todo reuse patterns on unsplitted string to reduce redundance
-        # if(gameState == GameStates.gaming):
         if splitted[0] == '!m' or splitted[0] == '!move':
             time.sleep(.02)
             # execute command
