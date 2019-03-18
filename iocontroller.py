@@ -25,6 +25,7 @@ import random
 
 
 class Singleton(type):
+    """Singleton pattern metaclass"""
     _instances = {}
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:
@@ -34,12 +35,22 @@ class Singleton(type):
 class IOController(metaclass=Singleton):
     """Handles the writing of files"""
     def writeFile(self, filename, message):
+        """Writes textfiles to use for chat representation and execution.
+        
+        Keyword arguments:
+            filename -- Filename of file to be written
+            message -- Text to write
+        """
         with open(filename, "w") as f:
             f.write(message)
         pass
 
     def resetFile(self, filename = None):
-        """Cleans specific file or all files"""
+        """Clears specific file or all files by overwriting them with an empty string.
+
+        Keyword arguments:
+            filename -- Filename of file to cleared. None if all files should be cleared.
+        """
         if(filename):
             with open(filename, "w") as f:
                 f.write("")

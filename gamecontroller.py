@@ -30,7 +30,6 @@ class GameController:
     """Controls the game input. Emulates mouse and keyboard input via xdotools.
     Each Dota AutoChess action is mapped as function"""
 
-    # TODO: singleton for io
     myIO = iocontroller.IOController()
     commandStack = []
     # default delay after each peripheral action. Needs to be > 0 to make sure that the actions are finished properly
@@ -203,7 +202,12 @@ class GameController:
 
     def moveMouse(self,x,y,clickType = None):
         """Move the mouse to the desired coordinates and optionally click at that location.
-        ClickType can be 1: leftclick, 2: middleclick, 3: rightclick"""
+        
+        Keyword arguments:
+            x -- x coordinate inside screen resolution
+            y -- y coordinate inside screen resolution
+            clickType -- 1: leftclick, 2: middleclick, 3: rightclick
+        """
         # -- window param makes sure that the input gets send to a specific window, even if it is in the background
         subprocess.run(['xdotool',
                         'mousemove',
@@ -217,13 +221,21 @@ class GameController:
         time.sleep(self.delayBetweenActions)
 
     def clickMouse(self, clickType):
-        """Clicks the specified mousebutton
-        ClickType can be 1: leftclick, 2: middleclick, 3: rightclick"""
+        """Clicks the specified mousebutton    
+                
+        Keyword arguments:
+            clickType -- 1: leftclick, 2: middleclick, 3: rightclick
+        """
         subprocess.run(['xdotool','click','--window',self.dota2WindowID, clickType])
 
     def dragAndDrop(self,source,target):
         """Drags & drops from source to target location.
-        This is used for items"""
+        This is used for items.
+        
+        Keyword arguments:
+            source -- coordinates of source location [x,y]
+            target -- coordinates of target location [x,y]
+        """
         self.moveMouse(source['x'],source['y'])
         time.sleep(1)
         # hold mouse button
@@ -235,11 +247,19 @@ class GameController:
         subprocess.run(['xdotool', 'mouseup', '--window', self.dota2WindowID, '1'])
 
     def pressKey(self, key):
-        """Presses specified key on keyboard"""
+        """Presses specified key on keyboard
+        
+        Keyword arguments:
+            key -- keyboard key (keycodes)
+        """
         subprocess.run(['xdotool', 'key', '--window', self.dota2WindowID, key])
 
     def toggleLockItem(self, slot):
-        """Locks item in specified itemslot (1-9)"""
+        """Locks item in specified itemslot (1-9)
+        
+        Keyword arguments:
+            slot -- number between 1-9
+        """
         slotID = 'chickSlot'+slot
         self.moveMouse(self.COORDMAP[slotID]['x'],self.COORDMAP[slotID]['y'],'3')
         time.sleep(0.5)
@@ -254,8 +274,11 @@ class GameController:
 
     # TODO: optimize, reduce redundancy
     def grabItemChickenloop(self, side):
-        """Let's the chicken/courier walk alongside a side of the chessboard to pick up items
-        Side can be left, top, bot or right"""
+        """Let's the chicken/courier walk alongside a side of the chessboard to pick up items.
+        
+        Keyword arguments:
+            side -- Which side should be checked for items. Can be left, top, bot or right.
+        """
         # make sure the shop is hidden to not interfere with our clicks
         self.showSelection('off')
         if(side == 'left'):
@@ -292,7 +315,11 @@ class GameController:
 
 
     def rightClickAtCoord(self, coord):
-        """Rightclick at target coordinates"""
+        """Rightclick at target coordinates
+        
+        Keyword arguments:
+            coord -- target coordinates (in pixel) for rightclicking 
+        """
         self.moveMouse(coord['x'],coord['y'],'3')
         time.sleep(self.delayBetweenActions)
 
@@ -305,7 +332,11 @@ class GameController:
 
     def moveItem(self, slot, target):
         '''Move item from chicken slot to target hero coordinates.
-        Slot can be from 1-9'''
+        
+        Keyword arguments:
+            slot -- Itemslot of the chicken (1-9)
+            target -- target chessboard/bench position
+        '''
         # close shop before
         self.showSelection('off')
         slotID = 'chickSlot'+slot
@@ -317,7 +348,11 @@ class GameController:
 
 
     def grabItem(self, target):
-        """Let's the chicken pick up dropped items"""
+        """Let's the chicken pick up dropped items
+        
+        Keyword arguments:
+            target -- target chessboard position
+        """
         # close shop first
         self.showSelection('off')
         self.rightClickAtCoord(self.COORDMAP[target])
@@ -327,7 +362,11 @@ class GameController:
 
 
     def tabTour(self, playerPlacementID=-1):
-        '''Show chessboard of player x or if no player is given show every chessboard in 5s'''
+        '''Show chessboard of player x or if no player is given show every chessboard in 5s
+        
+        Keyword arguments:
+            playerPlacementID -- PlayerID defined by current placement (1-8)
+        '''
         if(playerPlacementID != -1):
             timeToStayOnPlayer = 3
             placementKey = 'playerPos'+playerPlacementID
@@ -355,7 +394,11 @@ class GameController:
 
     # TODO: add profanity filter?
     def writeAllChat(self, message):
-        """Writes a message to everyone"""
+        """Writes a message to everyone
+        
+        Keyword arguments:
+            message -- Textmessage to be send
+        """
         self.pressKey('shift+Return')
         time.sleep(self.delayBetweenActions)
         subprocess.run(['xdotool', 'type', '--window', self.dota2WindowID, message])
@@ -363,11 +406,16 @@ class GameController:
         self.pressKey('Return')
         time.sleep(self.delayBetweenActions)
 
+    # TODO: promotelink should be read from settings file
     def camCalibration(self, promote=False):
         """Needs to be done once at the start of each game!
         Sets cam to playerposition.
         This is the referenceposition for all other commands and therefore important!
-        Without calibration every chess piece interaction will fail"""
+        Without calibration every chess piece interaction will fail.
+        
+        Keyword arguments:
+            promote -- Promotes the twitch channel in allchat (bool)
+        """
         self.pressKey('1')
         # shoutout in allchat to promote the bot
         if(promote):
@@ -499,7 +547,10 @@ class GameController:
 
     def pickPiece(self, target):
         """Buy a chess piece from the shop.
-        Target is a number between 1-5"""
+             
+        Keyword arguments:
+            target -- Number between 1-5
+        """
         self.showSelection('on')
         pickString = 'pick'+str(target)
         self.moveMouse(self.COORDMAP[pickString]['x'],self.COORDMAP[pickString]['y'], '1')
@@ -518,7 +569,10 @@ class GameController:
 
     def showSelection(self, isOn):
         """Shows/hides the shop.
-        isOn is a bool"""
+        
+        Keyword arguments:
+            isOn -- Show/hide (bool)
+        """
         # Make sure to close the shop via X button before since we do not have game feedback and therefore need to prevent toggling wrongly
         self.closeSelection()
         if(isOn == 'on'):
@@ -579,8 +633,13 @@ class GameController:
 
 
     def movePieceFromSlot(self, slot, direction=''):
-        """Shortcut command: Moves a piece from a slot towards a general direction.
-        If no direction is specified the piece will be put in the middle"""
+        """Shortcut command: Moves a piece from a slot/bench towards a general direction.
+        If no direction is specified the piece will be put in the middle
+        
+        Keyword arguments:
+            slot -- Bench/slot position of chess piece
+            direction -- Direction can be left, right, top or bot
+        """
         if direction == 'left':
             self.movePiece(slot, 'b3')
         elif direction == 'right':
@@ -593,9 +652,13 @@ class GameController:
             self.movePiece(slot, 'd3')
 
 
-    # probably obsolete
+    # TODO: check if this is needed anymore (probably obsolete)
     def movePieceDirection(self, direction):
-        """Shortcut command: Moves first piece towards a general direction"""
+        """Shortcut command: Moves first piece towards a general direction
+        
+        Keyword arguments:
+            direction -- Direction can be left, right, top or bot
+        """
         if direction == 'left':
             self.moveLeft()
         elif direction == 'right':
@@ -608,7 +671,11 @@ class GameController:
 
     def movePiece(self, source, target):
         """Moves piece from source to target location.
-        Source and target locations are fields on the chessboard or on the bench"""
+        Source and target locations are fields on the chessboard or on the bench
+        
+        Keyword arguments:
+            direction -- Direction can be left, right, top or bot
+        """
         # make sure shop is closed while moving pieces
         self.showSelection('off')
         self.moveMouse(self.COORDMAP[source]['x'],self.COORDMAP[source]['y'])
@@ -622,7 +689,10 @@ class GameController:
 
     def benchPiece(self, target):
         """Removes an active chess piece from the chessboard and puts it on the bench.
-        Target is a field on the chessboard"""
+        
+        Keyword arguments:
+            target -- target chessboard position
+        """
         self.showSelection('off')
         # TODO: Check if click should not be done because of quickcast
         self.moveMouse(self.COORDMAP[target]['x'],self.COORDMAP[target]['y'])
@@ -634,7 +704,11 @@ class GameController:
 
     def sellPiece(self, target):
         """Sells a piece.
-        Target is a field on the chessboard and on the bench"""
+        Target is a field on the chessboard and on the bench
+        
+        Keyword arguments:
+            target -- target chessboard position
+        """
         self.showSelection('off')
         self.moveMouse(self.COORDMAP[target]['x'],self.COORDMAP[target]['y'])
         self.pressKey('s')
@@ -653,7 +727,11 @@ class GameController:
         self.showSelection('on')
 
     def buyXP(self, amount):
-        """Buys experience x times depending on the amount"""
+        """Buys experience x times depending on the amount
+        
+        Keyword arguments:
+            amount -- How many times xp should be bought (1-4)
+        """
         for dummy in range(int(amount)):
             self.pressKey('x')
             time.sleep(0.8)
@@ -668,13 +746,21 @@ class GameController:
 
 
     def addToStack(self, commandForStack):
-        """Add a command to stack/queue for later execution"""
+        """Add a command to stack/queue for later execution
+        
+        Keyword arguments:
+            commandForStack -- Command as string
+        """
         # TODO: set a limit on stack?
         self.commandStack.append(commandForStack)
 
 
     def stackCommand(self, commandArray):
-        """Add a command to stack/queue for later execution"""
+        """Add a command to stack/queue for later execution
+        
+        Keyword arguments:
+            commandForStack -- Command as string
+        """
         # since it was a splitted array before we need to recreate the original nested command string first
         patchedCommand = ''
         for i in range(1, len(commandArray)):
@@ -687,7 +773,11 @@ class GameController:
 
     
     def findAndExecute(self, splitted):
-        """Checks which command is invoked and executes the command accordingly"""
+        """Checks which command is invoked and executes the command accordingly
+        
+        Keyword arguments:
+            splitted -- Array of commando parts that was splitted by space 
+        """
         # TODO: reuse patterns on unsplitted string to reduce redundance
         if splitted[0] == '!m' or splitted[0] == '!move':
             time.sleep(.02)

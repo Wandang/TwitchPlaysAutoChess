@@ -193,7 +193,11 @@ class Setup:
         return s
     
     def handleTwitchResponse(self, s):
-        """Extracts the relevant info/command from each chat line"""
+        """Extracts the relevant info/command from each chat line
+
+        Keyword arguments:
+            s -- socket containing live data
+        """
         readbuffer = ''
         while True:
             readbuffer = readbuffer+s.recv(1024).decode("UTF-8", errors="ignore")
@@ -249,7 +253,12 @@ class Setup:
 
     def addToCommandList(self, user, out):
         """Adds all valid commands to a list and removes/pops the first entry if the list gets too long.
-        Additionally adds commands to a democracy list which is used to determine the top 5 commands"""
+        Additionally adds commands to a democracy list which is used to determine the top 5 commands
+
+        Keyword arguments:
+            user -- twitch username as send by twitch api
+            out -- chatline from user
+        """
         if len(self.commands) >= self.command_length:
             del self.commands[0]
             self.commands.extend([user[1:] + out.lower()])
@@ -262,7 +271,11 @@ class Setup:
 
     def most_common(self, lst):
         """Return the most common/popular command of a given list.
-        At the same time determine the Top 5 commands to show stream view by writing it to a file"""
+        At the same time determine the Top 5 commands to show stream view by writing it to a file
+        
+        Keyword arguments:
+            lst -- list of commands to be examined
+        """
         # Write to file for stream view
         tempList = lst
         maxList = []

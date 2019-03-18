@@ -1,3 +1,19 @@
+#!/usr/bin/env python3
+
+# tpacLaunch.py
+# Copyright (C) 2019 : Carsten Demming
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+
 import re
 
 PATTERNS = {
@@ -30,8 +46,10 @@ PATTERNS = {
         }
 
 def validateCommand(command):
-    '''
-    Validate incoming commands
+    '''Validate incoming commands. Returns bool
+
+    Keyword arguments:
+        command -- Command (string) to be validated
     '''
     # not a command
     if(command[:1] != '!'):
