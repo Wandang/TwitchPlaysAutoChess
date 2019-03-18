@@ -128,8 +128,9 @@ class Setup:
                 print("Takes most said command every X second(s): ")
                 try:
                     self.democracy_time = float(input("(must be integer) X="))
-                    break
-                except TypeError as identifier:
+                    if(self.democracy_time > 0):
+                        break
+                except ValueError as identifier:
                     print(identifier)
             else:
                 break
@@ -239,7 +240,6 @@ class Setup:
                 
                 # Take in output
                 # sanitize output
-                # TODO: transfer command logic outside setup logic/ use another class
                 if(validator.validateCommand(out.lower())):
                     self.addToCommandList(user, out)
                     # Write to file for stream view

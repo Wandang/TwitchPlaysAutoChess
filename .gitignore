@@ -10,3 +10,4 @@ assets/dota menu.png
 assets/ingame new perspective.png
 assets/ingame action.png
 *.txt
+*.pyc

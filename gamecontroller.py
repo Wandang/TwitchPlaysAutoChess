@@ -242,7 +242,6 @@ class GameController:
         self.moveMouse(self.COORDMAP[slotID]['x'],self.COORDMAP[slotID]['y'],'3')
         time.sleep(0.5)
         # the rightclick menu changes position depending on row
-        # TODO: check if this still works too (since we switched to string values in dict)
         lockLabelPosX = str(int(self.COORDMAP[slotID]['x'])+int(self.itemoffsetFirstRowX))
         lockLabelPosY = str(int(self.COORDMAP[slotID]['y'])+int(self.itemoffsetFirstRowy))
         if(int(slot) > 3):
@@ -750,7 +749,7 @@ class GameController:
         elif splitted[0] == '!rq':
             time.sleep(.02)
             self.leaveGame()
-        elif splitted[0] == '!li' or splitted[0] == '!uli' or splitted[0] == '!itemlock':
+        elif splitted[0] == '!il' or splitted[0] == '!iul' or splitted[0] == '!itemlock':
             time.sleep(.02)
             self.toggleLockItem(splitted[1])
         elif splitted[0] == '!run':
