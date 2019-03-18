@@ -392,7 +392,7 @@ class GameController:
                 time.sleep(0.625)
 
 
-    # TODO: add profanity filter?
+    # TODO: add profanity filter to prevent possible repercussions through twitch/ possible violation of TOS?
     def writeAllChat(self, message):
         """Writes a message to everyone
         

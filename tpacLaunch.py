@@ -117,7 +117,8 @@ class Setup:
                 completedProcess = subprocess.run(['xdotool', 'search', '--name',
                                                 'Dota 2'], capture_output=True)
                 self.gc.dota2WindowID = completedProcess.stdout.decode('UTF-8')
-            print("Currently available: Democracy, Anarchy")
+            print("Currently available: Democracy, Anarchy\n"+
+                "Democracy: Takes most said command every X second(s)\nAnarchy: Executes every incoming command")
             self.mode = input("Game type (default Anarchy): ")
             if self.mode.lower() == "democracy":
                 print("Takes most said command every X second(s): ")
