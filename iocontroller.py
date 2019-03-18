@@ -25,6 +25,7 @@ class Singleton(type):
 
 class IOController(metaclass=Singleton):
     """Handles the writing of files"""
+
     def writeFile(self, filename, message):
         """Writes textfiles to use for chat representation and execution.
         
@@ -43,14 +44,9 @@ class IOController(metaclass=Singleton):
             filename -- Filename of file to cleared. None if all files should be cleared.
         """
         if(filename):
-            with open(filename, "w") as f:
-                f.write("")
+            self.writeFile(filename, '')
         else:
-            with open("lastsaid.txt", "w") as f:
-                f.write("")
-            with open("most_common_commands.txt", "w") as f:
-                f.write("")
-            with open("ragequit.txt", "w") as f:
-                f.write("")
-            with open("commands.txt", "w") as f:
-                f.write("")
+            self.writeFile('lastsaid.txt','')
+            self.writeFile('most_common_commands.txt','')
+            self.writeFile('ragequit.txt','')
+            self.writeFile('commands.txt','')
