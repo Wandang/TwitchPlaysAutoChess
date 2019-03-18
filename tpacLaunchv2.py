@@ -39,194 +39,204 @@ class GameController:
                     'OSFrog', 'PJSalt', 'WutFace', 'cmonBruh', 'TriHard', 'PogChamp', 'ResidentSleeper']
 
     COORDMAP = {
-        'a1': {'x': 633, 'y': 620},
-        'a2': {'x': 651, 'y': 548},
-        'a3': {'x': 669, 'y': 471},
-        'a4': {'x': 683, 'y': 402},
-        'a5': {'x': 695, 'y': 346},
-        'a6': {'x': 708, 'y': 293},
-        'a7': {'x': 715, 'y': 240},
-        'a8': {'x': 727, 'y': 194},
-        'b1': {'x': 734, 'y': 624},
-        'b2': {'x': 744, 'y': 545},
-        'b3': {'x': 750, 'y': 472},
-        'b4': {'x': 761, 'y': 408},
-        'b5': {'x': 769, 'y': 347},
-        'b6': {'x': 778, 'y': 292},
-        'b7': {'x': 783, 'y': 241},
-        'b8': {'x': 793, 'y': 195},
-        'c1': {'x': 824, 'y': 625},
-        'c2': {'x': 831, 'y': 542},
-        'c3': {'x': 835, 'y': 475},
-        'c4': {'x': 842, 'y': 409},
-        'c5': {'x': 846, 'y': 348},
-        'c6': {'x': 853, 'y': 290},
-        'c7': {'x': 856, 'y': 240},
-        'c8': {'x': 862, 'y': 192},
-        'd1': {'x': 913, 'y': 621},
-        'd2': {'x': 917, 'y': 542},
-        'd3': {'x': 919, 'y': 473},
-        'd4': {'x': 920, 'y': 405},
-        'd5': {'x': 923, 'y': 346},
-        'd6': {'x': 926, 'y': 289},
-        'd7': {'x': 928, 'y': 238},
-        'd8': {'x': 927, 'y': 189},
-        'e1': {'x': 1006, 'y': 621},
-        'e2': {'x': 1004, 'y': 546},
-        'e3': {'x': 1000, 'y': 476},
-        'e4': {'x': 999, 'y': 409},
-        'e5': {'x': 998, 'y': 346},
-        'e6': {'x': 996, 'y': 288},
-        'e7': {'x': 994, 'y': 240},
-        'e8': {'x': 994, 'y': 188},
-        'f1': {'x': 1098, 'y': 621},
-        'f2': {'x': 1091, 'y': 541},
-        'f3': {'x': 1084, 'y': 471},
-        'f4': {'x': 1081, 'y': 404},
-        'f5': {'x': 1072, 'y': 342},
-        'f6': {'x': 1069, 'y': 288},
-        'f7': {'x': 1066, 'y': 238},
-        'f8': {'x': 1061, 'y': 192},
-        'g1': {'x': 1193, 'y': 620},
-        'g2': {'x': 1180, 'y': 543},
-        'g3': {'x': 1167, 'y': 469},
-        'g4': {'x': 1159, 'y': 405},
-        'g5': {'x': 1149, 'y': 344},
-        'g6': {'x': 1142, 'y': 293},
-        'g7': {'x': 1137, 'y': 241},
-        'g8': {'x': 1134, 'y': 191},
-        'h1': {'x': 1278, 'y': 619},
-        'h2': {'x': 1265, 'y': 539},
-        'h3': {'x': 1248, 'y': 468},
-        'h4': {'x': 1235, 'y': 405},
-        'h5': {'x': 1227, 'y': 346},
-        'h6': {'x': 1213, 'y': 290},
-        'h7': {'x': 1204, 'y': 241},
-        'h8': {'x': 1195, 'y': 194},
+        'a1': {'x': '633', 'y': '620'},
+        'a2': {'x': '651', 'y': '548'},
+        'a3': {'x': '669', 'y': '471'},
+        'a4': {'x': '683', 'y': '402'},
+        'a5': {'x': '695', 'y': '346'},
+        'a6': {'x': '708', 'y': '293'},
+        'a7': {'x': '715', 'y': '240'},
+        'a8': {'x': '727', 'y': '194'},
+        'b1': {'x': '734', 'y': '624'},
+        'b2': {'x': '744', 'y': '545'},
+        'b3': {'x': '750', 'y': '472'},
+        'b4': {'x': '761', 'y': '408'},
+        'b5': {'x': '769', 'y': '347'},
+        'b6': {'x': '778', 'y': '292'},
+        'b7': {'x': '783', 'y': '241'},
+        'b8': {'x': '793', 'y': '195'},
+        'c1': {'x': '824', 'y': '625'},
+        'c2': {'x': '831', 'y': '542'},
+        'c3': {'x': '835', 'y': '475'},
+        'c4': {'x': '842', 'y': '409'},
+        'c5': {'x': '846', 'y': '348'},
+        'c6': {'x': '853', 'y': '290'},
+        'c7': {'x': '856', 'y': '240'},
+        'c8': {'x': '862', 'y': '192'},
+        'd1': {'x': '913', 'y': '621'},
+        'd2': {'x': '917', 'y': '542'},
+        'd3': {'x': '919', 'y': '473'},
+        'd4': {'x': '920', 'y': '405'},
+        'd5': {'x': '923', 'y': '346'},
+        'd6': {'x': '926', 'y': '289'},
+        'd7': {'x': '928', 'y': '238'},
+        'd8': {'x': '927', 'y': '189'},
+        'e1': {'x': '1006', 'y': '621'},
+        'e2': {'x': '1004', 'y': '546'},
+        'e3': {'x': '1000', 'y': '476'},
+        'e4': {'x': '999', 'y': '409'},
+        'e5': {'x': '998', 'y': '346'},
+        'e6': {'x': '996', 'y': '288'},
+        'e7': {'x': '994', 'y': '240'},
+        'e8': {'x': '994', 'y': '188'},
+        'f1': {'x': '1098', 'y': '621'},
+        'f2': {'x': '1091', 'y': '541'},
+        'f3': {'x': '1084', 'y': '471'},
+        'f4': {'x': '1081', 'y': '404'},
+        'f5': {'x': '1072', 'y': '342'},
+        'f6': {'x': '1069', 'y': '288'},
+        'f7': {'x': '1066', 'y': '238'},
+        'f8': {'x': '1061', 'y': '192'},
+        'g1': {'x': '1193', 'y': '620'},
+        'g2': {'x': '1180', 'y': '543'},
+        'g3': {'x': '1167', 'y': '469'},
+        'g4': {'x': '1159', 'y': '405'},
+        'g5': {'x': '1149', 'y': '344'},
+        'g6': {'x': '1142', 'y': '293'},
+        'g7': {'x': '1137', 'y': '241'},
+        'g8': {'x': '1134', 'y': '191'},
+        'h1': {'x': '1278', 'y': '619'},
+        'h2': {'x': '1265', 'y': '539'},
+        'h3': {'x': '1248', 'y': '468'},
+        'h4': {'x': '1235', 'y': '405'},
+        'h5': {'x': '1227', 'y': '346'},
+        'h6': {'x': '1213', 'y': '290'},
+        'h7': {'x': '1204', 'y': '241'},
+        'h8': {'x': '1195', 'y': '194'},
 
-        'aa': {'x': 592, 'y': 807},
-        'bb': {'x': 699, 'y': 809},
-        'cc': {'x': 804, 'y': 809},
-        'dd': {'x': 908, 'y': 808},
-        'ee': {'x': 1014, 'y': 807},
-        'ff': {'x': 1115, 'y': 809},
-        'gg': {'x': 1224, 'y': 805},
-        'hh': {'x': 1329, 'y': 806},
+        'aa': {'x': '592', 'y': '807'},
+        'bb': {'x': '699', 'y': '809'},
+        'cc': {'x': '804', 'y': '809'},
+        'dd': {'x': '908', 'y': '808'},
+        'ee': {'x': '1014', 'y': '807'},
+        'ff': {'x': '1115', 'y': '809'},
+        'gg': {'x': '1224', 'y': '805'},
+        'hh': {'x': '1329', 'y': '806'},
 
-        'pick1': {'x': 464, 'y': 276},
-        'pick2': {'x': 712, 'y': 257},
-        'pick3': {'x': 973, 'y': 265},
-        'pick4': {'x': 1220, 'y': 271},
-        'pick5': {'x': 1458, 'y': 256},
-        'lock': {'x': 313, 'y': 445},
-        'close': {'x': 1610, 'y': 344},
-        'nothing': {'x': 1547, 'y': 77},
+        'pick1': {'x': '464', 'y': '276'},
+        'pick2': {'x': '712', 'y': '257'},
+        'pick3': {'x': '973', 'y': '265'},
+        'pick4': {'x': '1220', 'y': '271'},
+        'pick5': {'x': '1458', 'y': '256'},
+        'lock': {'x': '313', 'y': '445'},
+        'close': {'x': '1610', 'y': '344'},
+        'nothing': {'x': '1547', 'y': '77'},
 
-        'chickSlot1': {'x': 1158, 'y': 964},
-        'chickSlot2': {'x': 1224, 'y': 964},
-        'chickSlot3': {'x': 1288, 'y': 965},
-        'chickSlot4': {'x': 1158, 'y': 1012},
-        'chickSlot5': {'x': 1223, 'y': 1010},
-        'chickSlot6': {'x': 1286, 'y': 1010},
-        'chickSlot7': {'x': 1159, 'y': 1057},
-        'chickSlot8': {'x': 1223, 'y': 1057},
-        'chickSlot9': {'x': 1286, 'y': 1057},
+        'chickSlot1': {'x': '1158', 'y': '964'},
+        'chickSlot2': {'x': '1224', 'y': '964'},
+        'chickSlot3': {'x': '1288', 'y': '965'},
+        'chickSlot4': {'x': '1158', 'y': '1012'},
+        'chickSlot5': {'x': '1223', 'y': '1010'},
+        'chickSlot6': {'x': '1286', 'y': '1010'},
+        'chickSlot7': {'x': '1159', 'y': '1057'},
+        'chickSlot8': {'x': '1223', 'y': '1057'},
+        'chickSlot9': {'x': '1286', 'y': '1057'},
 
-        'resetChicken': {'x': 914, 'y': 712},
+        'resetChicken': {'x': '914', 'y': '712'},
 
-        'dotaArrowBtn': {'x': 32, 'y': 27},
-        'dotaDisconnectBtn': {'x': 1627, 'y': 1035},
-        'dotaLeaveBtn': {'x': 1648, 'y': 985},
-        'dotaLeaveAcceptBtn': {'x': 874, 'y': 603},
-        'dotaPlayAutoChessBtn': {'x': 1530, 'y': 866},
-        'dotaAcceptBtn': {'x': 901, 'y': 529},
-        'dotaMainMenuBtn': {'x': 286, 'y': 32},
-        'dotaAutoChessBtn': {'x': 780, 'y': 478},
+        'dotaArrowBtn': {'x': '32', 'y': '27'},
+        'dotaDisconnectBtn': {'x': '1627', 'y': '1035'},
+        'dotaLeaveBtn': {'x': '1648', 'y': '985'},
+        'dotaLeaveAcceptBtn': {'x': '874', 'y': '603'},
+        'dotaPlayAutoChessBtn': {'x': '1530', 'y': '866'},
+        'dotaAcceptBtn': {'x': '901', 'y': '529'},
+        'dotaMainMenuBtn': {'x': '286', 'y': '32'},
+        'dotaAutoChessBtn': {'x': '780', 'y': '478'},
 
-        'playerPos1': {'x': 1737, 'y': 155},
-        'playerPos2': {'x': 1737, 'y': 255},
-        'playerPos3': {'x': 1737, 'y': 355},
-        'playerPos4': {'x': 1737, 'y': 455},
-        'playerPos5': {'x': 1737, 'y': 555},
-        'playerPos6': {'x': 1737, 'y': 655},
-        'playerPos7': {'x': 1737, 'y': 755},
-        'playerPos8': {'x': 1737, 'y': 855}
+        'playerPos1': {'x': '1737', 'y': '155'},
+        'playerPos2': {'x': '1737', 'y': '255'},
+        'playerPos3': {'x': '1737', 'y': '355'},
+        'playerPos4': {'x': '1737', 'y': '455'},
+        'playerPos5': {'x': '1737', 'y': '555'},
+        'playerPos6': {'x': '1737', 'y': '655'},
+        'playerPos7': {'x': '1737', 'y': '755'},
+        'playerPos8': {'x': '1737', 'y': '855'}
     }
 
     CHICKENLEFT = OrderedDict([
-        ('A1L', {'x': 565, 'y': 612}),
-        ('A2L', {'x': 583, 'y': 541}),
-        ('A3L', {'x': 603, 'y': 463}),
-        ('A4L', {'x': 617, 'y': 404}),
-        ('A5L', {'x': 633, 'y': 340}),
-        ('A6L', {'x': 645, 'y': 284}),
-        ('A7L', {'x': 660, 'y': 236}),
-        ('A8L', {'x': 670, 'y': 192})
+        ('A1L', {'x': '565', 'y': '612'}),
+        ('A2L', {'x': '583', 'y': '541'}),
+        ('A3L', {'x': '603', 'y': '463'}),
+        ('A4L', {'x': '617', 'y': '404'}),
+        ('A5L', {'x': '633', 'y': '340'}),
+        ('A6L', {'x': '645', 'y': '284'}),
+        ('A7L', {'x': '660', 'y': '236'}),
+        ('A8L', {'x': '670', 'y': '192'})
     ])
 
     CHICKENTOP = OrderedDict([
-        ('A8T', {'x': 735, 'y': 149}),
-        ('B8T', {'x': 798, 'y': 145}),
-        ('C8T', {'x': 866, 'y': 144}),
-        ('D8T', {'x': 928, 'y': 141}),
-        ('E8T', {'x': 994, 'y': 142}),
-        ('F8T', {'x': 1059, 'y': 143}),
-        ('G8T', {'x': 1131, 'y': 137}),
-        ('H8T', {'x': 1190, 'y': 151})])
+        ('A8T', {'x': '735', 'y': '149'}),
+        ('B8T', {'x': '798', 'y': '145'}),
+        ('C8T', {'x': '866', 'y': '144'}),
+        ('D8T', {'x': '928', 'y': '141'}),
+        ('E8T', {'x': '994', 'y': '142'}),
+        ('F8T', {'x': '1059', 'y': '143'}),
+        ('G8T', {'x': '1131', 'y': '137'}),
+        ('H8T', {'x': '1190', 'y': '151'})])
 
     CHICKENRIGHT = OrderedDict([
-        ('H8R', {'x': 1255, 'y': 191}),
-        ('H7R', {'x': 1269, 'y': 238}),
-        ('H6R', {'x': 1283, 'y': 293}),
-        ('H5R', {'x': 1293, 'y': 345}),
-        ('H4R', {'x': 1310, 'y': 403}),
-        ('H3R', {'x': 1320, 'y': 474}),
-        ('H2R', {'x': 1338, 'y': 542}),
-        ('H1R', {'x': 1355, 'y': 616})])
+        ('H8R', {'x': '1255', 'y': '191'}),
+        ('H7R', {'x': '1269', 'y': '238'}),
+        ('H6R', {'x': '1283', 'y': '293'}),
+        ('H5R', {'x': '1293', 'y': '345'}),
+        ('H4R', {'x': '1310', 'y': '403'}),
+        ('H3R', {'x': '1320', 'y': '474'}),
+        ('H2R', {'x': '1338', 'y': '542'}),
+        ('H1R', {'x': '1355', 'y': '616'})])
 
     CHICKENBOT = OrderedDict([
-        ('H1B', {'x': 1287, 'y': 698}),
-        ('G1B', {'x': 1194, 'y': 692}),
-        ('F1B', {'x': 1093, 'y': 695}),
-        ('E1B', {'x': 1001, 'y': 691}),
-        ('D1B', {'x': 913, 'y': 693}),
-        ('C1B', {'x': 820, 'y': 689}),
-        ('B1B', {'x': 728, 'y': 689}),
-        ('A1B', {'x': 630, 'y': 689})])
+        ('H1B', {'x': '1287', 'y': '698'}),
+        ('G1B', {'x': '1194', 'y': '692'}),
+        ('F1B', {'x': '1093', 'y': '695'}),
+        ('E1B', {'x': '1001', 'y': '691'}),
+        ('D1B', {'x': '913', 'y': '693'}),
+        ('C1B', {'x': '820', 'y': '689'}),
+        ('B1B', {'x': '728', 'y': '689'}),
+        ('A1B', {'x': '630', 'y': '689'})])
 
     itemoffsetFirstRowX = 54
     itemoffsetFirstRowy = 31
     itemoffsetSecondRowX = 75
     itemoffsetSecondRowy = 0  # 6 old
 
+    # TODO: Test if None is correctly detected
+    def moveMouse(self,x,y,clickType = None):
+        subprocess.run(['xdotool',
+                        'mousemove',
+                        '--window',
+                        self.dota2WindowID,
+                        x,
+                        y])
+        if(clickType):
+            self.clickMouse(clickType)
+
+        time.sleep(self.delayBetweenActions)
+
+    def clickMouse(self, clickType):
+        subprocess.run(['xdotool','click','--window',self.dota2WindowID, clickType])
+
+    def dragAndDrop(self,source,target):
+        self.moveMouse(source['x'],source['y'])
+        time.sleep(1)
+        subprocess.run(['xdotool', 'mousedown', '--window', self.dota2WindowID, '1'])
+        time.sleep(0.5)
+        self.moveMouse(target['x'],target['y'])
+        time.sleep(1)
+        subprocess.run(['xdotool', 'mouseup', '--window', self.dota2WindowID, '1'])
+
+    def pressKey(self, key):
+        subprocess.run(['xdotool', 'key', '--window', self.dota2WindowID, key])
+
     def toggleLockItem(self, slot):
         slotID = 'chickSlot'+slot
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        '--window',
-                        self.dota2WindowID,
-                        str(self.COORDMAP[slotID]['x']),
-                        str(self.COORDMAP[slotID]['y']),
-                        'click',
-                        '--window',
-                        self.dota2WindowID,
-                        '3'])
+        self.moveMouse(self.COORDMAP[slotID]['x'],self.COORDMAP[slotID]['y'],'3')
         time.sleep(0.5)
-        lockLabelPosX = str(self.COORDMAP[slotID]['x']+self.itemoffsetFirstRowX)
-        lockLabelPosY = str(self.COORDMAP[slotID]['y']+self.itemoffsetFirstRowy)
+        lockLabelPosX = str(int(self.COORDMAP[slotID]['x'])+int(self.itemoffsetFirstRowX))
+        lockLabelPosY = str(int(self.COORDMAP[slotID]['y'])+int(self.itemoffsetFirstRowy))
         if(int(slot) > 3):
-            lockLabelPosX = str(self.COORDMAP[slotID]['x']+self.itemoffsetSecondRowX)
-            lockLabelPosY = str(self.COORDMAP[slotID]['y']+self.itemoffsetSecondRowy)
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        '--window',
-                        self.dota2WindowID,
-                        lockLabelPosX,
-                        lockLabelPosY,
-                        'click',
-                        '--window',
-                        self.dota2WindowID,
-                        '1'])
+            lockLabelPosX = str(int(self.COORDMAP[slotID]['x'])+int(self.itemoffsetSecondRowX))
+            lockLabelPosY = str(int(self.COORDMAP[slotID]['y'])+int(self.itemoffsetSecondRowy))
+        self.moveMouse(lockLabelPosX,lockLabelPosY,'1')
 
     # TODO: optimize, reduce redundancy
     def grabItemChickenloop(self, side):
@@ -266,30 +276,12 @@ class GameController:
 
 
     def rightClickAtCoord(self, coord):
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        '--window',
-                        self.dota2WindowID,
-                        str(coord['x']),
-                        str(coord['y']),
-                        'click',
-                        '--window',
-                        self.dota2WindowID,
-                        '3'])
+        self.moveMouse(coord['x'],coord['y'],'3')
         time.sleep(self.delayBetweenActions)
 
 
     def resetChickenPos(self):
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        '--window',
-                        self.dota2WindowID,
-                        str(self.COORDMAP['resetChicken']['x']),
-                        str(self.COORDMAP['resetChicken']['y']),
-                        'click',
-                        '--window',
-                        self.dota2WindowID,
-                        '3'])
+        self.moveMouse(self.COORDMAP['resetChicken']['x'],self.COORDMAP['resetChicken']['y'],'3')
         time.sleep(self.delayBetweenActions)
 
 
@@ -302,23 +294,7 @@ class GameController:
         # close shop b4
         self.showSelection('off')
         slotID = 'chickSlot'+slot
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        '--window',
-                        self.dota2WindowID,
-                        str(self.COORDMAP[slotID]['x']),
-                        str(self.COORDMAP[slotID]['y'])])
-        time.sleep(1)
-        subprocess.run(['xdotool', 'mousedown', '--window', self.dota2WindowID, '1'])
-        time.sleep(0.5)
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        '--window',
-                        self.dota2WindowID,
-                        str(self.COORDMAP[target]['x']),
-                        str(self.COORDMAP[target]['y'])])
-        time.sleep(1)
-        subprocess.run(['xdotool', 'mouseup', '--window', self.dota2WindowID, '1'])
+        self.dragAndDrop(self.COORDMAP[slotID],self.COORDMAP[target])
         # give chicken time to run to the destination
         # TODO: dynamic time depending on target location
         time.sleep(5)
@@ -344,16 +320,7 @@ class GameController:
             placementKey = 'playerPos'+playerPlacementID
             allChatMessage = 'Chat wants to inspect the current position: '+playerPlacementID
             self.writeAllChat(allChatMessage)
-            subprocess.run(['xdotool',
-                            'mousemove',
-                            '--window',
-                            self.dota2WindowID,
-                            str(self.COORDMAP[placementKey]['x']),
-                            str(self.COORDMAP[placementKey]['y']),
-                            'click',
-                            '--window',
-                            self.dota2WindowID,
-                            '1'])
+            self.moveMouse(self.COORDMAP[placementKey]['x'],self.COORDMAP[placementKey]['y'], '1')
             time.sleep(self.delayBetweenActions)
             # move mouse away from avatars so the popovertext is not blocking the view
             self.clickNothing()
@@ -367,24 +334,22 @@ class GameController:
             self.clickNothing()
             time.sleep(self.delayBetweenActions)
             for dummy in range(8):
-                subprocess.run(
-                    ['xdotool', 'key', '--window', self.dota2WindowID, 'Tab'])
+                self.pressKey('Tab')
                 time.sleep(0.625)
 
 
     def writeAllChat(self, message):
-        subprocess.run(['xdotool', 'key', '--window',
-                        self.dota2WindowID, 'shift+Return'])
+        self.pressKey('shift+Return')
         time.sleep(self.delayBetweenActions)
         subprocess.run(['xdotool', 'type', '--window', self.dota2WindowID, message])
         time.sleep(0.5)
-        subprocess.run(['xdotool', 'key', '--window', self.dota2WindowID, 'Return'])
+        self.pressKey('Return')
         time.sleep(self.delayBetweenActions)
 
 
     def camCalibration(self, promote=False):
         print('calibrating cam...')
-        subprocess.run(['xdotool', 'key', '--window', self.dota2WindowID, '1'])
+        self.pressKey('1')
         # shoutout in allchat to promote the bot
         if(promote):
             self.writeAllChat(
@@ -395,61 +360,20 @@ class GameController:
 
     def acceptGame(self):
         print('accepting game...')
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        '--window',
-                        self.dota2WindowID,
-                        str(self.COORDMAP['dotaAcceptBtn']['x']),
-                        str(self.COORDMAP['dotaAcceptBtn']['y']),
-                        'click',
-                        '--window',
-                        self.dota2WindowID,
-                        '1'])
-        #gameState = GameStates.calibration
-
+        self.moveMouse(self.COORDMAP['dotaAcceptBtn']['x'],self.COORDMAP['dotaAcceptBtn']['y'], '1')
 
     def searchGame(self):
         print('searching game...')
-        # subprocess.run(['xdotool', 'search', "Dota 2", 'windowactivate'])
         # press esc to close any info windows (for example due to not accepting b4)
-        subprocess.run(['xdotool', 'key', '--window', self.dota2WindowID, 'Escape'])
+        self.pressKey('Escape')
         # go to main menu first
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        '--window',
-                        self.dota2WindowID,
-                        str(self.COORDMAP['dotaMainMenuBtn']['x']),
-                        str(self.COORDMAP['dotaMainMenuBtn']['y']),
-                        'click',
-                        '--window',
-                        self.dota2WindowID,
-                        '1'])
-        time.sleep(self.delayBetweenActions)
+        self.moveMouse(self.COORDMAP['dotaMainMenuBtn']['x'],self.COORDMAP['dotaMainMenuBtn']['y'], '1')
 
         # navigate to autochess
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        '--window',
-                        self.dota2WindowID,
-                        str(self.COORDMAP['dotaAutoChessBtn']['x']),
-                        str(self.COORDMAP['dotaAutoChessBtn']['y']),
-                        'click',
-                        '--window',
-                        self.dota2WindowID,
-                        '1'])
-        time.sleep(self.delayBetweenActions)
+        self.moveMouse(self.COORDMAP['dotaAutoChessBtn']['x'],self.COORDMAP['dotaAutoChessBtn']['y'], '1')
 
         # start autochess search
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        '--window',
-                        self.dota2WindowID,
-                        str(self.COORDMAP['dotaPlayAutoChessBtn']['x']),
-                        str(self.COORDMAP['dotaPlayAutoChessBtn']['y']),
-                        'click',
-                        '--window',
-                        self.dota2WindowID,
-                        '1'])
+        self.moveMouse(self.COORDMAP['dotaPlayAutoChessBtn']['x'],self.COORDMAP['dotaPlayAutoChessBtn']['y'], '1')
         time.sleep(5)
         self.acceptGame()
 
@@ -493,69 +417,23 @@ class GameController:
         if(self.allowRagequit):
             # print('trying to leave game...')
             # gameState = GameStates.searching
-            subprocess.run(['xdotool',
-                            'mousemove',
-                            '--window',
-                            self.dota2WindowID,
-                            str(self.COORDMAP['dotaArrowBtn']['x']),
-                            str(self.COORDMAP['dotaArrowBtn']['y']),
-                            'click',
-                            '--window',
-                            self.dota2WindowID,
-                            '1'])
-
+            self.moveMouse(self.COORDMAP['dotaArrowBtn']['x'],self.COORDMAP['dotaArrowBtn']['y'], '1')
             time.sleep(0.5)
-
-            subprocess.run(['xdotool',
-                            'mousemove',
-                            '--window',
-                            self.dota2WindowID,
-                            str(self.COORDMAP['dotaDisconnectBtn']['x']),
-                            str(self.COORDMAP['dotaDisconnectBtn']['y']),
-                            'click',
-                            '--window',
-                            self.dota2WindowID,
-                            '1'])
-
+            self.moveMouse(self.COORDMAP['dotaDisconnectBtn']['x'],self.COORDMAP['dotaDisconnectBtn']['y'], '1')
             time.sleep(1)
             # circumvent dac rating popup
             self.clickNothing()
-
             time.sleep(1)
-
-            subprocess.run(['xdotool',
-                            'mousemove',
-                            '--window',
-                            self.dota2WindowID,
-                            str(self.COORDMAP['dotaLeaveBtn']['x']),
-                            str(self.COORDMAP['dotaLeaveBtn']['y'])])
+            self.moveMouse(self.COORDMAP['dotaLeaveBtn']['x'],self.COORDMAP['dotaLeaveBtn']['y'])
             time.sleep(2)
-            subprocess.run(['xdotool', 'click',
-                            '--window',
-                            self.dota2WindowID,
-                            '1'])
-
+            self.clickMouse('1')
             time.sleep(1)
-            subprocess.run(['xdotool', 'click',
-                            '--window',
-                            self.dota2WindowID,
-                            '1'])
-
+            # since this part is glitching, we need to click twice
+            self.clickMouse('1')
             time.sleep(1)
-
-            subprocess.run(['xdotool',
-                            'mousemove',
-                            '--window',
-                            self.dota2WindowID,
-                            str(self.COORDMAP['dotaLeaveAcceptBtn']['x']),
-                            str(self.COORDMAP['dotaLeaveAcceptBtn']['y'])])
+            self.moveMouse(self.COORDMAP['dotaLeaveAcceptBtn']['x'],self.COORDMAP['dotaLeaveAcceptBtn']['y'])
             time.sleep(1)
-
-            subprocess.run(['xdotool', 'click',
-                            '--window',
-                            self.dota2WindowID,
-                            '1'])
-
+            self.clickMouse('1')
             with open("ragequit.txt", "w") as f:
                 f.write("")
 
@@ -612,16 +490,7 @@ class GameController:
         self.showSelection('on')
         print('trying to pick: %s' % target)
         pickString = 'pick'+str(target)
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        '--window',
-                        self.dota2WindowID,
-                        str(self.COORDMAP[pickString]['x']),
-                        str(self.COORDMAP[pickString]['y']),
-                        'click',
-                        '--window',
-                        self.dota2WindowID,
-                        '1'])
+        self.moveMouse(self.COORDMAP[pickString]['x'],self.COORDMAP[pickString]['y'], '1')
         time.sleep(self.delayBetweenActions)
         self.clickNothing()
 
@@ -630,18 +499,7 @@ class GameController:
         '''
         can be used to click empty space as well for resetting commandchain (autochess bug)
         '''
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        '--window',
-                        self.dota2WindowID,
-                        str(self.COORDMAP['nothing']['x']),
-                        str(self.COORDMAP['nothing']['y']),
-                        'click',
-                        '--window',
-                        self.dota2WindowID,
-                        '1'])
-        time.sleep(self.delayBetweenActions)
-
+        self.moveMouse(self.COORDMAP['nothing']['x'],self.COORDMAP['nothing']['y'], '1')
 
     # !shophowSelection
 
@@ -649,24 +507,13 @@ class GameController:
         '''
         closes Selection via X button
         '''
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        '--window',
-                        self.dota2WindowID,
-                        str(self.COORDMAP['close']['x']),
-                        str(self.COORDMAP['close']['y']),
-                        'click',
-                        '--window',
-                        self.dota2WindowID,
-                        '1'])
-        time.sleep(self.delayBetweenActions)
-
+        self.moveMouse(self.COORDMAP['close']['x'],self.COORDMAP['close']['y'], '1')
 
     def showSelection(self, isOn):
         print('trying to show selection: %s' % isOn)
         self.closeSelection()
         if(isOn == 'on'):
-            subprocess.run(['xdotool', 'key', '--window', self.dota2WindowID, 'space'])
+            self.pressKey('space')
         time.sleep(self.delayBetweenActions)
     # !l
 
@@ -675,104 +522,36 @@ class GameController:
         print('trying to lock')
         # first open selection
         self.showSelection('on')
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        '--window',
-                        self.dota2WindowID,
-                        str(self.COORDMAP['lock']['x']),
-                        str(self.COORDMAP['lock']['y']),
-                        'click',
-                        '--window',
-                        self.dota2WindowID,
-                        '1'])
+        self.moveMouse(self.COORDMAP['lock']['x'],self.COORDMAP['lock']['y'],'1')
         # optionally close selection afterwards
         # xdotool key space
 
 
     def moveBot(self):
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        '--window',
-                        self.dota2WindowID,
-                        str(self.COORDMAP['aa']['x']),
-                        str(self.COORDMAP['aa']['y']),
-                        'click',
-                        '--window',
-                        self.dota2WindowID,
-                        '1'])
+        self.moveMouse(self.COORDMAP['aa']['x'],self.COORDMAP['aa']['y'],'1')
+        self.pressKey('m')
         time.sleep(self.delayBetweenActions)
-        subprocess.run(['xdotool', 'key', '--window', self.dota2WindowID, 'm'])
-        time.sleep(self.delayBetweenActions)
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        '--window',
-                        self.dota2WindowID,
-                        str(self.COORDMAP['e1']['x']),
-                        str(self.COORDMAP['e1']['y']),
-                        'click',
-                        '--window',
-                        self.dota2WindowID,
-                        '1'])
-        time.sleep(self.delayBetweenActions)
+        self.moveMouse(self.COORDMAP['e1']['x'],self.COORDMAP['e1']['y'],'1')
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
         self.showSelection('on')
 
 
     def moveTop(self):
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        '--window',
-                        self.dota2WindowID,
-                        str(self.COORDMAP['aa']['x']),
-                        str(self.COORDMAP['aa']['y']),
-                        'click',
-                        '--window',
-                        self.dota2WindowID,
-                        '1'])
+        self.moveMouse(self.COORDMAP['aa']['x'],self.COORDMAP['aa']['y'],'1')
+        self.pressKey('m')
         time.sleep(self.delayBetweenActions)
-        subprocess.run(['xdotool', 'key', '--window', self.dota2WindowID, 'm'])
-        time.sleep(self.delayBetweenActions)
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        '--window',
-                        self.dota2WindowID,
-                        str(self.COORDMAP['d4']['x']),
-                        str(self.COORDMAP['d4']['y']),
-                        'click',
-                        '--window',
-                        self.dota2WindowID,
-                        '1'])
-        time.sleep(self.delayBetweenActions)
+        self.moveMouse(self.COORDMAP['d4']['x'],self.COORDMAP['d4']['y'],'1')
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
         self.showSelection('on')
 
 
     def moveRight(self):
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        '--window',
-                        self.dota2WindowID,
-                        str(self.COORDMAP['aa']['x']),
-                        str(self.COORDMAP['aa']['y']),
-                        'click',
-                        '--window',
-                        self.dota2WindowID,
-                        '1'])
+        self.moveMouse(self.COORDMAP['aa']['x'],self.COORDMAP['aa']['y'],'1')
+        self.pressKey('m')
         time.sleep(self.delayBetweenActions)
-        subprocess.run(['xdotool', 'key', '--window', self.dota2WindowID, 'm'])
-        time.sleep(self.delayBetweenActions)
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        '--window',
-                        self.dota2WindowID,
-                        str(self.COORDMAP['g3']['x']),
-                        str(self.COORDMAP['g3']['y']),
-                        'click',
-                        '--window',
-                        self.dota2WindowID,
-                        '1'])
+        self.moveMouse(self.COORDMAP['g3']['x'],self.COORDMAP['g3']['y'],'1')
         time.sleep(self.delayBetweenActions)
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
@@ -780,30 +559,10 @@ class GameController:
 
 
     def moveLeft(self):
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        '--window',
-                        self.dota2WindowID,
-                        str(self.COORDMAP['aa']['x']),
-                        str(self.COORDMAP['aa']['y']),
-                        'click',
-                        '--window',
-                        self.dota2WindowID,
-                        '1'])
+        self.moveMouse(self.COORDMAP['aa']['x'],self.COORDMAP['aa']['y'],'1')
+        self.pressKey('m')
         time.sleep(self.delayBetweenActions)
-        subprocess.run(['xdotool', 'key', '--window', self.dota2WindowID, 'm'])
-        time.sleep(self.delayBetweenActions)
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        '--window',
-                        self.dota2WindowID,
-                        str(self.COORDMAP['b3']['x']),
-                        str(self.COORDMAP['b3']['y']),
-                        'click',
-                        '--window',
-                        self.dota2WindowID,
-                        '1'])
-        time.sleep(self.delayBetweenActions)
+        self.moveMouse(self.COORDMAP['b3']['x'],self.COORDMAP['b3']['y'],'1')
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
         self.showSelection('on')
@@ -839,30 +598,10 @@ class GameController:
         print('to %s' % target)
         # make sure selection is closed
         self.showSelection('off')
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        '--window',
-                        self.dota2WindowID,
-                        str(self.COORDMAP[source]['x']),
-                        str(self.COORDMAP[source]['y']),
-                        'click',
-                        '--window',
-                        self.dota2WindowID,
-                        '1'])
+        self.moveMouse(self.COORDMAP[source]['x'],self.COORDMAP[source]['y'],'1')
+        self.pressKey('m')
         time.sleep(self.delayBetweenActions)
-        subprocess.run(['xdotool', 'key', '--window', self.dota2WindowID, 'm'])
-        time.sleep(self.delayBetweenActions)
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        '--window',
-                        self.dota2WindowID,
-                        str(self.COORDMAP[target]['x']),
-                        str(self.COORDMAP[target]['y']),
-                        'click',
-                        '--window',
-                        self.dota2WindowID,
-                        '1'])
-        time.sleep(self.delayBetweenActions)
+        self.moveMouse(self.COORDMAP[target]['x'],self.COORDMAP[target]['y'],'1')
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
         self.showSelection('on')
@@ -872,18 +611,9 @@ class GameController:
     def benchPiece(self, target):
         self.showSelection('off')
         print('trying to bench: %s' % target)
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        '--window',
-                        self.dota2WindowID,
-                        str(self.COORDMAP[target]['x']),
-                        str(self.COORDMAP[target]['y']),
-                        'click',
-                        '--window',
-                        self.dota2WindowID,
-                        '1'])
-        time.sleep(self.delayBetweenActions)
-        subprocess.run(['xdotool', 'key', '--window', self.dota2WindowID, 'b'])
+        # TODO: Check if click should not be done because of quickcast
+        self.moveMouse(self.COORDMAP[target]['x'],self.COORDMAP[target]['y'],'1')
+        self.pressKey('b')
         time.sleep(self.delayBetweenActions)
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
@@ -894,13 +624,8 @@ class GameController:
     def sellPiece(self, target):
         self.showSelection('off')
         print('trying to sell piece: %s' % target)
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        str(self.COORDMAP[target]['x']),
-                        str(self.COORDMAP[target]['y']),
-                        'click', '1'])
-        time.sleep(self.delayBetweenActions)
-        subprocess.run(['xdotool', 'key', 's'])
+        self.moveMouse(self.COORDMAP[target]['x'],self.COORDMAP[target]['y'],'1')
+        self.pressKey('s')
         time.sleep(self.delayBetweenActions)
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
@@ -911,7 +636,7 @@ class GameController:
     def rerollPieces(self):
         self.showSelection('off')
         print('trying to reroll')
-        subprocess.run(['xdotool', 'key', 'r'])
+        self.pressKey('r')
         time.sleep(self.delayBetweenActions)
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
@@ -922,7 +647,7 @@ class GameController:
     def buyXP(self, amount):
         print('trying to buy xp: %s' % amount)
         for dummy in range(int(amount)):
-            subprocess.run(['xdotool', 'key', 'x'])
+            self.pressKey('x')
             time.sleep(0.8)
         self.clickNothing()
     
