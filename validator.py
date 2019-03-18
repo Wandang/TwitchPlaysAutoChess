@@ -40,7 +40,6 @@ def validateCommand(command):
     # does it match any pattern?
     for pattern in PATTERNS:
         if(re.match(PATTERNS[pattern], command, re.IGNORECASE)):
-            print('found pattern for: %s' % pattern)
             return True
 
     return False

@@ -107,9 +107,10 @@ class Setup:
                 settings_length = input("Length: ")
                 settings.append("LENGTH = " + settings_length + "\n")
 
-                with open("settings.txt", "w") as f:
-                    for each_setting in settings:
-                        f.write(each_setting + '\n')
+                allSettings = ''
+                for each_setting in settings:
+                    allSettings += each_setting + '\n'
+                self.myIO.writeFile("settings.txt",allSettings)
 
         self.configDynamicSettings()
 
@@ -140,7 +141,7 @@ class Setup:
         Empties the text files for streaming (OBS)
         Creates parallel threads for democracy if needed
         Initiates connection to twitch"""
-        self.myIO.resetFiles()
+        self.myIO.resetFile()
         # Democracy Game Mode?
         if self.mode.lower() == "democracy":
             
@@ -165,22 +166,17 @@ class Setup:
                 if(len(list_commands) > 0):
                     # Select the most popular command
                     selected_c = self.most_common(list_commands)
-                    print('selected_c: %s' % selected_c)
                 else:
                     selected_c = 'None'
-                with open("lastsaid.txt", "w") as f:
-                    f.write("Selected %s\n" % selected_c)
-                    f.write("Time left: %s" % str(self.democracy_time)[0:1])
+                self.myIO.writeFile("lastsaid.txt","Selected {0}\nTime left: {1}".format(selected_c,str(self.democracy_time)[0:1]))
                 list_commands = []
                 if(selected_c != 'None'):
                     # Do nothing if chat didn't write any commands
                     splitted = selected_c.lower().split(' ')
                     self.gc.findAndExecute(splitted)
             else:
-                with open("lastsaid.txt", "w") as f:
-                    f.write("Selected %s\n" % selected_c)
-                    f.write("Time left: %s" % str(
-                        1.0 + last_command + self.democracy_time - time.time())[0:1])
+                self.myIO.writeFile("lastsaid.txt","Selected {0}\nTime left: {1}".format(selected_c ,str(
+                        1.0 + last_command + self.democracy_time - time.time())[0:1]))
             time.sleep(1)
 
     def connectToTwitch(self):
@@ -188,12 +184,12 @@ class Setup:
         s = socket.socket()
         s.connect((self.HOST, self.PORT))
 
-        s.send(bytes("PASS %s\r\n" % self.AUTH, "UTF-8"))
-        s.send(bytes("NICK %s\r\n" % self.NICK, "UTF-8"))
-        s.send(bytes("USER %s %s bla :%s\r\n" % (self.NICK, self.HOST, self.NICK), "UTF-8"))
-        s.send(bytes("JOIN #%s\r\n" % self.CHAT_CHANNEL, "UTF-8"))
-        s.send(bytes("PRIVMSG #%s :Connected\r\n" % self.CHAT_CHANNEL, "UTF-8"))
-        print("Sent connected message to channel %s" % self.CHAT_CHANNEL)
+        s.send(bytes("PASS {0}\r\n".format(self.AUTH), "UTF-8"))
+        s.send(bytes("NICK {0}\r\n".format(self.NICK), "UTF-8"))
+        s.send(bytes("USER {0} {1} bla :{2}\r\n".format(self.NICK, self.HOST, self.NICK), "UTF-8"))
+        s.send(bytes("JOIN #{0}\r\n".format(self.CHAT_CHANNEL), "UTF-8"))
+        s.send(bytes("PRIVMSG #{0} :Connected\r\n".format(self.CHAT_CHANNEL), "UTF-8"))
+        print("Sent connected message to channel {0}".format(self.CHAT_CHANNEL))
         return s
     
     def handleTwitchResponse(self, s):
@@ -230,7 +226,7 @@ class Setup:
                     pass
                 elif user == ":tmi.twitch.: ":
                     pass
-                elif user == ":%s.tmi.twitch.tv: " % self.NICK:
+                elif user == ":{0}.tmi.twitch.tv: ".format(self.NICK):
                     pass
                 else:
                     try:
@@ -243,9 +239,10 @@ class Setup:
                 if(validator.validateCommand(out.lower())):
                     self.addToCommandList(user, out)
                     # Write to file for stream view
-                    with open("commands.txt", "w") as f:
-                        for item in self.commands:
-                            f.write(item + '\n')
+                    items = ''
+                    for item in self.commands:
+                            items += item + '\n'
+                    self.myIO.writeFile('commands.txt',items)
                     if(self.mode != "democracy"):
                         splitted = out.lower().split(' ')
                         self.gc.findAndExecute(splitted)
@@ -288,10 +285,10 @@ class Setup:
                 else:
                     break
 
-        with open("most_common_commands.txt", "w") as f:
-            f.write('Top commands:\n')
-            for item in maxList:
-                f.write(item + '\n')
+        topCommands = 'Top commands:\n'
+        for item in maxList:
+            topCommands += item + '\n'
+        self.myIO.writeFile("most_common_commands.txt", topCommands)
         return maxList[0]
 
 print('starting v2...')

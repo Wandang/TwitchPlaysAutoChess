@@ -24,11 +24,14 @@ from collections import OrderedDict
 from threading import Thread
 
 import validator
+import iocontroller
 
 class GameController:
     """Controls the game input. Emulates mouse and keyboard input via xdotools.
     Each Dota AutoChess action is mapped as function"""
 
+    # TODO: singleton for io
+    myIO = iocontroller.IOController()
     commandStack = []
     # default delay after each peripheral action. Needs to be > 0 to make sure that the actions are finished properly
     delayBetweenActions = 0.3
@@ -395,8 +398,7 @@ class GameController:
         """Stop quitting the current AutoChess game"""
         self.allowRagequit = False
         # clear text file for stream view
-        with open("ragequit.txt", "w") as f:
-            f.write("")
+        self.myIO.resetFile("ragequit.txt")
 
 
     def rageQuitProcess(self):
@@ -409,15 +411,12 @@ class GameController:
             if(time.time() - starttime < targetTime):
                 if(self.allowRagequit):
                     # write remaining time for chat (adding +1s because of lazy cutting of decimals)
-                    with open("ragequit.txt", "w") as f:
-                        f.write("Time left till ragequit!: %s \n" % str(
-                                1.0 + targetTime - (time.time() - starttime)).split('.')[0])
-                        f.write("To abort write !stay")
+                    self.myIO.writeFile("ragequit.txt","Time left till ragequit!: {0} \nTo abort write !stay".format(str(
+                                1.0 + targetTime - (time.time() - starttime)).split('.')[0]))
                     time.sleep(1)
                 else:
                     # quitting aborted, clean the file
-                    with open("ragequit.txt", "w") as f:
-                        f.write('')
+                    self.myIO.resetFile("ragequit.txt")
                     break
             else:
                 # time's up
@@ -447,8 +446,7 @@ class GameController:
             time.sleep(1)
             self.clickMouse('1')
             # clean file for stream view
-            with open("ragequit.txt", "w") as f:
-                f.write("")
+            self.myIO.resetFile("ragequit.txt")
 
         self.allowRagequit = False
 
