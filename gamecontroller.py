@@ -26,7 +26,11 @@ from threading import Thread
 import validator
 
 class GameController:
+    """Controls the game input. Emulates mouse and keyboard input via xdotools.
+    Each Dota AutoChess action is mapped as function"""
+
     commandStack = []
+    # default delay after each peripheral action. Needs to be > 0 to make sure that the actions are finished properly
     delayBetweenActions = 0.3
     dota2WindowID = ''
     allowRagequit = False
@@ -196,6 +200,9 @@ class GameController:
 
     # TODO: Test if None is correctly detected
     def moveMouse(self,x,y,clickType = None):
+        """Move the mouse to the desired coordinates and optionally click at that location.
+        ClickType can be 1: leftclick, 2: middleclick, 3: rightclick"""
+        # -- window param makes sure that the input gets send to a specific window, even if it is in the background
         subprocess.run(['xdotool',
                         'mousemove',
                         '--window',
@@ -208,33 +215,47 @@ class GameController:
         time.sleep(self.delayBetweenActions)
 
     def clickMouse(self, clickType):
+        """Clicks the specified mousebutton
+        ClickType can be 1: leftclick, 2: middleclick, 3: rightclick"""
         subprocess.run(['xdotool','click','--window',self.dota2WindowID, clickType])
 
     def dragAndDrop(self,source,target):
+        """Drags & drops from source to target location.
+        This is used for items"""
         self.moveMouse(source['x'],source['y'])
         time.sleep(1)
+        # hold mouse button
         subprocess.run(['xdotool', 'mousedown', '--window', self.dota2WindowID, '1'])
         time.sleep(0.5)
         self.moveMouse(target['x'],target['y'])
         time.sleep(1)
+        # release mouse button
         subprocess.run(['xdotool', 'mouseup', '--window', self.dota2WindowID, '1'])
 
     def pressKey(self, key):
+        """Presses specified key on keyboard"""
         subprocess.run(['xdotool', 'key', '--window', self.dota2WindowID, key])
 
     def toggleLockItem(self, slot):
+        """Locks item in specified itemslot (1-9)"""
         slotID = 'chickSlot'+slot
         self.moveMouse(self.COORDMAP[slotID]['x'],self.COORDMAP[slotID]['y'],'3')
         time.sleep(0.5)
+        # the rightclick menu changes position depending on row
+        # TODO: check if this still works too (since we switched to string values in dict)
         lockLabelPosX = str(int(self.COORDMAP[slotID]['x'])+int(self.itemoffsetFirstRowX))
         lockLabelPosY = str(int(self.COORDMAP[slotID]['y'])+int(self.itemoffsetFirstRowy))
         if(int(slot) > 3):
+            # slot is below first row
             lockLabelPosX = str(int(self.COORDMAP[slotID]['x'])+int(self.itemoffsetSecondRowX))
             lockLabelPosY = str(int(self.COORDMAP[slotID]['y'])+int(self.itemoffsetSecondRowy))
         self.moveMouse(lockLabelPosX,lockLabelPosY,'1')
 
     # TODO: optimize, reduce redundancy
     def grabItemChickenloop(self, side):
+        """Let's the chicken/courier walk alongside a side of the chessboard to pick up items
+        Side can be left, top, bot or right"""
+        # make sure the shop is hidden to not interfere with our clicks
         self.showSelection('off')
         if(side == 'left'):
             # pos chicken at A1 first
@@ -243,50 +264,48 @@ class GameController:
             for coord in self.CHICKENLEFT:
                 self.rightClickAtCoord(self.CHICKENLEFT[coord])
                 time.sleep(0.3)
-            self.resetChickenPos()
         elif(side == 'top'):
-            # pos chicken at A1 first
+            # pos chicken at A8 first
             self.rightClickAtCoord(self.COORDMAP['a8'])
             time.sleep(3)
             for coord in self.CHICKENTOP:
                 self.rightClickAtCoord(self.CHICKENTOP[coord])
                 time.sleep(0.3)
-            self.resetChickenPos()
         elif(side == 'right'):
-            # pos chicken at A1 first
+            # pos chicken at H8 first
             self.rightClickAtCoord(self.COORDMAP['h8'])
             time.sleep(3)
             for coord in self.CHICKENRIGHT:
                 self.rightClickAtCoord(self.CHICKENRIGHT[coord])
                 time.sleep(0.3)
-            self.resetChickenPos()
         elif(side == 'bot'):
-            # pos chicken at A1 first
+            # pos chicken at H1 first
             self.rightClickAtCoord(self.COORDMAP['h1'])
             time.sleep(3)
             for coord in self.CHICKENBOT:
                 self.rightClickAtCoord(self.CHICKENBOT[coord])
                 time.sleep(0.3)
-            self.resetChickenPos()
+        
+        # send chicken back to default position
+        self.resetChickenPos()
 
 
     def rightClickAtCoord(self, coord):
+        """Rightclick at target coordinates"""
         self.moveMouse(coord['x'],coord['y'],'3')
         time.sleep(self.delayBetweenActions)
 
 
     def resetChickenPos(self):
+        """Sends chicken back to default position"""
         self.moveMouse(self.COORDMAP['resetChicken']['x'],self.COORDMAP['resetChicken']['y'],'3')
         time.sleep(self.delayBetweenActions)
 
 
     def moveItem(self, slot, target):
-        '''
-        move item from chicken slot to target hero
-        '''
-        print('trying to move item: %s' % slot)
-        print('to %s' % target)
-        # close shop b4
+        '''Move item from chicken slot to target hero coordinates.
+        Slot can be from 1-9'''
+        # close shop before
         self.showSelection('off')
         slotID = 'chickSlot'+slot
         self.dragAndDrop(self.COORDMAP[slotID],self.COORDMAP[target])
@@ -297,9 +316,9 @@ class GameController:
 
 
     def grabItem(self, target):
+        """Let's the chicken pick up dropped items"""
         # close shop first
         self.showSelection('off')
-        print('trying to grab item: %s' % target)
         self.rightClickAtCoord(self.COORDMAP[target])
         # TODO: dynamic time depending on target location
         time.sleep(5)
@@ -307,12 +326,11 @@ class GameController:
 
 
     def tabTour(self, playerPlacementID=-1):
-        '''
-        Show chessboard of player x or if no player is given show every chessboard in 5s
-        '''
+        '''Show chessboard of player x or if no player is given show every chessboard in 5s'''
         if(playerPlacementID != -1):
             timeToStayOnPlayer = 3
             placementKey = 'playerPos'+playerPlacementID
+            # cheeky message to be displayed to make it feel more interactive with the other players
             allChatMessage = 'Chat wants to inspect the current position: '+playerPlacementID
             self.writeAllChat(allChatMessage)
             self.moveMouse(self.COORDMAP[placementKey]['x'],self.COORDMAP[placementKey]['y'], '1')
@@ -320,12 +338,12 @@ class GameController:
             # move mouse away from avatars so the popovertext is not blocking the view
             self.clickNothing()
             time.sleep(timeToStayOnPlayer)
+            # cheeky message to be displayed to make it feel more interactive with the other players
             allChatMessage = 'Chat judgement: ' + \
                 self.TWITCHEMOTES[random.randint(0, len(self.TWITCHEMOTES))]
             self.writeAllChat(allChatMessage)
             self.camCalibration()
         else:
-            print('tabtour...')
             self.clickNothing()
             time.sleep(self.delayBetweenActions)
             for dummy in range(8):
@@ -333,7 +351,9 @@ class GameController:
                 time.sleep(0.625)
 
 
+    # TODO: add profanity filter?
     def writeAllChat(self, message):
+        """Writes a message to everyone"""
         self.pressKey('shift+Return')
         time.sleep(self.delayBetweenActions)
         subprocess.run(['xdotool', 'type', '--window', self.dota2WindowID, message])
@@ -341,32 +361,31 @@ class GameController:
         self.pressKey('Return')
         time.sleep(self.delayBetweenActions)
 
-
     def camCalibration(self, promote=False):
-        print('calibrating cam...')
+        """Needs to be done once at the start of each game!
+        Sets cam to playerposition.
+        This is the referenceposition for all other commands and therefore important!
+        Without calibration every chess piece interaction will fail"""
         self.pressKey('1')
         # shoutout in allchat to promote the bot
         if(promote):
             self.writeAllChat(
                 'Chat is playing right now on https://www.twitch.tv/twitchplaysautochess')
-        # gameState = GameStates.gaming
         time.sleep(self.delayBetweenActions)
 
 
     def acceptGame(self):
-        print('accepting game...')
+        """Press the accept button in Dota"""
         self.moveMouse(self.COORDMAP['dotaAcceptBtn']['x'],self.COORDMAP['dotaAcceptBtn']['y'], '1')
 
     def searchGame(self):
-        print('searching game...')
+        """Initiates the search for a Dota AutoChess game inside Dota."""
         # press esc to close any info windows (for example due to not accepting b4)
         self.pressKey('Escape')
         # go to main menu first
         self.moveMouse(self.COORDMAP['dotaMainMenuBtn']['x'],self.COORDMAP['dotaMainMenuBtn']['y'], '1')
-
         # navigate to autochess
         self.moveMouse(self.COORDMAP['dotaAutoChessBtn']['x'],self.COORDMAP['dotaAutoChessBtn']['y'], '1')
-
         # start autochess search
         self.moveMouse(self.COORDMAP['dotaPlayAutoChessBtn']['x'],self.COORDMAP['dotaPlayAutoChessBtn']['y'], '1')
         time.sleep(5)
@@ -374,30 +393,30 @@ class GameController:
 
 
     def abortRagequit(self):
+        """Stop quitting the current AutoChess game"""
         self.allowRagequit = False
+        # clear text file for stream view
         with open("ragequit.txt", "w") as f:
             f.write("")
 
 
     def rageQuitProcess(self):
+        """Starts a timer of 20s to display a warning. After 20s the current AutoChess game will be abandoned.
+        Can be stopped by writing !stay in chat"""
+        # how long should the message be displayed and the quitting delayed?
         targetTime = 20
-        # 
         starttime = time.time()
-        # do nothing till 20s passed
-        # time.sleep(20)
         while True:
             if(time.time() - starttime < targetTime):
                 if(self.allowRagequit):
-                    # print('self.allowRagequit: %s ' % self.allowRagequit)
-                    # write for chat
-                    # TODO: explain code
+                    # write remaining time for chat (adding +1s because of lazy cutting of decimals)
                     with open("ragequit.txt", "w") as f:
                         f.write("Time left till ragequit!: %s \n" % str(
                                 1.0 + targetTime - (time.time() - starttime)).split('.')[0])
                         f.write("To abort write !stay")
                     time.sleep(1)
                 else:
-                    # print('in rq process: self.allowRagequit = False, therefore aborting rq, cleaning file')
+                    # quitting aborted, clean the file
                     with open("ragequit.txt", "w") as f:
                         f.write('')
                     break
@@ -405,14 +424,18 @@ class GameController:
                 # time's up
                 break
 
+        # Ragequit still allowed?
         if(self.allowRagequit):
+            # Press the dota arrow button on the upper left corner
             self.moveMouse(self.COORDMAP['dotaArrowBtn']['x'],self.COORDMAP['dotaArrowBtn']['y'], '1')
             time.sleep(0.5)
+            # Press the dota disconnect button on the bottom right corner
             self.moveMouse(self.COORDMAP['dotaDisconnectBtn']['x'],self.COORDMAP['dotaDisconnectBtn']['y'], '1')
             time.sleep(1)
             # circumvent dac rating popup
             self.clickNothing()
             time.sleep(1)
+            # Press the dota leave button above the disconnect (now reconnect) button
             self.moveMouse(self.COORDMAP['dotaLeaveBtn']['x'],self.COORDMAP['dotaLeaveBtn']['y'])
             time.sleep(2)
             self.clickMouse('1')
@@ -420,9 +443,11 @@ class GameController:
             # since this part is glitching, we need to click twice
             self.clickMouse('1')
             time.sleep(1)
+            # Press the dota acccept button for leaving in the middle of the screen
             self.moveMouse(self.COORDMAP['dotaLeaveAcceptBtn']['x'],self.COORDMAP['dotaLeaveAcceptBtn']['y'])
             time.sleep(1)
             self.clickMouse('1')
+            # clean file for stream view
             with open("ragequit.txt", "w") as f:
                 f.write("")
 
@@ -430,18 +455,20 @@ class GameController:
 
 
     def leaveGame(self):
+        """Initiates a process of leaving the current AutoChess game with the option to abort that process."""
+        # Make sure the process is only started once
         if(self.allowRagequit):
-            print('ragequit already in process, aborting another thread')
+            print('ragequit already in process')
             return
         self.allowRagequit = True
         # start counter in seperate thread
-        print('starting rq thread')
         rageQuitJob = Thread(target=self.rageQuitProcess, args=())
         rageQuitJob.start()
 
 
     # TODO: check working or not?
     def randomAction(self):
+        """Execute a random action to confuse everyone and yourself."""
         randomNumber = random.randint(0, 4)
         if(randomNumber == 0):
             # pick random piece
@@ -468,15 +495,15 @@ class GameController:
             rand1Y = random.randint(1, 8)  # 1-8
             target = chr(rand1X + ord('a')) + rand1Y
             self.benchPiece(target)
-
         elif(randomNumber == 4):
             # reroll
             self.rerollPieces()
 
 
     def pickPiece(self, target):
+        """Buy a chess piece from the shop.
+        Target is a number between 1-5"""
         self.showSelection('on')
-        print('trying to pick: %s' % target)
         pickString = 'pick'+str(target)
         self.moveMouse(self.COORDMAP[pickString]['x'],self.COORDMAP[pickString]['y'], '1')
         time.sleep(self.delayBetweenActions)
@@ -484,31 +511,33 @@ class GameController:
 
 
     def clickNothing(self):
-        '''
-        can be used to click empty space as well for resetting commandchain (autochess bug)
-        '''
+        '''Click on the right side of the chessboard where nothing is to interact with.
+        Can be used to click empty space as well for resetting commandchain (autochess bug)'''
         self.moveMouse(self.COORDMAP['nothing']['x'],self.COORDMAP['nothing']['y'], '1')
 
     def closeSelection(self):
-        '''
-        closes Selection via X button
-        '''
+        '''Closes the shop via X button in the right upper corner'''
         self.moveMouse(self.COORDMAP['close']['x'],self.COORDMAP['close']['y'], '1')
 
     def showSelection(self, isOn):
-        print('trying to show selection: %s' % isOn)
+        """Shows/hides the shop.
+        isOn is a bool"""
+        # Make sure to close the shop via X button before since we do not have game feedback and therefore need to prevent toggling wrongly
         self.closeSelection()
         if(isOn == 'on'):
+            # reopen shop in this case, otherwise keep it closed
             self.pressKey('space')
         time.sleep(self.delayBetweenActions)
 
     def lockSelection(self):
-        print('trying to lock')
+        """Locks the shop to prevent automatic rerolling"""
         # first open selection
         self.showSelection('on')
+        # click on the lock icon
         self.moveMouse(self.COORDMAP['lock']['x'],self.COORDMAP['lock']['y'],'1')
 
     def moveBot(self):
+        """Shortcut command: Moves the first piece to the backline"""
         self.moveMouse(self.COORDMAP['aa']['x'],self.COORDMAP['aa']['y'],'1')
         self.pressKey('m')
         time.sleep(self.delayBetweenActions)
@@ -519,6 +548,7 @@ class GameController:
 
 
     def moveTop(self):
+        """Shortcut command: Moves the first piece to the frontline"""
         self.moveMouse(self.COORDMAP['aa']['x'],self.COORDMAP['aa']['y'],'1')
         self.pressKey('m')
         time.sleep(self.delayBetweenActions)
@@ -529,6 +559,7 @@ class GameController:
 
 
     def moveRight(self):
+        """Shortcut command: Moves the first piece to the right side"""
         self.moveMouse(self.COORDMAP['aa']['x'],self.COORDMAP['aa']['y'],'1')
         self.pressKey('m')
         time.sleep(self.delayBetweenActions)
@@ -540,6 +571,7 @@ class GameController:
 
 
     def moveLeft(self):
+        """Shortcut command: Moves the first piece to the left side"""
         self.moveMouse(self.COORDMAP['aa']['x'],self.COORDMAP['aa']['y'],'1')
         self.pressKey('m')
         time.sleep(self.delayBetweenActions)
@@ -550,6 +582,8 @@ class GameController:
 
 
     def movePieceFromSlot(self, slot, direction=''):
+        """Shortcut command: Moves a piece from a slot towards a general direction.
+        If no direction is specified the piece will be put in the middle"""
         if direction == 'left':
             self.movePiece(slot, 'b3')
         elif direction == 'right':
@@ -564,6 +598,7 @@ class GameController:
 
     # probably obsolete
     def movePieceDirection(self, direction):
+        """Shortcut command: Moves first piece towards a general direction"""
         if direction == 'left':
             self.moveLeft()
         elif direction == 'right':
@@ -575,9 +610,9 @@ class GameController:
 
 
     def movePiece(self, source, target):
-        print('trying to move: %s' % source)
-        print('to %s' % target)
-        # make sure selection is closed
+        """Moves piece from source to target location.
+        Source and target locations are fields on the chessboard or on the bench"""
+        # make sure shop is closed while moving pieces
         self.showSelection('off')
         self.moveMouse(self.COORDMAP[source]['x'],self.COORDMAP[source]['y'],'1')
         self.pressKey('m')
@@ -585,11 +620,13 @@ class GameController:
         self.moveMouse(self.COORDMAP[target]['x'],self.COORDMAP[target]['y'],'1')
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
+        # show shop after movement for comfort
         self.showSelection('on')
 
     def benchPiece(self, target):
+        """Removes an active chess piece from the chessboard and puts it on the bench.
+        Target is a field on the chessboard"""
         self.showSelection('off')
-        print('trying to bench: %s' % target)
         # TODO: Check if click should not be done because of quickcast
         self.moveMouse(self.COORDMAP[target]['x'],self.COORDMAP[target]['y'],'1')
         self.pressKey('b')
@@ -599,8 +636,9 @@ class GameController:
         self.showSelection('on')
 
     def sellPiece(self, target):
+        """Sells a piece.
+        Target is a field on the chessboard and on the bench"""
         self.showSelection('off')
-        print('trying to sell piece: %s' % target)
         self.moveMouse(self.COORDMAP[target]['x'],self.COORDMAP[target]['y'],'1')
         self.pressKey('s')
         time.sleep(self.delayBetweenActions)
@@ -609,8 +647,8 @@ class GameController:
         self.showSelection('on')
 
     def rerollPieces(self):
+        """Rerolls the shop selection."""
         self.showSelection('off')
-        print('trying to reroll')
         self.pressKey('r')
         time.sleep(self.delayBetweenActions)
         self.clickNothing()
@@ -618,36 +656,42 @@ class GameController:
         self.showSelection('on')
 
     def buyXP(self, amount):
-        print('trying to buy xp: %s' % amount)
+        """Buys experience x times depending on the amount"""
         for dummy in range(int(amount)):
             self.pressKey('x')
             time.sleep(0.8)
         self.clickNothing()
     
     def executeStack(self):
+        """Executes a stack/queue of commands sequentially."""
         for command in self.commandStack:
             self.findAndExecute(command.split(' '))
+        # clear command stack afterwards
         self.commandStack = []
 
 
     def addToStack(self, commandForStack):
+        """Add a command to stack/queue for later execution"""
         # TODO: set a limit on stack?
         self.commandStack.append(commandForStack)
 
 
     def stackCommand(self, commandArray):
+        """Add a command to stack/queue for later execution"""
+        # since it was a splitted array before we need to recreate the original nested command string first
         patchedCommand = ''
         for i in range(1, len(commandArray)):
             patchedCommand += commandArray[i] + ' '
         patchedCommand = patchedCommand[:-1]
+        # check the nested command
         if validator.validateCommand(patchedCommand):
             # valid, add to stack
             self.addToStack(patchedCommand)
 
     
     def findAndExecute(self, splitted):
-        print('findAndExecute %s' % splitted)
-        # todo reuse patterns on unsplitted string to reduce redundance
+        """Checks which command is invoked and executes the command accordingly"""
+        # TODO: reuse patterns on unsplitted string to reduce redundance
         if splitted[0] == '!m' or splitted[0] == '!move':
             time.sleep(.02)
             # execute command

@@ -31,7 +31,11 @@ import validator
 import io
 import gamecontroller
 
+# TODO: split setup/configuration from controller flow
 class Setup:
+    """
+    Configures program and controls flow
+    """
     mode = ''
     commands = []
     list_commands = []
@@ -42,8 +46,7 @@ class Setup:
         self.config()
         
     def config(self):
-        print('in config')
-        # Generate a config file if one doesn't exist
+        """Generates a config file if it does not exist"""
         # TODO: exclude settings and configs outside of controlling programflow -> move programflow to controller class
         while True:
             if os.path.isfile("settings.txt"):
@@ -108,8 +111,11 @@ class Setup:
                     for each_setting in settings:
                         f.write(each_setting + '\n')
 
-    def start(self):
-        # Select game type
+        self.configDynamicSettings()
+
+    def configDynamicSettings(self):
+        """Checks if Dota is running to get dota window ID.
+        Select game type (Democracy/Anarchy)"""
         while True:
             while self.gc.dota2WindowID == '':
                 input("Dota already running? Then press enter")
@@ -120,14 +126,19 @@ class Setup:
             self.mode = input("Game type (default Anarchy): ")
             if self.mode.lower() == "democracy":
                 print("Takes most said command every X second(s): ")
-                self.democracy_time = float(input("(must be integer) X="))
-                break
+                try:
+                    self.democracy_time = float(input("(must be integer) X="))
+                    break
+                except TypeError as identifier:
+                    print(identifier)
             else:
                 break
 
-        self.startMode()
-
-    def startMode(self):
+    def start(self):
+        """Starts the main program flow
+        Empties the text files for streaming (OBS)
+        Creates parallel threads for democracy if needed
+        Initiates connection to twitch"""
         self.myIO.resetFiles()
         # Democracy Game Mode?
         if self.mode.lower() == "democracy":
@@ -140,14 +151,18 @@ class Setup:
         self.handleTwitchResponse(twitchSocket)
 
     def democracy(self):
+        """Runs in parallel thread and counts the most popular commands for a few seconds.
+        After that the most popular command is executed"""
         list_commands = []
         last_command = time.time()
         selected_c = "None"
 
         while True:
             if time.time() > last_command + self.democracy_time:
+                # Time has run out since last command
                 last_command = time.time()
                 if(len(list_commands) > 0):
+                    # Select the most popular command
                     selected_c = self.most_common(list_commands)
                     print('selected_c: %s' % selected_c)
                 else:
@@ -157,6 +172,7 @@ class Setup:
                     f.write("Time left: %s" % str(self.democracy_time)[0:1])
                 list_commands = []
                 if(selected_c != 'None'):
+                    # Do nothing if chat didn't write any commands
                     splitted = selected_c.lower().split(' ')
                     self.gc.findAndExecute(splitted)
             else:
@@ -167,6 +183,7 @@ class Setup:
             time.sleep(1)
 
     def connectToTwitch(self):
+        """Connects to twitch by using a socket, host, port and user credentials"""
         s = socket.socket()
         s.connect((self.HOST, self.PORT))
 
@@ -179,6 +196,7 @@ class Setup:
         return s
     
     def handleTwitchResponse(self, s):
+        """Extracts the relevant info/command from each chat line"""
         readbuffer = ''
         while True:
             readbuffer = readbuffer+s.recv(1024).decode("UTF-8", errors="ignore")
@@ -191,6 +209,7 @@ class Setup:
                 line = str.rstrip(line)
                 line = str.split(line)
 
+                # remove username and : in front of each line 
                 for index, dummy in enumerate(line):
                     if x == 0:
                         user = line[index]
@@ -232,6 +251,8 @@ class Setup:
                         self.gc.findAndExecute(splitted)
 
     def addToCommandList(self, user, out):
+        """Adds all valid commands to a list and removes/pops the first entry if the list gets too long.
+        Additionally adds commands to a democracy list which is used to determine the top 5 commands"""
         if len(self.commands) >= self.command_length:
             del self.commands[0]
             self.commands.extend([user[1:] + out.lower()])
@@ -243,10 +264,13 @@ class Setup:
                 self.list_commands.extend([out.lower()])
 
     def most_common(self, lst):
+        """Return the most common/popular command of a given list.
+        At the same time determine the Top 5 commands to show stream view by writing it to a file"""
         # Write to file for stream view
         tempList = lst
         maxList = []
         if(len(lst) > 5):
+            # if more than 5 commands are found, only get the top5
             for dummy in range(5):
                 if(len(tempList) > 0):
                     tempMax = max(tempList, key=tempList.count)
