@@ -23,19 +23,12 @@ import socket
 import re
 import random
 
-# TODO: use IO for every file write
 class IOController:
-    def __init__(self):
-        pass
-        
+    """Handles the writing of files"""
     def writeFile(self, filename, message):
         with open(filename, "w") as f:
             f.write(message)
         pass
-
-    def readFile(self):
-        pass
-
 
     def resetFile(self, filename = None):
         """Cleans specific file or all files"""
