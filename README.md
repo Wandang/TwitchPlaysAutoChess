@@ -24,7 +24,7 @@ Twitch Plays AutoChess bot that lets twitch-chat play Dota AutoChess
 # USAGE
 
 - Start Dota2
-- Go to settings and change the hotkeys like this (including quickcast!): 
+- Go to settings and activate quickcast: 
 ![hotkeyssetup](https://github.com/Wandang/TwitchPlaysAutoChess/blob/master/assets/Dota_settings_example.png)
 - Navigate to the project folder with a console
 - Execute tpacLaunch.py with python `python tpacLaunch.py` (alternatively python3 if you have several python versions)
