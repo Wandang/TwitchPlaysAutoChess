@@ -13,8 +13,6 @@ Twitch Plays AutoChess bot that lets twitch-chat play Dota AutoChess
 - python 3.x
 - pynput (cross platform)
 - twitch account (+ auth token)
-- ~~xdotool (only works on Linux, I am working on a windows alternative)~~
-
 
 # INSTALL
 
@@ -35,6 +33,7 @@ After you have successfully started the bot the bot will write `Connected` into 
 
 The generated text files can be loaded in OBS (and probably other streaming programs as well) to show the currently read commands
 
+There is an example OBS scene/overlay inside the assets folder that can be imported into OBS.
 
 ## Important notes
 
