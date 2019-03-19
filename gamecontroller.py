@@ -205,9 +205,15 @@ class GameController:
     itemoffsetSecondRowX = 75
     itemoffsetSecondRowy = 0  # 6 old
 
-    def __init__(self, channelName, hotkeys):
+    def __init__(self, channelName, hotkeys, resolution):
         self.channelName = channelName
         self.hotkeys = hotkeys
+        self.resolution = resolution
+        for coord in self.COORDMAP:
+            relativeXValue = float(self.COORDMAP[coord]['x'])/1920 * int(self.resolution[0])
+            relativeYValue = float(self.COORDMAP[coord]['y'])/1080 * int(self.resolution[1])
+            self.COORDMAP[coord]['x'] = str(int(relativeXValue))
+            self.COORDMAP[coord]['y'] = str(int(relativeYValue))
 
     def moveMouse(self,x,y,clickType = None):
         """Move the mouse to the desired coordinates and optionally click at that location.
