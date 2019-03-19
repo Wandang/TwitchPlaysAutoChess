@@ -20,12 +20,12 @@ Twitch Plays AutoChess bot that lets twitch-chat play Dota AutoChess
 
 - Install python
 - Install pynput with pip `pip install --user pynput` (--user is optional but keeps the package with user permissions)
-- Download and Unzip this project package
+- Download and Unzip this project package or if you want to stay up to date use git clone
 
 # USAGE
 
 - Start Dota2
-- Go to settings and change the hotkeys like this: 
+- Go to settings and change the hotkeys like this (including quickcast!): 
 ![hotkeyssetup](https://github.com/Wandang/TwitchPlaysAutoChess/blob/master/assets/Dota_settings_example.png)
 - Navigate to the project folder with a console
 - Execute tpacLaunch.py with python `python tpacLaunch.py` (alternatively python3 if you have several python versions)
