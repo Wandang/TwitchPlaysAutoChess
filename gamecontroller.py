@@ -16,9 +16,11 @@
 
 
 import subprocess
-#import string
+from pynput.mouse import Button as MouseButton
+from pynput.mouse import Controller as MouseController
+from pynput.keyboard import Key as KeyboardKey
+from pynput.keyboard import Controller as KeyboardController
 import time
-#import re
 import random
 from collections import OrderedDict
 from threading import Thread
@@ -31,6 +33,9 @@ class GameController:
     Each Dota AutoChess action is mapped as function"""
 
     myIO = iocontroller.IOController()
+    isXDOTOOL = False
+    mouse = MouseController()
+    keyboard = KeyboardController()
     commandStack = []
     # default delay after each peripheral action. Needs to be > 0 to make sure that the actions are finished properly
     delayBetweenActions = 0.3
@@ -208,16 +213,20 @@ class GameController:
             y -- y coordinate inside screen resolution
             clickType -- 1: leftclick, 2: middleclick, 3: rightclick
         """
-        # -- window param makes sure that the input gets send to a specific window, even if it is in the background
-        subprocess.run(['xdotool',
-                        'mousemove',
-                        '--window',
-                        self.dota2WindowID,
-                        x,
-                        y])
-        if(clickType):
-            self.clickMouse(clickType)
-
+        if(self.isXDOTOOL):
+            # -- window param makes sure that the input gets send to a specific window, even if it is in the background
+            subprocess.run(['xdotool',
+                            'mousemove',
+                            '--window',
+                            self.dota2WindowID,
+                            x,
+                            y])
+            if(clickType):
+                self.clickMouse(clickType)
+        else:
+            self.mouse.position = (int(x),int(y))
+            if(clickType):
+                self.clickMouse(clickType)
         time.sleep(self.delayBetweenActions)
 
     def clickMouse(self, clickType):
@@ -226,7 +235,16 @@ class GameController:
         Keyword arguments:
             clickType -- 1: leftclick, 2: middleclick, 3: rightclick
         """
-        subprocess.run(['xdotool','click','--window',self.dota2WindowID, clickType])
+        if(self.isXDOTOOL):
+            subprocess.run(['xdotool','click','--window',self.dota2WindowID, clickType])
+        else:
+            if(clickType == '1'):
+                self.mouse.click(MouseButton.left)
+            elif(clickType == '2'):
+                self.mouse.click(MouseButton.middle)
+            elif(clickType == '3'):
+                self.mouse.click(MouseButton.right)
+
 
     def dragAndDrop(self,source,target):
         """Drags & drops from source to target location.
@@ -239,12 +257,18 @@ class GameController:
         self.moveMouse(source['x'],source['y'])
         time.sleep(1)
         # hold mouse button
-        subprocess.run(['xdotool', 'mousedown', '--window', self.dota2WindowID, '1'])
+        if(self.isXDOTOOL):
+            subprocess.run(['xdotool', 'mousedown', '--window', self.dota2WindowID, '1'])
+        else:
+            self.mouse.press(MouseButton.left)
         time.sleep(0.5)
         self.moveMouse(target['x'],target['y'])
         time.sleep(1)
         # release mouse button
-        subprocess.run(['xdotool', 'mouseup', '--window', self.dota2WindowID, '1'])
+        if(self.isXDOTOOL):
+            subprocess.run(['xdotool', 'mouseup', '--window', self.dota2WindowID, '1'])
+        else:
+            self.mouse.release(MouseButton.left)
 
     def pressKey(self, key):
         """Presses specified key on keyboard
@@ -253,6 +277,15 @@ class GameController:
             key -- keyboard key (keycodes)
         """
         subprocess.run(['xdotool', 'key', '--window', self.dota2WindowID, key])
+
+    def pressKeyWithPynput(self, key):
+        """Presses specified key on keyboard with pykeyboard module
+        
+        Keyword arguments:
+            key -- keyboard key (keycodes)
+        """
+        self.keyboard.press(key)
+        self.keyboard.release(key)
 
     def toggleLockItem(self, slot):
         """Locks item in specified itemslot (1-9)
@@ -388,7 +421,11 @@ class GameController:
             self.clickNothing()
             time.sleep(self.delayBetweenActions)
             for dummy in range(8):
-                self.pressKey('Tab')
+                if(self.isXDOTOOL):
+                    self.pressKey('Tab')
+                else:
+                    self.pressKeyWithPynput(KeyboardKey.tab)
+
                 time.sleep(0.625)
 
 
@@ -399,11 +436,22 @@ class GameController:
         Keyword arguments:
             message -- Textmessage to be send
         """
-        self.pressKey('shift+Return')
+        if(self.isXDOTOOL):
+            self.pressKey('shift+Return')
+        else:
+            with self.keyboard.pressed(KeyboardKey.shift):
+                self.pressKeyWithPynput(KeyboardKey.enter)
+
         time.sleep(self.delayBetweenActions)
-        subprocess.run(['xdotool', 'type', '--window', self.dota2WindowID, message])
+        if(self.isXDOTOOL):
+            subprocess.run(['xdotool', 'type', '--window', self.dota2WindowID, message])
+        else:
+            self.keyboard.type(message)
         time.sleep(0.5)
-        self.pressKey('Return')
+        if (self.isXDOTOOL):
+            self.pressKey('Return')
+        else:
+            self.pressKeyWithPynput(KeyboardKey.enter)
         time.sleep(self.delayBetweenActions)
 
     # TODO: promotelink should be read from settings file
@@ -431,7 +479,11 @@ class GameController:
     def searchGame(self):
         """Initiates the search for a Dota AutoChess game inside Dota."""
         # press esc to close any info windows (for example due to not accepting b4)
-        self.pressKey('Escape')
+        if (self.isXDOTOOL):
+            self.pressKey('Escape')
+        else:
+            self.pressKeyWithPynput(KeyboardKey.esc)
+        
         # go to main menu first
         self.moveMouse(self.COORDMAP['dotaMainMenuBtn']['x'],self.COORDMAP['dotaMainMenuBtn']['y'], '1')
         # navigate to autochess
@@ -577,7 +629,10 @@ class GameController:
         self.closeSelection()
         if(isOn == 'on'):
             # reopen shop in this case, otherwise keep it closed
-            self.pressKey('space')
+            if (self.isXDOTOOL):
+                self.pressKey('space')
+            else:
+                self.pressKeyWithPynput(KeyboardKey.space)
         time.sleep(self.delayBetweenActions)
 
     def lockSelection(self):
@@ -782,7 +837,6 @@ class GameController:
         if splitted[0] == '!m' or splitted[0] == '!move':
             time.sleep(.02)
             # execute command
-            print(splitted)
             if(len(splitted) > 2):
                 self.movePiece(splitted[1], splitted[2])
             else:
@@ -875,7 +929,6 @@ class GameController:
             time.sleep(.02)
             self.searchGame()
         elif splitted[0] == '!accept':
-            print('about to enter acceptGame()')
             time.sleep(.02)
             self.acceptGame()
         elif splitted[0] == '!calib':

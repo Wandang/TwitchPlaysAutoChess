@@ -112,11 +112,12 @@ class Setup:
         """Checks if Dota is running to get dota window ID.
         Select game type (Democracy/Anarchy)"""
         while True:
-            while self.gc.dota2WindowID == '':
-                input("Dota already running? Then press enter")
-                completedProcess = subprocess.run(['xdotool', 'search', '--name',
-                                                'Dota 2'], capture_output=True)
-                self.gc.dota2WindowID = completedProcess.stdout.decode('UTF-8')
+            # TODO: get window ID cross platform style (maybe with pynput)
+            # while self.gc.dota2WindowID == '':
+            #     input("Dota already running? Then press enter")
+            #     completedProcess = subprocess.run(['xdotool', 'search', '--name',
+            #                                     'Dota 2'], capture_output=True)
+            #     self.gc.dota2WindowID = completedProcess.stdout.decode('UTF-8')
             print("Currently available: Democracy, Anarchy\n"+
                 "Democracy: Takes most said command every X second(s)\nAnarchy: Executes every incoming command")
             self.mode = input("Game type (default Anarchy): ")
@@ -300,5 +301,6 @@ class Setup:
         return maxList[0]
 
 print('starting v2...')
-setup = Setup()
-setup.start()
+if __name__ == "__main__":
+    setup = Setup()
+    setup.start()
