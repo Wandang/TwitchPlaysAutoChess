@@ -42,7 +42,7 @@ There is an example OBS scene/overlay inside the assets folder that can be impor
 - Only tested for Linux. Please create an issue for Windows
 - Chicken abilities are fixed for now and need to be set in the Dota Client
 
-# COMMANDLIST
+# COMMANDLIST (These are written and recognized in Twitch Chat)
 
 ## Dota
 
