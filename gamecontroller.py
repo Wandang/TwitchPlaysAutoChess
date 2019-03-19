@@ -205,6 +205,9 @@ class GameController:
     itemoffsetSecondRowX = 75
     itemoffsetSecondRowy = 0  # 6 old
 
+    def __init__(self, channelName):
+        self.channelName = channelName
+
     def moveMouse(self,x,y,clickType = None):
         """Move the mouse to the desired coordinates and optionally click at that location.
         
@@ -468,7 +471,7 @@ class GameController:
         # shoutout in allchat to promote the bot
         if(promote):
             self.writeAllChat(
-                'Chat is playing right now on https://www.twitch.tv/twitchplaysautochess')
+                'Chat is playing right now on https://www.twitch.tv/' + self.channelName)
         time.sleep(self.delayBetweenActions)
 
 

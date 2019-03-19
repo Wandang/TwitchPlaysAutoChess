@@ -33,7 +33,6 @@ class Setup:
     mode = ''
     commands = []
     list_commands = []
-    gc = gamecontroller.GameController()
     myIO = iocontroller.IOController()
 
     def __init__(self):
@@ -106,6 +105,7 @@ class Setup:
                     allSettings += each_setting + '\n'
                 self.myIO.writeFile("settings.txt",allSettings)
 
+        self.gc = gamecontroller.GameController(self.CHAT_CHANNEL)
         self.configDynamicSettings()
 
     def configDynamicSettings(self):
