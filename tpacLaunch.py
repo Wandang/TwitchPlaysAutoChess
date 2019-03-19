@@ -101,16 +101,14 @@ class Setup:
                 settings_length = input("Length: ")
                 settings.append("LENGTH = " + settings_length + "\n")
                 
-                settings.append("; Dota 2 Hotkey mapping for the courier/chicken abilities.\n; default ['m','b','s','r','x']")
+                settings.append("; Dota 2 Hotkey mapping for the courier/chicken abilities.\n; default m,b,s,r,x")
                 print("Dota 2 Hotkey mapping for the courier/chicken abilities.")
                 settings_hotkey_ability1 = input("Select Chess Piece (default: m)")
                 settings_hotkey_ability2 = input("Recall Chess Piece (default: b)")
                 settings_hotkey_ability3 = input("Sell Chess Piece (default: s)")
                 settings_hotkey_ability4 = input("Reroll Pieces (default: r)")
                 settings_hotkey_ability5 = input("Buy XP (default: x)")
-                settings_hotkeys = [
-                    settings_hotkey_ability1,settings_hotkey_ability2,settings_hotkey_ability3,
-                    settings_hotkey_ability4,settings_hotkey_ability5]
+                settings_hotkeys = '' + settings_hotkey_ability1 + ',' + settings_hotkey_ability2 + ',' + settings_hotkey_ability3 + ',' + settings_hotkey_ability4 + ',' + settings_hotkey_ability5
                 settings.append("HOTKEYS = " + settings_hotkeys + "\n")
 
                 allSettings = ''
