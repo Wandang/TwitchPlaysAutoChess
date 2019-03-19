@@ -52,6 +52,7 @@ class Setup:
                 self.APP = config.get('Settings', 'APP')
                 self.CHAT_CHANNEL = config.get('Settings', 'CHAT_CHANNEL').lower()
                 self.command_length = config.getint('Settings', 'LENGTH')
+                self.hotkeys = config.get('Settings', 'HOTKEYS').split(',')
                 break
             else:
                 print("Let's make you a config file")
@@ -99,13 +100,25 @@ class Setup:
                 print("The maximum number of lines in commands.txt (Useful for showing commands received in stream)")
                 settings_length = input("Length: ")
                 settings.append("LENGTH = " + settings_length + "\n")
+                
+                settings.append("; Dota 2 Hotkey mapping for the courier/chicken abilities.\n; default ['m','b','s','r','x']")
+                print("Dota 2 Hotkey mapping for the courier/chicken abilities.")
+                settings_hotkey_ability1 = input("Select Chess Piece (default: m)")
+                settings_hotkey_ability2 = input("Recall Chess Piece (default: b)")
+                settings_hotkey_ability3 = input("Sell Chess Piece (default: s)")
+                settings_hotkey_ability4 = input("Reroll Pieces (default: r)")
+                settings_hotkey_ability5 = input("Buy XP (default: x)")
+                settings_hotkeys = [
+                    settings_hotkey_ability1,settings_hotkey_ability2,settings_hotkey_ability3,
+                    settings_hotkey_ability4,settings_hotkey_ability5]
+                settings.append("HOTKEYS = " + settings_hotkeys + "\n")
 
                 allSettings = ''
                 for each_setting in settings:
                     allSettings += each_setting + '\n'
                 self.myIO.writeFile("settings.txt",allSettings)
 
-        self.gc = gamecontroller.GameController(self.CHAT_CHANNEL)
+        self.gc = gamecontroller.GameController(self.CHAT_CHANNEL, self.hotkeys)
         self.configDynamicSettings()
 
     def configDynamicSettings(self):

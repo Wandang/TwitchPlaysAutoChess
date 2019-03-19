@@ -205,8 +205,9 @@ class GameController:
     itemoffsetSecondRowX = 75
     itemoffsetSecondRowy = 0  # 6 old
 
-    def __init__(self, channelName):
+    def __init__(self, channelName, hotkeys):
         self.channelName = channelName
+        self.hotkeys = hotkeys
 
     def moveMouse(self,x,y,clickType = None):
         """Move the mouse to the desired coordinates and optionally click at that location.
@@ -286,7 +287,7 @@ class GameController:
         
         Keyword arguments:
             key -- keyboard key (keycodes)
-        """
+        """        
         self.keyboard.press(key)
         self.keyboard.release(key)
 
@@ -467,7 +468,10 @@ class GameController:
         Keyword arguments:
             promote -- Promotes the twitch channel in allchat (bool)
         """
-        self.pressKey('1')
+        if (self.isXDOTOOL):
+            self.pressKey('1')
+        else:
+            self.pressKeyWithPynput('1')
         # shoutout in allchat to promote the bot
         if(promote):
             self.writeAllChat(
@@ -648,7 +652,11 @@ class GameController:
     def moveBot(self):
         """Shortcut command: Moves the first piece to the backline"""
         self.moveMouse(self.COORDMAP['aa']['x'],self.COORDMAP['aa']['y'])
-        self.pressKey('m')
+        if (self.isXDOTOOL):
+            self.pressKey(self.hotkeys[0])
+        else:
+            self.pressKeyWithPynput(self.hotkeys[0])
+
         time.sleep(self.delayBetweenActions)
         self.moveMouse(self.COORDMAP['e1']['x'],self.COORDMAP['e1']['y'])
         self.clickNothing()
@@ -659,7 +667,10 @@ class GameController:
     def moveTop(self):
         """Shortcut command: Moves the first piece to the frontline"""
         self.moveMouse(self.COORDMAP['aa']['x'],self.COORDMAP['aa']['y'])
-        self.pressKey('m')
+        if (self.isXDOTOOL):
+            self.pressKey(self.hotkeys[0])
+        else:
+            self.pressKeyWithPynput(self.hotkeys[0])
         time.sleep(self.delayBetweenActions)
         self.moveMouse(self.COORDMAP['d4']['x'],self.COORDMAP['d4']['y'])
         self.clickNothing()
@@ -670,7 +681,10 @@ class GameController:
     def moveRight(self):
         """Shortcut command: Moves the first piece to the right side"""
         self.moveMouse(self.COORDMAP['aa']['x'],self.COORDMAP['aa']['y'])
-        self.pressKey('m')
+        if (self.isXDOTOOL):
+            self.pressKey(self.hotkeys[0])
+        else:
+            self.pressKeyWithPynput(self.hotkeys[0])
         time.sleep(self.delayBetweenActions)
         self.moveMouse(self.COORDMAP['g3']['x'],self.COORDMAP['g3']['y'])
         time.sleep(self.delayBetweenActions)
@@ -682,7 +696,10 @@ class GameController:
     def moveLeft(self):
         """Shortcut command: Moves the first piece to the left side"""
         self.moveMouse(self.COORDMAP['aa']['x'],self.COORDMAP['aa']['y'])
-        self.pressKey('m')
+        if (self.isXDOTOOL):
+            self.pressKey(self.hotkeys[0])
+        else:
+            self.pressKeyWithPynput(self.hotkeys[0])
         time.sleep(self.delayBetweenActions)
         self.moveMouse(self.COORDMAP['b3']['x'],self.COORDMAP['b3']['y'])
         self.clickNothing()
@@ -737,7 +754,10 @@ class GameController:
         # make sure shop is closed while moving pieces
         self.showSelection('off')
         self.moveMouse(self.COORDMAP[source]['x'],self.COORDMAP[source]['y'])
-        self.pressKey('m')
+        if (self.isXDOTOOL):
+            self.pressKey(self.hotkeys[0])
+        else:
+            self.pressKeyWithPynput(self.hotkeys[0])
         time.sleep(self.delayBetweenActions)
         self.moveMouse(self.COORDMAP[target]['x'],self.COORDMAP[target]['y'],'1')
         self.clickNothing()
@@ -754,7 +774,10 @@ class GameController:
         self.showSelection('off')
         # TODO: Check if click should not be done because of quickcast
         self.moveMouse(self.COORDMAP[target]['x'],self.COORDMAP[target]['y'])
-        self.pressKey('b')
+        if (self.isXDOTOOL):
+            self.pressKey(self.hotkeys[1])
+        else:
+            self.pressKeyWithPynput(self.hotkeys[1])
         time.sleep(self.delayBetweenActions)
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
@@ -769,7 +792,10 @@ class GameController:
         """
         self.showSelection('off')
         self.moveMouse(self.COORDMAP[target]['x'],self.COORDMAP[target]['y'])
-        self.pressKey('s')
+        if (self.isXDOTOOL):
+            self.pressKey(self.hotkeys[2])
+        else:
+            self.pressKeyWithPynput(self.hotkeys[2])
         time.sleep(self.delayBetweenActions)
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
@@ -778,7 +804,10 @@ class GameController:
     def rerollPieces(self):
         """Rerolls the shop selection."""
         self.showSelection('off')
-        self.pressKey('r')
+        if (self.isXDOTOOL):
+            self.pressKey(self.hotkeys[3])
+        else:
+            self.pressKeyWithPynput(self.hotkeys[3])
         time.sleep(self.delayBetweenActions)
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
@@ -791,7 +820,10 @@ class GameController:
             amount -- How many times xp should be bought (1-4)
         """
         for dummy in range(int(amount)):
-            self.pressKey('x')
+            if (self.isXDOTOOL):
+                self.pressKey(self.hotkeys[4])
+            else:
+                self.pressKeyWithPynput(self.hotkeys[4])
             time.sleep(0.8)
         self.clickNothing()
     
