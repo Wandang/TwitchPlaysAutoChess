@@ -40,3 +40,24 @@ There is an example OBS scene/overlay inside the assets folder that can be impor
 - Only works on 1920x1080 resolution at the moment
 - Only tested for Linux. Please create an issue for Windows
 - Chicken abilities are fixed for now and need to be set in the Dota Client
+
+# Shoutout
+
+Big thanks to TwitchPlaysPokemon developers: sunshinekitty, RDJ, MZ, AP, & Oriax
+
+# Licence
+
+```
+# Copyright (C) 2019 : Carsten Demming
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
+
+```

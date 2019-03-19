@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# tpacLaunch.py
+# iocontroller.py
 # Copyright (C) 2019 : Carsten Demming
 #
 # This program is free software; you can redistribute it and/or modify
