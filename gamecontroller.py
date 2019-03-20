@@ -215,6 +215,33 @@ class GameController:
             self.COORDMAP[coord]['x'] = str(int(relativeXValue))
             self.COORDMAP[coord]['y'] = str(int(relativeYValue))
 
+    def convertToLocation(self, field):
+        """Returns pixel coordinates of a given field (AA,A1..H8)
+        
+        Keyword arguments:
+            field -- Field (AA,A1..H8)
+        """
+        aAsNr = ord('a')
+        firstChar = field[:1]
+        secondChar = field[1:]
+        firstCharNr = ord(firstChar)
+        diffNr = firstCharNr - aAsNr 
+        print('diffNr: ', diffNr)
+        if(firstChar == secondChar):
+            diffRow1 = float(self.COORDMAP['hh']['x']) - float(self.COORDMAP['aa']['x'])
+            print('diffRow1: ',diffRow1)
+            intervalRow1 = diffRow1 / 7
+            newXPos = int(float(self.COORDMAP['aa']['x'])+diffNr*intervalRow1)
+            newYPos = int(self.COORDMAP['aa']['y'])
+        else:
+            diffRow1 = float(self.COORDMAP['h'+secondChar]['x']) - float(self.COORDMAP['a'+secondChar]['x'])
+            print('diffRow1: ',diffRow1)
+            intervalRow1 = diffRow1 / 7
+            newXPos = int(float(self.COORDMAP['a'+secondChar]['x'])+diffNr*intervalRow1)
+            newYPos = int(self.COORDMAP['a'+secondChar]['y'])
+        return newXPos, newYPos
+
+
     def moveMouse(self,x,y,clickType = None):
         """Move the mouse to the desired coordinates and optionally click at that location.
         
@@ -261,8 +288,8 @@ class GameController:
         This is used for items.
         
         Keyword arguments:
-            source -- coordinates of source location [x,y]
-            target -- coordinates of target location [x,y]
+            source -- coordinates of source item location [x,y]
+            target -- Field name ('aa','a1'..'h8')
         """
         self.moveMouse(source['x'],source['y'])
         time.sleep(1)
@@ -272,7 +299,8 @@ class GameController:
         else:
             self.mouse.press(MouseButton.left)
         time.sleep(0.5)
-        self.moveMouse(target['x'],target['y'])
+        x, y = self.convertToLocation(target)
+        self.moveMouse(x,y)
         time.sleep(1)
         # release mouse button
         if(self.isXDOTOOL):
@@ -326,45 +354,39 @@ class GameController:
         self.showSelection('off')
         if(side == 'left'):
             # pos chicken at A1 first
-            self.rightClickAtCoord(self.COORDMAP['a1'])
+            x, y = self.convertToLocation('a1')
+            self.moveMouse(x,y ,'3')
             time.sleep(3)
             for coord in self.CHICKENLEFT:
-                self.rightClickAtCoord(self.CHICKENLEFT[coord])
+                self.moveMouse(self.CHICKENLEFT[coord]['x'],self.CHICKENLEFT[coord]['y'],'3')
                 time.sleep(0.3)
         elif(side == 'top'):
             # pos chicken at A8 first
-            self.rightClickAtCoord(self.COORDMAP['a8'])
+            x,y = self.convertToLocation('a8')
+            self.moveMouse(x,y)
             time.sleep(3)
             for coord in self.CHICKENTOP:
-                self.rightClickAtCoord(self.CHICKENTOP[coord])
+                self.moveMouse(self.CHICKENTOP[coord]['x'],self.CHICKENTOP[coord]['y'])
                 time.sleep(0.3)
         elif(side == 'right'):
             # pos chicken at H8 first
-            self.rightClickAtCoord(self.COORDMAP['h8'])
+            x,y = self.convertToLocation('h8')
+            self.moveMouse(x,y)
             time.sleep(3)
             for coord in self.CHICKENRIGHT:
-                self.rightClickAtCoord(self.CHICKENRIGHT[coord])
+                self.moveMouse(self.CHICKENRIGHT[coord]['x'],self.CHICKENRIGHT[coord]['y'])
                 time.sleep(0.3)
         elif(side == 'bot'):
             # pos chicken at H1 first
-            self.rightClickAtCoord(self.COORDMAP['h1'])
+            x,y = self.convertToLocation('h1')
+            self.moveMouse(x,y)
             time.sleep(3)
             for coord in self.CHICKENBOT:
-                self.rightClickAtCoord(self.CHICKENBOT[coord])
+                self.moveMouse(self.CHICKENBOT[coord]['x'],self.CHICKENBOT[coord]['y'])
                 time.sleep(0.3)
         
         # send chicken back to default position
         self.resetChickenPos()
-
-
-    def rightClickAtCoord(self, coord):
-        """Rightclick at target coordinates
-        
-        Keyword arguments:
-            coord -- target coordinates (in pixel) for rightclicking 
-        """
-        self.moveMouse(coord['x'],coord['y'],'3')
-        time.sleep(self.delayBetweenActions)
 
 
     def resetChickenPos(self):
@@ -383,7 +405,7 @@ class GameController:
         # close shop before
         self.showSelection('off')
         slotID = 'chickSlot'+slot
-        self.dragAndDrop(self.COORDMAP[slotID],self.COORDMAP[target])
+        self.dragAndDrop(self.COORDMAP[slotID],target)
         # give chicken time to run to the destination
         # TODO: dynamic time depending on target location
         time.sleep(5)
@@ -398,7 +420,8 @@ class GameController:
         """
         # close shop first
         self.showSelection('off')
-        self.rightClickAtCoord(self.COORDMAP[target])
+        x, y = self.convertToLocation(target)
+        self.moveMouse(x,y,'3')
         # TODO: dynamic time depending on target location
         time.sleep(5)
         self.resetChickenPos()
@@ -617,6 +640,7 @@ class GameController:
             target -- Number between 1-5
         """
         self.showSelection('on')
+        # TODO: reduce coordmap entries by eliminating pick2-4 entries and calculating pos inbetween
         pickString = 'pick'+str(target)
         self.moveMouse(self.COORDMAP[pickString]['x'],self.COORDMAP[pickString]['y'], '1')
         time.sleep(self.delayBetweenActions)
@@ -657,14 +681,16 @@ class GameController:
 
     def moveBot(self):
         """Shortcut command: Moves the first piece to the backline"""
-        self.moveMouse(self.COORDMAP['aa']['x'],self.COORDMAP['aa']['y'])
+        x,y = self.convertToLocation('aa')
+        self.moveMouse(x,y)
         if (self.isXDOTOOL):
             self.pressKey(self.hotkeys[0])
         else:
             self.pressKeyWithPynput(self.hotkeys[0])
 
         time.sleep(self.delayBetweenActions)
-        self.moveMouse(self.COORDMAP['e1']['x'],self.COORDMAP['e1']['y'])
+        x,y = self.convertToLocation('e1')
+        self.moveMouse(x,y)
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
         self.showSelection('on')
@@ -672,13 +698,15 @@ class GameController:
 
     def moveTop(self):
         """Shortcut command: Moves the first piece to the frontline"""
-        self.moveMouse(self.COORDMAP['aa']['x'],self.COORDMAP['aa']['y'])
+        x,y = self.convertToLocation('aa')
+        self.moveMouse(x,y)
         if (self.isXDOTOOL):
             self.pressKey(self.hotkeys[0])
         else:
             self.pressKeyWithPynput(self.hotkeys[0])
         time.sleep(self.delayBetweenActions)
-        self.moveMouse(self.COORDMAP['d4']['x'],self.COORDMAP['d4']['y'])
+        x,y = self.convertToLocation('d4')
+        self.moveMouse(x,y)
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
         self.showSelection('on')
@@ -686,13 +714,15 @@ class GameController:
 
     def moveRight(self):
         """Shortcut command: Moves the first piece to the right side"""
-        self.moveMouse(self.COORDMAP['aa']['x'],self.COORDMAP['aa']['y'])
+        x,y = self.convertToLocation('aa')
+        self.moveMouse(x,y)
         if (self.isXDOTOOL):
             self.pressKey(self.hotkeys[0])
         else:
             self.pressKeyWithPynput(self.hotkeys[0])
         time.sleep(self.delayBetweenActions)
-        self.moveMouse(self.COORDMAP['g3']['x'],self.COORDMAP['g3']['y'])
+        x,y = self.convertToLocation('g3')
+        self.moveMouse(x,y)
         time.sleep(self.delayBetweenActions)
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
@@ -701,13 +731,15 @@ class GameController:
 
     def moveLeft(self):
         """Shortcut command: Moves the first piece to the left side"""
-        self.moveMouse(self.COORDMAP['aa']['x'],self.COORDMAP['aa']['y'])
+        x,y = self.convertToLocation('aa')
+        self.moveMouse(x,y)
         if (self.isXDOTOOL):
             self.pressKey(self.hotkeys[0])
         else:
             self.pressKeyWithPynput(self.hotkeys[0])
         time.sleep(self.delayBetweenActions)
-        self.moveMouse(self.COORDMAP['b3']['x'],self.COORDMAP['b3']['y'])
+        x,y = self.convertToLocation('b3')
+        self.moveMouse(x,y)
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
         self.showSelection('on')
@@ -755,17 +787,19 @@ class GameController:
         Source and target locations are fields on the chessboard or on the bench
         
         Keyword arguments:
-            direction -- Direction can be left, right, top or bot
+            source -- Field on the chessboard (aa,a1..h8)
+            target -- Field on the chessboard (aa,a1..h8)
         """
         # make sure shop is closed while moving pieces
         self.showSelection('off')
-        self.moveMouse(self.COORDMAP[source]['x'],self.COORDMAP[source]['y'])
+        x, y = self.convertToLocation(source)
         if (self.isXDOTOOL):
             self.pressKey(self.hotkeys[0])
         else:
             self.pressKeyWithPynput(self.hotkeys[0])
         time.sleep(self.delayBetweenActions)
-        self.moveMouse(self.COORDMAP[target]['x'],self.COORDMAP[target]['y'],'1')
+        x, y = self.convertToLocation(target)
+        self.moveMouse(x,y,'1')
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
         # show shop after movement for comfort
@@ -779,7 +813,8 @@ class GameController:
         """
         self.showSelection('off')
         # TODO: Check if click should not be done because of quickcast
-        self.moveMouse(self.COORDMAP[target]['x'],self.COORDMAP[target]['y'])
+        x, y = self.convertToLocation(target)
+        self.moveMouse(x,y)
         if (self.isXDOTOOL):
             self.pressKey(self.hotkeys[1])
         else:
@@ -797,7 +832,8 @@ class GameController:
             target -- target chessboard position
         """
         self.showSelection('off')
-        self.moveMouse(self.COORDMAP[target]['x'],self.COORDMAP[target]['y'])
+        x, y = self.convertToLocation(target)
+        self.moveMouse(x,y)
         if (self.isXDOTOOL):
             self.pressKey(self.hotkeys[2])
         else:
