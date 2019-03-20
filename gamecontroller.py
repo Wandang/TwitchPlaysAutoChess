@@ -22,6 +22,7 @@ from pynput.keyboard import Key as KeyboardKey
 from pynput.keyboard import Controller as KeyboardController
 import time
 import random
+import math
 from collections import OrderedDict
 from threading import Thread
 
@@ -44,51 +45,54 @@ class GameController:
     TWITCHEMOTES = ['monkaS', '4Head', 'FailFish', 'DansGame', 'LUL', 'Kappa', 'NotLikeThis',
                     'OSFrog', 'PJSalt', 'WutFace', 'cmonBruh', 'TriHard', 'PogChamp', 'ResidentSleeper']
 
+
+    # taken with reference resolution of 1024x768
     COORDMAP_RESOLUTION_4TO3 = {
-        'a1': {'x': '285', 'y': '519'},
-        'a2': {'x': '295', 'y': '461'},
-        'a3': {'x': '303', 'y': '409'},
-        'a4': {'x': '314', 'y': '363'},
-        'a5': {'x': '323', 'y': '320'},
-        'a6': {'x': '331', 'y': '282'},
-        'a7': {'x': '338', 'y': '246'},
-        'a8': {'x': '343', 'y': '212'},
-        'h1': {'x': '736', 'y': '515'},
-        'h2': {'x': '726', 'y': '460'},
-        'h3': {'x': '715', 'y': '407'},
-        'h4': {'x': '706', 'y': '364'},
-        'h5': {'x': '698', 'y': '322'},
-        'h6': {'x': '690', 'y': '281'},
-        'h7': {'x': '683', 'y': '243'},
-        'h8': {'x': '677', 'y': '211'},
+        'a1': {'x': '285', 'y': '449'},
+        'a2': {'x': '295', 'y': '391'},
+        'a3': {'x': '303', 'y': '339'},
+        'a4': {'x': '314', 'y': '293'},
+        'a5': {'x': '323', 'y': '250'},
+        'a6': {'x': '331', 'y': '212'},
+        'a7': {'x': '338', 'y': '176'},
+        'a8': {'x': '343', 'y': '142'},
+        'h1': {'x': '736', 'y': '445'},
+        'h2': {'x': '726', 'y': '390'},
+        'h3': {'x': '715', 'y': '337'},
+        'h4': {'x': '706', 'y': '294'},
+        'h5': {'x': '698', 'y': '252'},
+        'h6': {'x': '690', 'y': '211'},
+        'h7': {'x': '683', 'y': '173'},
+        'h8': {'x': '677', 'y': '141'},
 
-        'aa': {'x': '253', 'y': '648'},
-        'hh': {'x': '770', 'y': '648'},
+        'aa': {'x': '253', 'y': '578'},
+        'hh': {'x': '770', 'y': '578'},
 
-        'pickFirst': {'x': '464', 'y': '276'},
-        'pickLast': {'x': '1458', 'y': '256'},
-        'lock': {'x': '313', 'y': '445'},
-        'close': {'x': '1610', 'y': '344'},
-        'nothing': {'x': '1547', 'y': '77'},
+        'pickFirst': {'x': '152', 'y': '196'},
+        'pickLast': {'x': '861', 'y': '194'},
+        'lock': {'x': '53', 'y': '312'},
+        'close': {'x': '971', 'y': '245'},
+        'nothing': {'x': '848', 'y': '39'},
 
-        'chickSlot1': {'x': '1158', 'y': '964'},
-        'chickSlot9': {'x': '1286', 'y': '1057'},
+        'chickSlot1': {'x': '651', 'y': '686'},
+        'chickSlot9': {'x': '739', 'y': '747'},
 
-        'resetChicken': {'x': '914', 'y': '712'},
+        'resetChicken': {'x': '514', 'y': '500'},
 
-        'dotaArrowBtn': {'x': '32', 'y': '27'},
-        'dotaDisconnectBtn': {'x': '1627', 'y': '1035'},
-        'dotaLeaveBtn': {'x': '1648', 'y': '985'},
-        'dotaLeaveAcceptBtn': {'x': '874', 'y': '603'},
-        'dotaPlayAutoChessBtn': {'x': '1530', 'y': '866'},
-        'dotaAcceptBtn': {'x': '901', 'y': '529'},
-        'dotaMainMenuBtn': {'x': '286', 'y': '32'},
-        'dotaAutoChessBtn': {'x': '780', 'y': '478'},
+        'dotaArrowBtn': {'x': '22', 'y': '20'},
+        'dotaDisconnectBtn': {'x': '841', 'y': '735'},
+        'dotaLeaveBtn': {'x': '850', 'y': '700'},
+        'dotaLeaveAcceptBtn': {'x': '456', 'y': '423'},
+        'dotaPlayAutoChessBtn': {'x': '900', 'y': '616'},
+        'dotaAcceptBtn': {'x': '504', 'y': '371'},
+        'dotaMainMenuBtn': {'x': '207', 'y': '27'},
+        'dotaAutoChessBtn': {'x': '394', 'y': '345'},
 
-        'playerPosFirst': {'x': '1737', 'y': '155'},
-        'playerPosLast': {'x': '1737', 'y': '855'}
+        'playerPosFirst': {'x': '895', 'y': '108'},
+        'playerPosLast': {'x': '895', 'y': '605'}
     }
 
+    # taken with reference resolution of 1920x1080
     COORDMAP_RESOLUTION_16TO9 = {
         'a1': {'x': '633', 'y': '620'},
         'a2': {'x': '651', 'y': '548'},
@@ -134,49 +138,51 @@ class GameController:
         'playerPosLast': {'x': '1737', 'y': '855'}
     }
 
+    # taken with reference resolution of 1280x800
     COORDMAP_RESOLUTION_16TO10 = {
-        'a1': {'x': '399', 'y': '534'},
-        'a2': {'x': '412', 'y': '471'},
-        'a3': {'x': '422', 'y': '419'},
-        'a4': {'x': '434', 'y': '370'},
-        'a5': {'x': '440', 'y': '328'},
-        'a6': {'x': '449', 'y': '285'},
-        'a7': {'x': '457', 'y': '246'},
-        'a8': {'x': '463', 'y': '213'},
-        'h1': {'x': '877', 'y': '530'},
-        'h2': {'x': '867', 'y': '472'},
-        'h3': {'x': '855', 'y': '418'},
-        'h4': {'x': '846', 'y': '369'},
-        'h5': {'x': '836', 'y': '323'},
-        'h6': {'x': '828', 'y': '285'},
-        'h7': {'x': '821', 'y': '246'},
-        'h8': {'x': '815', 'y': '212'},
+        'a1': {'x': '399', 'y': '464'},
+        'a2': {'x': '412', 'y': '401'},
+        'a3': {'x': '422', 'y': '349'},
+        'a4': {'x': '434', 'y': '300'},
+        'a5': {'x': '440', 'y': '258'},
+        'a6': {'x': '449', 'y': '215'},
+        'a7': {'x': '457', 'y': '176'},
+        'a8': {'x': '463', 'y': '143'},
+        'h1': {'x': '877', 'y': '460'},
+        'h2': {'x': '867', 'y': '402'},
+        'h3': {'x': '855', 'y': '348'},
+        'h4': {'x': '846', 'y': '299'},
+        'h5': {'x': '836', 'y': '253'},
+        'h6': {'x': '828', 'y': '215'},
+        'h7': {'x': '821', 'y': '176'},
+        'h8': {'x': '815', 'y': '142'},
 
-        'aa': {'x': '366', 'y': '670'},
-        'hh': {'x': '910', 'y': '667'},
+        'aa': {'x': '366', 'y': '600'},
+        'hh': {'x': '910', 'y': '600'},
 
-        'pickFirst': {'x': '464', 'y': '276'},
-        'pickLast': {'x': '1458', 'y': '256'},
-        'lock': {'x': '313', 'y': '445'},
-        'close': {'x': '1610', 'y': '344'},
-        'nothing': {'x': '1547', 'y': '77'},
+        # old 16:9 values below!
+        'pickFirst': {'x': '271', 'y': '207'},
+        'pickLast': {'x': '1014', 'y': '207'},
+        'lock': {'x': '161', 'y': '325'},
+        'close': {'x': '1121', 'y': '255'},
+        'nothing': {'x': '1027', 'y': '39'},
 
-        'chickSlot1': {'x': '1158', 'y': '964'},
-        'chickSlot9': {'x': '1286', 'y': '1057'},
+        'chickSlot1': {'x': '785', 'y': '715'},
+        'chickSlot9': {'x': '880', 'y': '780'},
 
-        'resetChicken': {'x': '914', 'y': '712'},
+        'resetChicken': {'x': '642', 'y': '508'},
 
-        'dotaArrowBtn': {'x': '32', 'y': '27'},
-        'dotaDisconnectBtn': {'x': '1627', 'y': '1035'},
-        'dotaLeaveBtn': {'x': '1648', 'y': '985'},
-        'dotaLeaveAcceptBtn': {'x': '874', 'y': '603'},
-        'dotaPlayAutoChessBtn': {'x': '1530', 'y': '866'},
-        'dotaAcceptBtn': {'x': '901', 'y': '529'},
-        'dotaMainMenuBtn': {'x': '286', 'y': '32'},
-        'dotaAutoChessBtn': {'x': '780', 'y': '478'},
+        'dotaArrowBtn': {'x': '22', 'y': '20'},
+        'dotaDisconnectBtn': {'x': '1103', 'y': '764'},
+        'dotaLeaveBtn': {'x': '1100', 'y': '730'},
+        'dotaLeaveAcceptBtn': {'x': '553', 'y': '444'},
+        'dotaPlayAutoChessBtn': {'x': '1017', 'y': '644'},
+        'dotaAcceptBtn': {'x': '627', 'y': '390'},
+        'dotaMainMenuBtn': {'x': '214', 'y': '24'},
+        'dotaAutoChessBtn': {'x': '504', 'y': '357'},
 
-        'playerPosFirst': {'x': '1737', 'y': '155'},
-        'playerPosLast': {'x': '1737', 'y': '855'}
+        'playerPosFirst': {'x': '1144', 'y': '112'},
+        'playerPosLast': {'x': '1144', 'y': '630'}
     }
 
     COORDMAP = {
@@ -274,11 +280,46 @@ class GameController:
         self.channelName = channelName
         self.hotkeys = hotkeys
         self.resolution = resolution
+
+        aspectRatio4To3 = (int(self.resolution[0])/int(self.resolution[1]) * 3/4)
+        aspectRatio16To9 = (int(self.resolution[0])/int(self.resolution[1]) * 9/16)
+        aspectRatio16To10 = (int(self.resolution[0])/int(self.resolution[1]) * 10/16)
+        if( math.isclose(aspectRatio4To3,1.0,rel_tol=0.05)):
+            print('4:3!')
+            diffResoX = int(self.resolution[0])/1024
+            diffResoY = int(self.resolution[1])/768
+            self.COORDMAP = self.COORDMAP_RESOLUTION_4TO3
+
+        elif(math.isclose(aspectRatio16To9,1.0,rel_tol=0.05)):
+            print('16:9!')
+            diffResoX = int(self.resolution[0])/1920
+            diffResoY = int(self.resolution[1])/1080
+            self.COORDMAP = self.COORDMAP_RESOLUTION_16TO9
+
+        elif(math.isclose(aspectRatio16To10,1.0,rel_tol=0.05)):
+            print('16:10!')
+            diffResoX = int(self.resolution[0])/1280
+            diffResoY = int(self.resolution[1])/800
+            self.COORDMAP = self.COORDMAP_RESOLUTION_16TO10
+
         for coord in self.COORDMAP:
-            relativeXValue = float(self.COORDMAP[coord]['x'])/1920 * int(self.resolution[0])
-            relativeYValue = float(self.COORDMAP[coord]['y'])/1080 * int(self.resolution[1])
+            relativeXValue = float(self.COORDMAP[coord]['x']) * diffResoX
+            relativeYValue = float(self.COORDMAP[coord]['y']) * diffResoY
             self.COORDMAP[coord]['x'] = str(int(relativeXValue))
             self.COORDMAP[coord]['y'] = str(int(relativeYValue))
+            
+
+
+    def testAllFields(self):
+        """Testfunction that will move the mouse to every field"""
+        time.sleep(5)
+        startOffset = ord('a')
+        for i in range(1,9):
+            for j in range(8):
+                tempChar = str(chr(startOffset + j))
+                x, y = self.convertToLocation(tempChar+str(i))
+                self.moveMouse(x,y)
+                time.sleep(0.1)
 
     def convertToLocation(self, field):
         """Returns pixel coordinates of a given field (AA,A1..H8)
@@ -291,16 +332,13 @@ class GameController:
         secondChar = field[1:]
         firstCharNr = ord(firstChar)
         diffNr = firstCharNr - aAsNr 
-        print('diffNr: ', diffNr)
         if(firstChar == secondChar):
             diffRow = float(self.COORDMAP['hh']['x']) - float(self.COORDMAP['aa']['x'])
-            print('diffRow1: ',diffRow)
             intervalRow = diffRow / 7
             newXPos = int(float(self.COORDMAP['aa']['x'])+diffNr*intervalRow)
             newYPos = int(self.COORDMAP['aa']['y'])
         else:
             diffRow = float(self.COORDMAP['h'+secondChar]['x']) - float(self.COORDMAP['a'+secondChar]['x'])
-            print('diffRow1: ',diffRow)
             intervalRow = diffRow / 7
             newXPos = int(float(self.COORDMAP['a'+secondChar]['x'])+diffNr*intervalRow)
             newYPos = int(self.COORDMAP['a'+secondChar]['y'])
@@ -396,15 +434,15 @@ class GameController:
         Keyword arguments:
             slot -- number between 1-9
         """
-        distanceX = self.COORDMAP['chickSlot9']['x'] - self.COORDMAP['chickSlot1']['x']
-        distanceY = self.COORDMAP['chickSlot9']['y'] - self.COORDMAP['chickSlot1']['y']
+        distanceX = int(self.COORDMAP['chickSlot9']['x']) - int(self.COORDMAP['chickSlot1']['x'])
+        distanceY = int(self.COORDMAP['chickSlot9']['y']) - int(self.COORDMAP['chickSlot1']['y'])
         # We have 3x3 item matrix
         distanceToEachCenterX = distanceX / 3
         distanceToEachCenterY = distanceY / 3
         # after 3 and 6 the next row starts
-        newXCoord = self.COORDMAP['chickSlot1']['x'] + ((slot-1) % 3) * distanceToEachCenterX
+        newXCoord = int(self.COORDMAP['chickSlot1']['x']) + ((int(slot)-1) % 3) * distanceToEachCenterX
         # reduce slot number slightly so 1,2,3 / 3.0 casted to int becomes 0; 4,5,6 become 1; and 7,8,9 become 2
-        newYCoord = self.COORDMAP['chickSlot1']['y'] + int((slot-0.01)/3.0) * distanceToEachCenterY
+        newYCoord = int(self.COORDMAP['chickSlot1']['y']) + int((float(slot)-0.01)/3.0) * distanceToEachCenterY
         self.moveMouse(newXCoord,newYCoord, '3')
         time.sleep(0.5)
         # the rightclick menu changes position depending on row
@@ -477,15 +515,15 @@ class GameController:
         '''
         # close shop before
         self.showSelection('off')
-        distanceX = self.COORDMAP['chickSlot9']['x'] - self.COORDMAP['chickSlot1']['x']
-        distanceY = self.COORDMAP['chickSlot9']['y'] - self.COORDMAP['chickSlot1']['y']
+        distanceX = int(self.COORDMAP['chickSlot9']['x']) - int(self.COORDMAP['chickSlot1']['x'])
+        distanceY = int(self.COORDMAP['chickSlot9']['y']) - int(self.COORDMAP['chickSlot1']['y'])
         # We have 3x3 item matrix
         distanceToEachCenterX = distanceX / 3
         distanceToEachCenterY = distanceY / 3
         # after 3 and 6 the next row starts
-        newXCoord = self.COORDMAP['chickSlot1']['x'] + ((slot-1) % 3) * distanceToEachCenterX
+        newXCoord = int(self.COORDMAP['chickSlot1']['x']) + ((int(slot)-1) % 3) * distanceToEachCenterX
         # reduce slot number slightly so 1,2,3 / 3.0 casted to int becomes 0; 4,5,6 become 1; and 7,8,9 become 2
-        newYCoord = self.COORDMAP['chickSlot1']['y'] + int((slot-0.01)/3.0) * distanceToEachCenterY
+        newYCoord = int(self.COORDMAP['chickSlot1']['y']) + int((float(slot)-0.01)/3.0) * distanceToEachCenterY
         self.dragAndDrop({'x': newXCoord, 'y': newYCoord},target)
         # give chicken time to run to the destination
         # TODO: dynamic time depending on target location
@@ -516,9 +554,9 @@ class GameController:
         '''
         if(playerPlacementID != -1):
             timeToStayOnPlayer = 3
-            distancePlayersY = self.COORDMAP['playerPosFirst']['y'] - self.COORDMAP['playerPosLast']['y']
+            distancePlayersY = int(self.COORDMAP['playerPosFirst']['y']) - int(self.COORDMAP['playerPosLast']['y'])
             diffCenter = distancePlayersY / 8
-            newYCoord = self.COORDMAP['playerPosFirst']['y'] + (playerPlacementID-1) * diffCenter
+            newYCoord = int(self.COORDMAP['playerPosFirst']['y']) + (playerPlacementID-1) * diffCenter
             # cheeky message to be displayed to make it feel more interactive with the other players
             allChatMessage = 'Chat wants to inspect the current position: '+playerPlacementID
             self.writeAllChat(allChatMessage)
@@ -723,9 +761,9 @@ class GameController:
             target -- Number between 1-5
         """
         self.showSelection('on')
-        distancePixels = self.COORDMAP['pickLast']['x'] - self.COORDMAP['pickFirst']['x']
-        distanceToEachCenter = distancePixels / 5
-        newXCoord = self.COORDMAP['pickFirst']['x'] + target * distanceToEachCenter
+        distancePixels = int(self.COORDMAP['pickLast']['x']) - int(self.COORDMAP['pickFirst']['x'])
+        distanceToEachCenter = distancePixels / 4
+        newXCoord = int(self.COORDMAP['pickFirst']['x']) + (int(target)-1) * distanceToEachCenter
         self.moveMouse(newXCoord,self.COORDMAP['pickFirst']['y'], '1')
         time.sleep(self.delayBetweenActions)
         self.clickNothing()
@@ -876,6 +914,8 @@ class GameController:
         # make sure shop is closed while moving pieces
         self.showSelection('off')
         x, y = self.convertToLocation(source)
+        self.moveMouse(x,y)
+
         if (self.isXDOTOOL):
             self.pressKey(self.hotkeys[0])
         else:
