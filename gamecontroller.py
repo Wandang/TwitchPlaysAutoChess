@@ -74,6 +74,10 @@ class GameController:
         'close': {'x': '971', 'y': '245'},
         'nothing': {'x': '848', 'y': '39'},
 
+        'chickenAbility1':{'x': '438', 'y': '690'},
+        'chickenAbility5':{'x': '601', 'y': '690'},
+        'shopButton': {'x': '249', 'y': '30'},
+
         'chickSlot1': {'x': '651', 'y': '686'},
         'chickSlot9': {'x': '739', 'y': '747'},
 
@@ -119,6 +123,10 @@ class GameController:
         'lock': {'x': '313', 'y': '445'},
         'close': {'x': '1610', 'y': '344'},
         'nothing': {'x': '1547', 'y': '77'},
+
+        'chickenAbility1':{'x': '855', 'y': '970'},
+        'chickenAbility5':{'x': '1087', 'y': '970'},
+        'shopButton': {'x': '591', 'y': '37'},
 
         'chickSlot1': {'x': '1158', 'y': '964'},
         'chickSlot9': {'x': '1286', 'y': '1057'},
@@ -167,6 +175,10 @@ class GameController:
         'close': {'x': '1121', 'y': '255'},
         'nothing': {'x': '1027', 'y': '39'},
 
+        'chickenAbility1':{'x': '562', 'y': '717'},
+        'chickenAbility5':{'x': '734', 'y': '717'},
+        'shopButton': {'x': '365', 'y': '30'},
+
         'chickSlot1': {'x': '785', 'y': '715'},
         'chickSlot9': {'x': '880', 'y': '780'},
 
@@ -211,6 +223,10 @@ class GameController:
         'lock': {'x': '313', 'y': '445'},
         'close': {'x': '1610', 'y': '344'},
         'nothing': {'x': '1547', 'y': '77'},
+
+        'chickenAbility1':{'x': '855', 'y': '970'},
+        'chickenAbility5':{'x': '1087', 'y': '970'},
+        'shopButton': {'x': '591', 'y': '37'},
 
         'chickSlot1': {'x': '1158', 'y': '964'},
         'chickSlot9': {'x': '1286', 'y': '1057'},
@@ -422,15 +438,15 @@ class GameController:
         """
         subprocess.run(['xdotool', 'key', '--window', self.dota2WindowID, key])
 
-    def pressKeyWithPynput(self, key):
-        """Presses specified key on keyboard with pykeyboard module
+    # def pressKeyWithPynput(self, key):
+    #     """Presses specified key on keyboard with pykeyboard module
         
-        Keyword arguments:
-            key -- keyboard key (keycodes)
-        """
-        print('trying to press key: ',key)
-        self.keyboard.press(key)
-        self.keyboard.release(key)
+    #     Keyword arguments:
+    #         key -- keyboard key (keycodes)
+    #     """
+    #     print('trying to press key: ',key)
+    #     self.keyboard.press(key)
+    #     self.keyboard.release(key)
 
     def toggleLockItem(self, slot):
         """Locks item in specified itemslot (1-9)
@@ -446,7 +462,7 @@ class GameController:
         # after 3 and 6 the next row starts
         newXCoord = int(self.COORDMAP['chickSlot1']['x']) + ((int(slot)-1) % 3) * distanceToEachCenterX
         # reduce slot number slightly so 1,2,3 / 3.0 casted to int becomes 0; 4,5,6 become 1; and 7,8,9 become 2
-        newYCoord = int(self.COORDMAP['chickSlot1']['y']) + int((float(slot)-0.01)/3.0) * distanceToEachCenterY
+        newYCoord = int(self.COORDMAP['chickSlot1']['y']) + int((int(slot)-1)/3.0) * distanceToEachCenterY
         self.moveMouse(newXCoord,newYCoord, '3')
         time.sleep(0.5)
         # the rightclick menu changes position depending on row
@@ -527,7 +543,7 @@ class GameController:
         # after 3 and 6 the next row starts
         newXCoord = int(self.COORDMAP['chickSlot1']['x']) + ((int(slot)-1) % 3) * distanceToEachCenterX
         # reduce slot number slightly so 1,2,3 / 3.0 casted to int becomes 0; 4,5,6 become 1; and 7,8,9 become 2
-        newYCoord = int(self.COORDMAP['chickSlot1']['y']) + int((float(slot)-0.01)/3.0) * distanceToEachCenterY
+        newYCoord = int(self.COORDMAP['chickSlot1']['y']) + int((int(slot)-1)/3.0) * distanceToEachCenterY
         self.dragAndDrop({'x': newXCoord, 'y': newYCoord},target)
         # give chicken time to run to the destination
         # TODO: dynamic time depending on target location
@@ -556,64 +572,69 @@ class GameController:
         Keyword arguments:
             playerPlacementID -- PlayerID defined by current placement (1-8)
         '''
+        distancePlayersY = int(self.COORDMAP['playerPosFirst']['y']) - int(self.COORDMAP['playerPosLast']['y'])
+        diffCenter = distancePlayersY / 8
         if(playerPlacementID != -1):
-            timeToStayOnPlayer = 3
-            distancePlayersY = int(self.COORDMAP['playerPosFirst']['y']) - int(self.COORDMAP['playerPosLast']['y'])
-            diffCenter = distancePlayersY / 8
+            #timeToStayOnPlayer = 3
+
             newYCoord = int(self.COORDMAP['playerPosFirst']['y']) + (playerPlacementID-1) * diffCenter
             # cheeky message to be displayed to make it feel more interactive with the other players
-            allChatMessage = 'Chat wants to inspect the current position: '+playerPlacementID
-            self.writeAllChat(allChatMessage)
+            # allChatMessage = 'Chat wants to inspect the current position: '+playerPlacementID
+            # self.writeAllChat(allChatMessage)
             # clicking on the avatar of the specific player leads us to their camposition
             self.moveMouse(self.COORDMAP['playerPosFirst']['x'],newYCoord, '1')
             time.sleep(self.delayBetweenActions)
             # move mouse away from avatars so the popovertext is not blocking the view
             self.clickNothing()
-            time.sleep(timeToStayOnPlayer)
+            #time.sleep(timeToStayOnPlayer)
             # cheeky message to be displayed to make it feel more interactive with the other players
-            allChatMessage = 'Chat judgement: ' + \
-                self.TWITCHEMOTES[random.randint(0, len(self.TWITCHEMOTES))]
-            self.writeAllChat(allChatMessage)
-            self.camCalibration()
+            # allChatMessage = 'Chat judgement: ' + \
+            #     self.TWITCHEMOTES[random.randint(0, len(self.TWITCHEMOTES))]
+            # self.writeAllChat(allChatMessage)
+            #self.camCalibration()
         else:
             self.clickNothing()
             time.sleep(self.delayBetweenActions)
-            for dummy in range(8):
+            for i in range(8):
                 if(self.isXDOTOOL):
                     self.pressKey('Tab')
                 else:
-                    self.pressKeyWithPynput(KeyboardKey.tab)
+                    newYCoord = int(self.COORDMAP['playerPosFirst']['y']) + i * diffCenter
+                    self.moveMouse(self.COORDMAP['playerPosFirst']['x'],newYCoord, '1')
+                    time.sleep(self.delayBetweenActions)
+                    # move mouse away from avatars so the popovertext is not blocking the view
+                    self.clickNothing()
 
                 time.sleep(0.625)
 
 
     # TODO: add profanity filter to prevent possible repercussions through twitch/ possible violation of TOS?
-    def writeAllChat(self, message):
-        """Writes a message to everyone
+    # def writeAllChat(self, message):
+    #     """Writes a message to everyone
         
-        Keyword arguments:
-            message -- Textmessage to be send
-        """
-        if(self.isXDOTOOL):
-            self.pressKey('shift+Return')
-        else:
-            print('trying to hold shift...')
-            with self.keyboard.pressed(KeyboardKey.shift):
-                print('shift held')
-                self.pressKeyWithPynput(KeyboardKey.enter)
+    #     Keyword arguments:
+    #         message -- Textmessage to be send
+    #     """
+    #     if(self.isXDOTOOL):
+    #         self.pressKey('shift+Return')
+    #     else:
+    #         print('trying to hold shift...')
+    #         with self.keyboard.pressed(KeyboardKey.shift):
+    #             print('shift held')
+    #             self.pressKeyWithPynput(KeyboardKey.enter)
 
-        time.sleep(self.delayBetweenActions)
-        if(self.isXDOTOOL):
-            subprocess.run(['xdotool', 'type', '--window', self.dota2WindowID, message])
-        else:
-            print('typing message')
-            self.keyboard.type(message)
-        time.sleep(0.5)
-        if (self.isXDOTOOL):
-            self.pressKey('Return')
-        else:
-            self.pressKeyWithPynput(KeyboardKey.enter)
-        time.sleep(self.delayBetweenActions)
+    #     time.sleep(self.delayBetweenActions)
+    #     if(self.isXDOTOOL):
+    #         subprocess.run(['xdotool', 'type', '--window', self.dota2WindowID, message])
+    #     else:
+    #         print('typing message')
+    #         self.keyboard.type(message)
+    #     time.sleep(0.5)
+    #     if (self.isXDOTOOL):
+    #         self.pressKey('Return')
+    #     else:
+    #         self.pressKeyWithPynput(KeyboardKey.enter)
+    #     time.sleep(self.delayBetweenActions)
 
     # TODO: promotelink should be read from settings file
     def camCalibration(self, promote=False):
@@ -625,15 +646,16 @@ class GameController:
         Keyword arguments:
             promote -- Promotes the twitch channel in allchat (bool)
         """
-        if (self.isXDOTOOL):
-            self.pressKey('1')
-        else:
-            self.pressKeyWithPynput('1')
-        # shoutout in allchat to promote the bot
-        if(promote):
-            self.writeAllChat(
-                'Chat is playing right now on https://www.twitch.tv/' + self.channelName)
-        time.sleep(self.delayBetweenActions)
+        pass
+        # if (self.isXDOTOOL):
+        #     self.pressKey('1')
+        # else:
+        #     self.pressKeyWithPynput('1')
+        # # shoutout in allchat to promote the bot
+        # if(promote):
+        #     self.writeAllChat(
+        #         'Chat is playing right now on https://www.twitch.tv/' + self.channelName)
+        # time.sleep(self.delayBetweenActions)
 
 
     def acceptGame(self):
@@ -643,10 +665,10 @@ class GameController:
     def searchGame(self):
         """Initiates the search for a Dota AutoChess game inside Dota."""
         # press esc to close any info windows (for example due to not accepting b4)
-        if (self.isXDOTOOL):
-            self.pressKey('Escape')
-        else:
-            self.pressKeyWithPynput(KeyboardKey.esc)
+        # if (self.isXDOTOOL):
+        #     self.pressKey('Escape')
+        # else:
+        #     self.pressKeyWithPynput(KeyboardKey.esc)
         
         # go to main menu first
         self.moveMouse(self.COORDMAP['dotaMainMenuBtn']['x'],self.COORDMAP['dotaMainMenuBtn']['y'], '1')
@@ -797,7 +819,7 @@ class GameController:
             if (self.isXDOTOOL):
                 self.pressKey('space')
             else:
-                self.pressKeyWithPynput(KeyboardKey.space)
+                self.moveMouse(self.COORDMAP['shopButton']['x'],self.COORDMAP['shopButton']['y'],'1')
         time.sleep(self.delayBetweenActions)
 
     def lockSelection(self):
@@ -809,16 +831,17 @@ class GameController:
 
     def moveBot(self):
         """Shortcut command: Moves the first piece to the backline"""
+        self.moveMouse(self.COORDMAP['chickenAbility1']['x'],self.COORDMAP['chickenAbility1']['y'],'1')
         x,y = self.convertToLocation('aa')
-        self.moveMouse(x,y)
-        if (self.isXDOTOOL):
-            self.pressKey(self.hotkeys[0])
-        else:
-            self.pressKeyWithPynput(self.hotkeys[0])
+        self.moveMouse(x,y,'1')
+        # if (self.isXDOTOOL):
+        #     self.pressKey(self.hotkeys[0])
+        # else:
+        #     self.pressKeyWithPynput(self.hotkeys[0])
 
         time.sleep(self.delayBetweenActions)
         x,y = self.convertToLocation('e1')
-        self.moveMouse(x,y)
+        self.moveMouse(x,y,'1')
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
         self.showSelection('on')
@@ -826,15 +849,17 @@ class GameController:
 
     def moveTop(self):
         """Shortcut command: Moves the first piece to the frontline"""
+        self.moveMouse(self.COORDMAP['chickenAbility1']['x'],self.COORDMAP['chickenAbility1']['y'],'1')
+
         x,y = self.convertToLocation('aa')
-        self.moveMouse(x,y)
-        if (self.isXDOTOOL):
-            self.pressKey(self.hotkeys[0])
-        else:
-            self.pressKeyWithPynput(self.hotkeys[0])
+        self.moveMouse(x,y, '1')
+        # if (self.isXDOTOOL):
+        #     self.pressKey(self.hotkeys[0])
+        # else:
+        #     self.pressKeyWithPynput(self.hotkeys[0])
         time.sleep(self.delayBetweenActions)
         x,y = self.convertToLocation('d4')
-        self.moveMouse(x,y)
+        self.moveMouse(x,y, '1')
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
         self.showSelection('on')
@@ -842,15 +867,16 @@ class GameController:
 
     def moveRight(self):
         """Shortcut command: Moves the first piece to the right side"""
+        self.moveMouse(self.COORDMAP['chickenAbility1']['x'],self.COORDMAP['chickenAbility1']['y'],'1')
         x,y = self.convertToLocation('aa')
-        self.moveMouse(x,y)
-        if (self.isXDOTOOL):
-            self.pressKey(self.hotkeys[0])
-        else:
-            self.pressKeyWithPynput(self.hotkeys[0])
+        self.moveMouse(x,y, '1')
+        # if (self.isXDOTOOL):
+        #     self.pressKey(self.hotkeys[0])
+        # else:
+        #     self.pressKeyWithPynput(self.hotkeys[0])
         time.sleep(self.delayBetweenActions)
         x,y = self.convertToLocation('g3')
-        self.moveMouse(x,y)
+        self.moveMouse(x,y, '1')
         time.sleep(self.delayBetweenActions)
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
@@ -859,15 +885,16 @@ class GameController:
 
     def moveLeft(self):
         """Shortcut command: Moves the first piece to the left side"""
+        self.moveMouse(self.COORDMAP['chickenAbility1']['x'],self.COORDMAP['chickenAbility1']['y'],'1')
         x,y = self.convertToLocation('aa')
-        self.moveMouse(x,y)
-        if (self.isXDOTOOL):
-            self.pressKey(self.hotkeys[0])
-        else:
-            self.pressKeyWithPynput(self.hotkeys[0])
+        self.moveMouse(x,y, '1')
+        # if (self.isXDOTOOL):
+        #     self.pressKey(self.hotkeys[0])
+        # else:
+        #     self.pressKeyWithPynput(self.hotkeys[0])
         time.sleep(self.delayBetweenActions)
         x,y = self.convertToLocation('b3')
-        self.moveMouse(x,y)
+        self.moveMouse(x,y, '1')
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
         self.showSelection('on')
@@ -920,13 +947,14 @@ class GameController:
         """
         # make sure shop is closed while moving pieces
         self.showSelection('off')
+        self.moveMouse(self.COORDMAP['chickenAbility1']['x'],self.COORDMAP['chickenAbility1']['y'],'1')
         x, y = self.convertToLocation(source)
-        self.moveMouse(x,y)
+        self.moveMouse(x,y, '1')
 
-        if (self.isXDOTOOL):
-            self.pressKey(self.hotkeys[0])
-        else:
-            self.pressKeyWithPynput(self.hotkeys[0])
+        # if (self.isXDOTOOL):
+        #     self.pressKey(self.hotkeys[0])
+        # else:
+        #     self.pressKeyWithPynput(self.hotkeys[0])
         time.sleep(self.delayBetweenActions)
         x, y = self.convertToLocation(target)
         self.moveMouse(x,y,'1')
@@ -942,13 +970,16 @@ class GameController:
             target -- target chessboard position
         """
         self.showSelection('off')
-        # TODO: Check if click should not be done because of quickcast
+        diffDistance = self.COORDMAP['chickenAbility5']['x'] - self.COORDMAP['chickenAbility1']['x']
+        interval = diffDistance / 4
+        newXCoord = self.COORDMAP['chickenAbility1']['x'] + interval
+        self.moveMouse(newXCoord,self.COORDMAP['chickenAbility1']['y'],'1')
         x, y = self.convertToLocation(target)
-        self.moveMouse(x,y)
-        if (self.isXDOTOOL):
-            self.pressKey(self.hotkeys[1])
-        else:
-            self.pressKeyWithPynput(self.hotkeys[1])
+        self.moveMouse(x,y, '1')
+        # if (self.isXDOTOOL):
+        #     self.pressKey(self.hotkeys[1])
+        # else:
+        #     self.pressKeyWithPynput(self.hotkeys[1])
         time.sleep(self.delayBetweenActions)
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
@@ -962,12 +993,16 @@ class GameController:
             target -- target chessboard position
         """
         self.showSelection('off')
+        diffDistance = self.COORDMAP['chickenAbility5']['x'] - self.COORDMAP['chickenAbility1']['x']
+        interval = diffDistance / 4
+        newXCoord = self.COORDMAP['chickenAbility1']['x'] + 2 * interval
+        self.moveMouse(newXCoord,self.COORDMAP['chickenAbility1']['y'],'1')
         x, y = self.convertToLocation(target)
-        self.moveMouse(x,y)
-        if (self.isXDOTOOL):
-            self.pressKey(self.hotkeys[2])
-        else:
-            self.pressKeyWithPynput(self.hotkeys[2])
+        self.moveMouse(x,y, '1')
+        # if (self.isXDOTOOL):
+        #     self.pressKey(self.hotkeys[2])
+        # else:
+        #     self.pressKeyWithPynput(self.hotkeys[2])
         time.sleep(self.delayBetweenActions)
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
@@ -976,10 +1011,14 @@ class GameController:
     def rerollPieces(self):
         """Rerolls the shop selection."""
         self.showSelection('off')
-        if (self.isXDOTOOL):
-            self.pressKey(self.hotkeys[3])
-        else:
-            self.pressKeyWithPynput(self.hotkeys[3])
+        diffDistance = self.COORDMAP['chickenAbility5']['x'] - self.COORDMAP['chickenAbility1']['x']
+        interval = diffDistance / 4
+        newXCoord = self.COORDMAP['chickenAbility1']['x'] + 3 * interval
+        self.moveMouse(newXCoord,self.COORDMAP['chickenAbility1']['y'],'1')
+        # if (self.isXDOTOOL):
+        #     self.pressKey(self.hotkeys[3])
+        # else:
+        #     self.pressKeyWithPynput(self.hotkeys[3])
         time.sleep(self.delayBetweenActions)
         self.clickNothing()
         time.sleep(self.delayBetweenActions)
@@ -992,10 +1031,11 @@ class GameController:
             amount -- How many times xp should be bought (1-4)
         """
         for dummy in range(int(amount)):
-            if (self.isXDOTOOL):
-                self.pressKey(self.hotkeys[4])
-            else:
-                self.pressKeyWithPynput(self.hotkeys[4])
+            self.moveMouse(self.COORDMAP['chickenAbility5']['x'],self.COORDMAP['chickenAbility5']['y'],'1')
+            # if (self.isXDOTOOL):
+            #     self.pressKey(self.hotkeys[4])
+            # else:
+            #     self.pressKeyWithPynput(self.hotkeys[4])
             time.sleep(0.8)
         self.clickNothing()
     
@@ -1112,7 +1152,7 @@ class GameController:
             tempword = ''
             for i in range(1, len(splitted)):
                 tempword += splitted[i] + ' '
-            self.writeAllChat(tempword)
+            # self.writeAllChat(tempword)
         elif splitted[0] == '!stack':
             time.sleep(.02)
             self.stackCommand(splitted)
