@@ -103,6 +103,14 @@ There is an example OBS scene/overlay inside the assets folder that can be impor
 
 Big thanks to TwitchPlaysPokemon developers: sunshinekitty, RDJ, MZ, AP, & Oriax
 
+Big thanks as well to:
+MrTee
+Sinthowinto
+StuckyO
+モエリッル
+billymitchell_dk
+unyieldingdeath
+
 # Licence
 
 ```
