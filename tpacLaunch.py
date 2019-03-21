@@ -17,6 +17,11 @@
 import configparser
 import os
 import subprocess
+from pynput.mouse import Button as MouseButton
+from pynput.mouse import Controller as MouseController
+from pynput.keyboard import Key as KeyboardKey
+from pynput.keyboard import Controller as KeyboardController
+from screeninfo import get_monitors
 import time
 import socket
 from threading import Thread
@@ -318,5 +323,23 @@ class Setup:
 
 print('starting v2...')
 if __name__ == "__main__":
+    for m in get_monitors():
+        print(str(m))
+    # mouse = MouseController()
+    # keyboard = KeyboardController()
+    # move mouse to new location:
+    # self.mouse.position = (int(x),int(y))
+    # click mouse:
+    # self.mouse.click(MouseButton.left)
+    # hold shift and press enter:
+    # with self.keyboard.pressed(KeyboardKey.shift):
+    #     print('shift held')
+    #     self.keyboard.press(KeyboardKey.enter)
+    #     self.keyboard.release(KeyboardKey.enter)
+    # write a message:
+    # self.keyboard.type(message)
+    # press single key:
+    # self.keyboard.press('a')
+    # self.keyboard.release('a')
     setup = Setup()
     setup.start()

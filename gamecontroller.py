@@ -353,6 +353,9 @@ class GameController:
             y -- y coordinate inside screen resolution
             clickType -- 1: leftclick, 2: middleclick, 3: rightclick
         """
+        print('trying to move to x: ',x)
+        print('trying to move to y: ',y)
+        # print('trying to click: ' + clickType)
         if(self.isXDOTOOL):
             # -- window param makes sure that the input gets send to a specific window, even if it is in the background
             subprocess.run(['xdotool',
@@ -424,7 +427,8 @@ class GameController:
         
         Keyword arguments:
             key -- keyboard key (keycodes)
-        """        
+        """
+        print('trying to press key: ',key)
         self.keyboard.press(key)
         self.keyboard.release(key)
 
@@ -593,13 +597,16 @@ class GameController:
         if(self.isXDOTOOL):
             self.pressKey('shift+Return')
         else:
+            print('trying to hold shift...')
             with self.keyboard.pressed(KeyboardKey.shift):
+                print('shift held')
                 self.pressKeyWithPynput(KeyboardKey.enter)
 
         time.sleep(self.delayBetweenActions)
         if(self.isXDOTOOL):
             subprocess.run(['xdotool', 'type', '--window', self.dota2WindowID, message])
         else:
+            print('typing message')
             self.keyboard.type(message)
         time.sleep(0.5)
         if (self.isXDOTOOL):
