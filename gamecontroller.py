@@ -572,12 +572,13 @@ class GameController:
         Keyword arguments:
             playerPlacementID -- PlayerID defined by current placement (1-8)
         '''
-        distancePlayersY = int(self.COORDMAP['playerPosFirst']['y']) - int(self.COORDMAP['playerPosLast']['y'])
-        diffCenter = distancePlayersY / 8
+        self.closeSelection()
+        distancePlayersY = int(self.COORDMAP['playerPosLast']['y']) - int(self.COORDMAP['playerPosFirst']['y'])
+        diffCenter = distancePlayersY / 7
         if(playerPlacementID != -1):
             #timeToStayOnPlayer = 3
 
-            newYCoord = int(self.COORDMAP['playerPosFirst']['y']) + (playerPlacementID-1) * diffCenter
+            newYCoord = int(self.COORDMAP['playerPosFirst']['y']) + (int(playerPlacementID)-1) * diffCenter
             # cheeky message to be displayed to make it feel more interactive with the other players
             # allChatMessage = 'Chat wants to inspect the current position: '+playerPlacementID
             # self.writeAllChat(allChatMessage)
@@ -970,9 +971,10 @@ class GameController:
             target -- target chessboard position
         """
         self.showSelection('off')
-        diffDistance = self.COORDMAP['chickenAbility5']['x'] - self.COORDMAP['chickenAbility1']['x']
+        diffDistance = int(self.COORDMAP['chickenAbility5']['x']) - int(self.COORDMAP['chickenAbility1']['x'])
         interval = diffDistance / 4
-        newXCoord = self.COORDMAP['chickenAbility1']['x'] + interval
+        # TODO: write a function to use coordmaps as integers -> useCoordsAsNumber(coord)
+        newXCoord = int(self.COORDMAP['chickenAbility1']['x']) + interval
         self.moveMouse(newXCoord,self.COORDMAP['chickenAbility1']['y'],'1')
         x, y = self.convertToLocation(target)
         self.moveMouse(x,y, '1')
@@ -993,9 +995,9 @@ class GameController:
             target -- target chessboard position
         """
         self.showSelection('off')
-        diffDistance = self.COORDMAP['chickenAbility5']['x'] - self.COORDMAP['chickenAbility1']['x']
+        diffDistance = int(self.COORDMAP['chickenAbility5']['x']) - int(self.COORDMAP['chickenAbility1']['x'])
         interval = diffDistance / 4
-        newXCoord = self.COORDMAP['chickenAbility1']['x'] + 2 * interval
+        newXCoord = int(self.COORDMAP['chickenAbility1']['x']) + 2 * interval
         self.moveMouse(newXCoord,self.COORDMAP['chickenAbility1']['y'],'1')
         x, y = self.convertToLocation(target)
         self.moveMouse(x,y, '1')
@@ -1011,9 +1013,9 @@ class GameController:
     def rerollPieces(self):
         """Rerolls the shop selection."""
         self.showSelection('off')
-        diffDistance = self.COORDMAP['chickenAbility5']['x'] - self.COORDMAP['chickenAbility1']['x']
+        diffDistance = int(self.COORDMAP['chickenAbility5']['x']) - int(self.COORDMAP['chickenAbility1']['x'])
         interval = diffDistance / 4
-        newXCoord = self.COORDMAP['chickenAbility1']['x'] + 3 * interval
+        newXCoord = int(self.COORDMAP['chickenAbility1']['x']) + 3 * interval
         self.moveMouse(newXCoord,self.COORDMAP['chickenAbility1']['y'],'1')
         # if (self.isXDOTOOL):
         #     self.pressKey(self.hotkeys[3])
