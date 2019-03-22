@@ -832,6 +832,7 @@ class GameController:
 
     def moveBot(self):
         """Shortcut command: Moves the first piece to the backline"""
+        self.resetChickenPos()
         self.moveMouse(self.COORDMAP['chickenAbility1']['x'],self.COORDMAP['chickenAbility1']['y'],'1')
         x,y = self.convertToLocation('aa')
         self.moveMouse(x,y,'1')
@@ -850,6 +851,7 @@ class GameController:
 
     def moveTop(self):
         """Shortcut command: Moves the first piece to the frontline"""
+        self.resetChickenPos()
         self.moveMouse(self.COORDMAP['chickenAbility1']['x'],self.COORDMAP['chickenAbility1']['y'],'1')
 
         x,y = self.convertToLocation('aa')
@@ -868,6 +870,7 @@ class GameController:
 
     def moveRight(self):
         """Shortcut command: Moves the first piece to the right side"""
+        self.resetChickenPos()
         self.moveMouse(self.COORDMAP['chickenAbility1']['x'],self.COORDMAP['chickenAbility1']['y'],'1')
         x,y = self.convertToLocation('aa')
         self.moveMouse(x,y, '1')
@@ -886,6 +889,7 @@ class GameController:
 
     def moveLeft(self):
         """Shortcut command: Moves the first piece to the left side"""
+        self.resetChickenPos()
         self.moveMouse(self.COORDMAP['chickenAbility1']['x'],self.COORDMAP['chickenAbility1']['y'],'1')
         x,y = self.convertToLocation('aa')
         self.moveMouse(x,y, '1')
@@ -948,6 +952,7 @@ class GameController:
         """
         # make sure shop is closed while moving pieces
         self.showSelection('off')
+        self.resetChickenPos()
         self.moveMouse(self.COORDMAP['chickenAbility1']['x'],self.COORDMAP['chickenAbility1']['y'],'1')
         x, y = self.convertToLocation(source)
         self.moveMouse(x,y, '1')
@@ -971,6 +976,7 @@ class GameController:
             target -- target chessboard position
         """
         self.showSelection('off')
+        self.resetChickenPos()
         diffDistance = int(self.COORDMAP['chickenAbility5']['x']) - int(self.COORDMAP['chickenAbility1']['x'])
         interval = diffDistance / 4
         # TODO: write a function to use coordmaps as integers -> useCoordsAsNumber(coord)
@@ -995,6 +1001,7 @@ class GameController:
             target -- target chessboard position
         """
         self.showSelection('off')
+        self.resetChickenPos()
         diffDistance = int(self.COORDMAP['chickenAbility5']['x']) - int(self.COORDMAP['chickenAbility1']['x'])
         interval = diffDistance / 4
         newXCoord = int(self.COORDMAP['chickenAbility1']['x']) + 2 * interval
@@ -1013,6 +1020,7 @@ class GameController:
     def rerollPieces(self):
         """Rerolls the shop selection."""
         self.showSelection('off')
+        self.resetChickenPos()
         diffDistance = int(self.COORDMAP['chickenAbility5']['x']) - int(self.COORDMAP['chickenAbility1']['x'])
         interval = diffDistance / 4
         newXCoord = int(self.COORDMAP['chickenAbility1']['x']) + 3 * interval
