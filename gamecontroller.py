@@ -39,7 +39,9 @@ class GameController:
     keyboard = KeyboardController()
     commandStack = []
     # default delay after each peripheral action. Needs to be > 0 to make sure that the actions are finished properly
-    delayBetweenActions = 0.3
+    sleepAfterMouseMove = 0.3
+    # default delay after interacting with the dota menu
+    sleepBetweenMenu = 1
     dota2WindowID = ''
     allowRagequit = False
     TWITCHEMOTES = ['monkaS', '4Head', 'FailFish', 'DansGame', 'LUL', 'Kappa', 'NotLikeThis',
@@ -328,14 +330,17 @@ class GameController:
 
     def testAllFields(self):
         """Testfunction that will move the mouse to every field"""
-        time.sleep(5)
+        # give time to switch to dota/focus dota window
+        waitForAltTab = 5
+        durationLingerOnOneField = 0.1
+        time.sleep(waitForAltTab)
         startOffset = ord('a')
         for i in range(1,9):
             for j in range(8):
                 tempChar = str(chr(startOffset + j))
                 x, y = self.convertToLocation(tempChar+str(i))
                 self.moveMouse(x,y)
-                time.sleep(0.1)
+                time.sleep(durationLingerOnOneField)
 
     def reconnectGame(self):
         self.moveMouse(self.COORDMAP['dotaDisconnectBtn']['x'],self.COORDMAP['dotaDisconnectBtn']['y'],'1')
@@ -389,7 +394,7 @@ class GameController:
             self.mouse.position = (int(x),int(y))
             if(clickType):
                 self.clickMouse(clickType)
-        time.sleep(self.delayBetweenActions)
+        time.sleep(self.sleepAfterMouseMove)
 
     def clickMouse(self, clickType):
         """Clicks the specified mousebutton    
@@ -416,17 +421,19 @@ class GameController:
             source -- coordinates of source item location [x,y]
             target -- Field name ('aa','a1'..'h8')
         """
+        # TODO: check if dragExtraWaitTime is even needed anymore since we switched to pynput
+        dragExtraWaitTime = 1
         self.moveMouse(source['x'],source['y'])
-        time.sleep(1)
+        time.sleep(dragExtraWaitTime)
         # hold mouse button
         if(self.isXDOTOOL):
             subprocess.run(['xdotool', 'mousedown', '--window', self.dota2WindowID, '1'])
         else:
             self.mouse.press(MouseButton.left)
-        time.sleep(0.5)
+        time.sleep(dragExtraWaitTime)
         x, y = self.convertToLocation(target)
         self.moveMouse(x,y)
-        time.sleep(1)
+        time.sleep(dragExtraWaitTime)
         # release mouse button
         if(self.isXDOTOOL):
             subprocess.run(['xdotool', 'mouseup', '--window', self.dota2WindowID, '1'])
@@ -457,6 +464,8 @@ class GameController:
         Keyword arguments:
             slot -- number between 1-9
         """
+        # TODO: check if special delay is still needed since pynput
+        waitForRightClickMenu = 0.5
         distanceX = int(self.COORDMAP['chickSlot9']['x']) - int(self.COORDMAP['chickSlot1']['x'])
         distanceY = int(self.COORDMAP['chickSlot9']['y']) - int(self.COORDMAP['chickSlot1']['y'])
         # We have 3x3 item matrix
@@ -467,7 +476,7 @@ class GameController:
         # reduce slot number slightly so 1,2,3 / 3.0 casted to int becomes 0; 4,5,6 become 1; and 7,8,9 become 2
         newYCoord = int(self.COORDMAP['chickSlot1']['y']) + int((int(slot)-1)/3.0) * distanceToEachCenterY
         self.moveMouse(newXCoord,newYCoord, '3')
-        time.sleep(0.5)
+        time.sleep(waitForRightClickMenu)
         # the rightclick menu changes position depending on row
         lockLabelPosX = str(int(newXCoord)+int(self.itemoffsetFirstRowX))
         lockLabelPosY = str(int(newYCoord)+int(self.itemoffsetFirstRowy))
@@ -486,38 +495,36 @@ class GameController:
         """
         # make sure the shop is hidden to not interfere with our clicks
         self.showSelection('off')
+        # give chicken time to reach starting pos
+        timeToReachStartPos = 3
         if(side == 'left'):
             # pos chicken at A1 first
             x, y = self.convertToLocation('a1')
             self.moveMouse(x,y ,'3')
-            time.sleep(3)
+            time.sleep(timeToReachStartPos)
             for coord in self.CHICKENLEFT:
                 self.moveMouse(self.CHICKENLEFT[coord]['x'],self.CHICKENLEFT[coord]['y'],'3')
-                time.sleep(0.3)
         elif(side == 'top'):
             # pos chicken at A8 first
             x,y = self.convertToLocation('a8')
             self.moveMouse(x,y)
-            time.sleep(3)
+            time.sleep(timeToReachStartPos)
             for coord in self.CHICKENTOP:
                 self.moveMouse(self.CHICKENTOP[coord]['x'],self.CHICKENTOP[coord]['y'])
-                time.sleep(0.3)
         elif(side == 'right'):
             # pos chicken at H8 first
             x,y = self.convertToLocation('h8')
             self.moveMouse(x,y)
-            time.sleep(3)
+            time.sleep(timeToReachStartPos)
             for coord in self.CHICKENRIGHT:
                 self.moveMouse(self.CHICKENRIGHT[coord]['x'],self.CHICKENRIGHT[coord]['y'])
-                time.sleep(0.3)
         elif(side == 'bot'):
             # pos chicken at H1 first
             x,y = self.convertToLocation('h1')
             self.moveMouse(x,y)
-            time.sleep(3)
+            time.sleep(timeToReachStartPos)
             for coord in self.CHICKENBOT:
                 self.moveMouse(self.CHICKENBOT[coord]['x'],self.CHICKENBOT[coord]['y'])
-                time.sleep(0.3)
         
         # send chicken back to default position
         self.resetChickenPos()
@@ -526,8 +533,6 @@ class GameController:
     def resetChickenPos(self):
         """Sends chicken back to default position"""
         self.moveMouse(self.COORDMAP['resetChicken']['x'],self.COORDMAP['resetChicken']['y'],'3')
-        time.sleep(self.delayBetweenActions)
-
 
     def moveItem(self, slot, target):
         '''Move item from chicken slot to target hero coordinates.
@@ -550,7 +555,8 @@ class GameController:
         self.dragAndDrop({'x': newXCoord, 'y': newYCoord},target)
         # give chicken time to run to the destination
         # TODO: dynamic time depending on target location
-        time.sleep(5)
+        waitForChickenDelivery = 5
+        time.sleep(waitForChickenDelivery)
         self.resetChickenPos()
 
 
@@ -565,7 +571,8 @@ class GameController:
         x, y = self.convertToLocation(target)
         self.moveMouse(x,y,'3')
         # TODO: dynamic time depending on target location
-        time.sleep(5)
+        waitForChickenDelivery = 5
+        time.sleep(waitForChickenDelivery)
         self.resetChickenPos()
 
 
@@ -587,7 +594,6 @@ class GameController:
             # self.writeAllChat(allChatMessage)
             # clicking on the avatar of the specific player leads us to their camposition
             self.moveMouse(self.COORDMAP['playerPosFirst']['x'],newYCoord, '1')
-            time.sleep(self.delayBetweenActions)
             # move mouse away from avatars so the popovertext is not blocking the view
             self.clickNothing()
             #time.sleep(timeToStayOnPlayer)
@@ -598,18 +604,18 @@ class GameController:
             #self.camCalibration()
         else:
             self.clickNothing()
-            time.sleep(self.delayBetweenActions)
+            tabTourDuration = 5
+            timeToLingerOnPlayer = tabTourDuration/8
             for i in range(8):
                 if(self.isXDOTOOL):
                     self.pressKey('Tab')
                 else:
                     newYCoord = int(self.COORDMAP['playerPosFirst']['y']) + i * diffCenter
                     self.moveMouse(self.COORDMAP['playerPosFirst']['x'],newYCoord, '1')
-                    time.sleep(self.delayBetweenActions)
                     # move mouse away from avatars so the popovertext is not blocking the view
                     self.clickNothing()
 
-                time.sleep(0.625)
+                time.sleep(timeToLingerOnPlayer)
 
 
     # TODO: add profanity filter to prevent possible repercussions through twitch/ possible violation of TOS?
@@ -677,11 +683,15 @@ class GameController:
         
         # go to main menu first
         self.moveMouse(self.COORDMAP['dotaMainMenuBtn']['x'],self.COORDMAP['dotaMainMenuBtn']['y'], '1')
+        time.sleep(self.sleepBetweenMenu)
         # navigate to autochess
         self.moveMouse(self.COORDMAP['dotaAutoChessBtn']['x'],self.COORDMAP['dotaAutoChessBtn']['y'], '1')
+        time.sleep(self.sleepBetweenMenu)
         # start autochess search
         self.moveMouse(self.COORDMAP['dotaPlayAutoChessBtn']['x'],self.COORDMAP['dotaPlayAutoChessBtn']['y'], '1')
-        time.sleep(5)
+        # automatically accept the first lobby to reduce user burden. Estimated time after a lobby is ready
+        waitForFirstLobby = 5
+        time.sleep(waitForFirstLobby)
         self.acceptGame()
 
 
@@ -704,6 +714,7 @@ class GameController:
                     # write remaining time for chat (adding +1s because of lazy cutting of decimals)
                     self.myIO.writeFile("ragequit.txt","Time left till ragequit!: {0} \nTo abort write !stay".format(str(
                                 1.0 + targetTime - (time.time() - starttime)).split('.')[0]))
+                    # let one second pass to prevent spam
                     time.sleep(1)
                 else:
                     # quitting aborted, clean the file
@@ -717,25 +728,19 @@ class GameController:
         if(self.allowRagequit):
             # Press the dota arrow button on the upper left corner
             self.moveMouse(self.COORDMAP['dotaArrowBtn']['x'],self.COORDMAP['dotaArrowBtn']['y'], '1')
-            time.sleep(0.5)
+            time.sleep(self.sleepBetweenMenu)
             # Press the dota disconnect button on the bottom right corner
             self.moveMouse(self.COORDMAP['dotaDisconnectBtn']['x'],self.COORDMAP['dotaDisconnectBtn']['y'], '1')
-            time.sleep(1)
+            time.sleep(self.sleepBetweenMenu)
             # circumvent dac rating popup
             self.clickNothing()
-            time.sleep(1)
+            time.sleep(self.sleepBetweenMenu)
             # Press the dota leave button above the disconnect (now reconnect) button
-            self.moveMouse(self.COORDMAP['dotaLeaveBtn']['x'],self.COORDMAP['dotaLeaveBtn']['y'])
-            time.sleep(2)
-            self.clickMouse('1')
-            time.sleep(1)
-            # since this part is glitching, we need to click twice
-            self.clickMouse('1')
-            time.sleep(1)
+            # TODO: Test if this works without the workaround now since we use pynput
+            self.moveMouse(self.COORDMAP['dotaLeaveBtn']['x'],self.COORDMAP['dotaLeaveBtn']['y'], '1')
+            time.sleep(self.sleepBetweenMenu)
             # Press the dota acccept button for leaving in the middle of the screen
-            self.moveMouse(self.COORDMAP['dotaLeaveAcceptBtn']['x'],self.COORDMAP['dotaLeaveAcceptBtn']['y'])
-            time.sleep(1)
-            self.clickMouse('1')
+            self.moveMouse(self.COORDMAP['dotaLeaveAcceptBtn']['x'],self.COORDMAP['dotaLeaveAcceptBtn']['y'], '1')
             # clean file for stream view
             self.myIO.resetFile("ragequit.txt")
 
@@ -799,7 +804,6 @@ class GameController:
         distanceToEachCenter = distancePixels / 4
         newXCoord = int(self.COORDMAP['pickFirst']['x']) + (int(target)-1) * distanceToEachCenter
         self.moveMouse(newXCoord,self.COORDMAP['pickFirst']['y'], '1')
-        time.sleep(self.delayBetweenActions)
         self.clickNothing()
 
     def clickNothing(self):
@@ -825,7 +829,6 @@ class GameController:
                 self.pressKey('space')
             else:
                 self.moveMouse(self.COORDMAP['shopButton']['x'],self.COORDMAP['shopButton']['y'],'1')
-        time.sleep(self.delayBetweenActions)
 
     def lockSelection(self):
         """Locks the shop to prevent automatic rerolling"""
@@ -845,11 +848,9 @@ class GameController:
         # else:
         #     self.pressKeyWithPynput(self.hotkeys[0])
 
-        time.sleep(self.delayBetweenActions)
         x,y = self.convertToLocation('e1')
         self.moveMouse(x,y,'1')
         self.clickNothing()
-        time.sleep(self.delayBetweenActions)
         self.showSelection('on')
 
 
@@ -864,11 +865,9 @@ class GameController:
         #     self.pressKey(self.hotkeys[0])
         # else:
         #     self.pressKeyWithPynput(self.hotkeys[0])
-        time.sleep(self.delayBetweenActions)
         x,y = self.convertToLocation('d4')
         self.moveMouse(x,y, '1')
         self.clickNothing()
-        time.sleep(self.delayBetweenActions)
         self.showSelection('on')
 
 
@@ -882,12 +881,9 @@ class GameController:
         #     self.pressKey(self.hotkeys[0])
         # else:
         #     self.pressKeyWithPynput(self.hotkeys[0])
-        time.sleep(self.delayBetweenActions)
         x,y = self.convertToLocation('g3')
         self.moveMouse(x,y, '1')
-        time.sleep(self.delayBetweenActions)
         self.clickNothing()
-        time.sleep(self.delayBetweenActions)
         self.showSelection('on')
 
 
@@ -901,11 +897,9 @@ class GameController:
         #     self.pressKey(self.hotkeys[0])
         # else:
         #     self.pressKeyWithPynput(self.hotkeys[0])
-        time.sleep(self.delayBetweenActions)
         x,y = self.convertToLocation('b3')
         self.moveMouse(x,y, '1')
         self.clickNothing()
-        time.sleep(self.delayBetweenActions)
         self.showSelection('on')
 
 
@@ -965,11 +959,9 @@ class GameController:
         #     self.pressKey(self.hotkeys[0])
         # else:
         #     self.pressKeyWithPynput(self.hotkeys[0])
-        time.sleep(self.delayBetweenActions)
         x, y = self.convertToLocation(target)
         self.moveMouse(x,y,'1')
         self.clickNothing()
-        time.sleep(self.delayBetweenActions)
         # show shop after movement for comfort
         self.showSelection('on')
 
@@ -992,9 +984,7 @@ class GameController:
         #     self.pressKey(self.hotkeys[1])
         # else:
         #     self.pressKeyWithPynput(self.hotkeys[1])
-        time.sleep(self.delayBetweenActions)
         self.clickNothing()
-        time.sleep(self.delayBetweenActions)
         self.showSelection('on')
 
     def sellPiece(self, target):
@@ -1016,9 +1006,7 @@ class GameController:
         #     self.pressKey(self.hotkeys[2])
         # else:
         #     self.pressKeyWithPynput(self.hotkeys[2])
-        time.sleep(self.delayBetweenActions)
         self.clickNothing()
-        time.sleep(self.delayBetweenActions)
         self.showSelection('on')
 
     def rerollPieces(self):
@@ -1033,9 +1021,7 @@ class GameController:
         #     self.pressKey(self.hotkeys[3])
         # else:
         #     self.pressKeyWithPynput(self.hotkeys[3])
-        time.sleep(self.delayBetweenActions)
         self.clickNothing()
-        time.sleep(self.delayBetweenActions)
         self.showSelection('on')
 
     def buyXP(self, amount):
@@ -1044,13 +1030,14 @@ class GameController:
         Keyword arguments:
             amount -- How many times xp should be bought (1-4)
         """
+        waitBetweenClicks = 0.8
         for dummy in range(int(amount)):
             self.moveMouse(self.COORDMAP['chickenAbility5']['x'],self.COORDMAP['chickenAbility5']['y'],'1')
             # if (self.isXDOTOOL):
             #     self.pressKey(self.hotkeys[4])
             # else:
             #     self.pressKeyWithPynput(self.hotkeys[4])
-            time.sleep(0.8)
+            time.sleep(waitBetweenClicks)
         self.clickNothing()
     
     def executeStack(self):
@@ -1096,82 +1083,51 @@ class GameController:
         """
         # TODO: reuse patterns on unsplitted string to reduce redundance
         if splitted[0] == '!m' or splitted[0] == '!move':
-            time.sleep(.02)
-            # execute command
             if(len(splitted) > 2):
                 self.movePiece(splitted[1], splitted[2])
             else:
                 self.movePieceDirection(splitted[1])
         elif splitted[0] == '!b' or splitted[0] == '!bench':
-            time.sleep(.02)
-            # execute command
             self.benchPiece(splitted[1])
         elif splitted[0] == '!s' or splitted[0] == '!sell':
-            time.sleep(.02)
-            # execute command
             self.sellPiece(splitted[1])
         elif splitted[0] == '!r' or splitted[0] == '!reroll':
-            time.sleep(.02)
-            # execute command
             self.rerollPieces()
         elif splitted[0] == '!x' or splitted[0] == '!xp':
-            time.sleep(.02)
-            # execute command
             self.buyXP(splitted[1])
         elif splitted[0] == '!shop':
-            time.sleep(.02)
-            # execute command
             self.showSelection(splitted[1])
         elif splitted[0] == '!p' or splitted[0] == '!pick':
-            time.sleep(.02)
-            # execute command
             self.pickPiece(splitted[1])
         elif splitted[0] == '!l' or splitted[0] == '!lock':
-            time.sleep(.02)
-            # execute command
             self.lockSelection()
         elif splitted[0] == '!g' or splitted[0] == '!grab':
-            time.sleep(.02)
-            # execute command
             self.grabItem(splitted[1])
         elif splitted[0] == '!i' or splitted[0] == '!item':
-            time.sleep(.02)
-            # execute command
             self.moveItem(splitted[1], splitted[2])
         elif splitted[0] == '!tab':
-            time.sleep(.02)
-            # execute command
             if(len(splitted) > 1):
                 self.tabTour(splitted[1])
             else:
                 self.tabTour()
         elif splitted[0] == '!random':
-            time.sleep(.02)
-            # execute command
             self.randomAction()
         elif splitted[0] == '!rq':
-            time.sleep(.02)
             self.leaveGame()
         elif splitted[0] == '!il' or splitted[0] == '!iul' or splitted[0] == '!itemlock':
-            time.sleep(.02)
             self.toggleLockItem(splitted[1])
         elif splitted[0] == '!run':
-            time.sleep(.02)
             self.grabItemChickenloop(splitted[1])
         elif splitted[0] == '!stay':
-            time.sleep(.02)
             self.abortRagequit()
         elif splitted[0] == '!write':
-            time.sleep(.02)
             tempword = ''
             for i in range(1, len(splitted)):
                 tempword += splitted[i] + ' '
             # self.writeAllChat(tempword)
         elif splitted[0] == '!stack':
-            time.sleep(.02)
             self.stackCommand(splitted)
         elif splitted[0] == '!exec':
-            time.sleep(.02)
             self.executeStack()
         elif (splitted[0] == '!aa'
             or splitted[0] == '!bb'
@@ -1181,20 +1137,15 @@ class GameController:
             or splitted[0] == '!ff'
             or splitted[0] == '!gg'
                 or splitted[0] == '!hh'):
-            time.sleep(.02)
             if len(splitted) > 1:
                 self.movePieceFromSlot(splitted[0][1:], splitted[1])
             else:
                 self.movePieceFromSlot(splitted[0][1:], 'd3')
         elif splitted[0] == '!search':
-            time.sleep(.02)
             self.searchGame()
         elif splitted[0] == '!accept':
-            time.sleep(.02)
             self.acceptGame()
         elif splitted[0] == '!calib':
-            time.sleep(.02)
             self.camCalibration(True)
         elif splitted[0] == '!reconnect':
-            time.sleep(.02)
             self.camCalibration(True)
