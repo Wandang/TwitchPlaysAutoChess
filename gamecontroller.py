@@ -30,7 +30,7 @@ import validator
 import iocontroller
 
 class GameController:
-    """Controls the game input. Emulates mouse and keyboard input via xdotools.
+    """Controls the game input. Emulates mouse and keyboard input via pynput.
     Each Dota AutoChess action is mapped as function"""
 
     myIO = iocontroller.IOController()
@@ -336,6 +336,9 @@ class GameController:
                 x, y = self.convertToLocation(tempChar+str(i))
                 self.moveMouse(x,y)
                 time.sleep(0.1)
+
+    def reconnectGame(self):
+        self.moveMouse(self.COORDMAP['dotaDisconnectBtn']['x'],self.COORDMAP['dotaDisconnectBtn']['y'],'1')
 
     def convertToLocation(self, field):
         """Returns pixel coordinates of a given field (AA,A1..H8)
@@ -666,7 +669,7 @@ class GameController:
     def searchGame(self):
         """Initiates the search for a Dota AutoChess game inside Dota."""
         # press esc to close any info windows (for example due to not accepting b4)
-        self.clickMouse()
+        self.clickNothing()
         # if (self.isXDOTOOL):
         #     self.pressKey('Escape')
         # else:
@@ -1192,4 +1195,6 @@ class GameController:
         elif splitted[0] == '!calib':
             time.sleep(.02)
             self.camCalibration(True)
-
+        elif splitted[0] == '!reconnect':
+            time.sleep(.02)
+            self.camCalibration(True)
