@@ -666,6 +666,7 @@ class GameController:
     def searchGame(self):
         """Initiates the search for a Dota AutoChess game inside Dota."""
         # press esc to close any info windows (for example due to not accepting b4)
+        self.clickMouse()
         # if (self.isXDOTOOL):
         #     self.pressKey('Escape')
         # else:
