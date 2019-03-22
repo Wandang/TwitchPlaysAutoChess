@@ -21,7 +21,7 @@ from pynput.mouse import Button as MouseButton
 from pynput.mouse import Controller as MouseController
 from pynput.keyboard import Key as KeyboardKey
 from pynput.keyboard import Controller as KeyboardController
-from screeninfo import get_monitors
+# from screeninfo import get_monitors
 import time
 import socket
 from threading import Thread
@@ -323,8 +323,8 @@ class Setup:
 
 print('starting v2...')
 if __name__ == "__main__":
-    for m in get_monitors():
-        print(str(m))
+    # for m in get_monitors():
+    #     print(str(m))
     # mouse = MouseController()
     # keyboard = KeyboardController()
     # move mouse to new location:
