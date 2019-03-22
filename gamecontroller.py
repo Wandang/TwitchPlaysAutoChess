@@ -91,6 +91,7 @@ class GameController:
         'dotaLeaveAcceptBtn': {'x': '456', 'y': '423'},
         'dotaPlayAutoChessBtn': {'x': '900', 'y': '616'},
         'dotaAcceptBtn': {'x': '504', 'y': '371'},
+        'dotaDeclineBtn': {'x': '724', 'y': '419'},
         'dotaMainMenuBtn': {'x': '207', 'y': '27'},
         'dotaAutoChessBtn': {'x': '394', 'y': '345'},
 
@@ -141,6 +142,7 @@ class GameController:
         'dotaLeaveAcceptBtn': {'x': '874', 'y': '603'},
         'dotaPlayAutoChessBtn': {'x': '1530', 'y': '866'},
         'dotaAcceptBtn': {'x': '901', 'y': '529'},
+        'dotaDeclineBtn': {'x': '1255', 'y': '589'},
         'dotaMainMenuBtn': {'x': '286', 'y': '32'},
         'dotaAutoChessBtn': {'x': '780', 'y': '478'},
 
@@ -192,6 +194,7 @@ class GameController:
         'dotaLeaveAcceptBtn': {'x': '553', 'y': '444'},
         'dotaPlayAutoChessBtn': {'x': '1017', 'y': '644'},
         'dotaAcceptBtn': {'x': '627', 'y': '390'},
+        'dotaDeclineBtn': {'x': '865', 'y': '438'},
         'dotaMainMenuBtn': {'x': '214', 'y': '24'},
         'dotaAutoChessBtn': {'x': '504', 'y': '357'},
 
@@ -199,54 +202,7 @@ class GameController:
         'playerPosLast': {'x': '1144', 'y': '630'}
     }
 
-    COORDMAP = {
-        'a1': {'x': '633', 'y': '620'},
-        'a2': {'x': '651', 'y': '548'},
-        'a3': {'x': '669', 'y': '471'},
-        'a4': {'x': '683', 'y': '402'},
-        'a5': {'x': '695', 'y': '346'},
-        'a6': {'x': '708', 'y': '293'},
-        'a7': {'x': '715', 'y': '240'},
-        'a8': {'x': '727', 'y': '194'},
-        'h1': {'x': '1278', 'y': '619'},
-        'h2': {'x': '1265', 'y': '539'},
-        'h3': {'x': '1248', 'y': '468'},
-        'h4': {'x': '1235', 'y': '405'},
-        'h5': {'x': '1227', 'y': '346'},
-        'h6': {'x': '1213', 'y': '290'},
-        'h7': {'x': '1204', 'y': '241'},
-        'h8': {'x': '1195', 'y': '194'},
-
-        'aa': {'x': '592', 'y': '807'},
-        'hh': {'x': '1329', 'y': '806'},
-
-        'pickFirst': {'x': '464', 'y': '276'},
-        'pickLast': {'x': '1458', 'y': '256'},
-        'lock': {'x': '313', 'y': '445'},
-        'close': {'x': '1610', 'y': '344'},
-        'nothing': {'x': '1547', 'y': '77'},
-
-        'chickenAbility1':{'x': '855', 'y': '970'},
-        'chickenAbility5':{'x': '1087', 'y': '970'},
-        'shopButton': {'x': '591', 'y': '37'},
-
-        'chickSlot1': {'x': '1158', 'y': '964'},
-        'chickSlot9': {'x': '1286', 'y': '1057'},
-
-        'resetChicken': {'x': '914', 'y': '712'},
-
-        'dotaArrowBtn': {'x': '32', 'y': '27'},
-        'dotaDisconnectBtn': {'x': '1627', 'y': '1035'},
-        'dotaLeaveBtn': {'x': '1648', 'y': '985'},
-        'dotaLeaveAcceptBtn': {'x': '874', 'y': '603'},
-        'dotaPlayAutoChessBtn': {'x': '1530', 'y': '866'},
-        'dotaAcceptBtn': {'x': '901', 'y': '529'},
-        'dotaMainMenuBtn': {'x': '286', 'y': '32'},
-        'dotaAutoChessBtn': {'x': '780', 'y': '478'},
-
-        'playerPosFirst': {'x': '1737', 'y': '155'},
-        'playerPosLast': {'x': '1737', 'y': '855'}
-    }
+    COORDMAP = {}
 
     CHICKENLEFT = OrderedDict([
         ('A1L', {'x': '565', 'y': '612'}),
@@ -293,6 +249,8 @@ class GameController:
     itemoffsetFirstRowy = 31
     itemoffsetSecondRowX = 75
     itemoffsetSecondRowy = 0  # 6 old
+
+    # TODO: Reorder functions into groups
 
     def __init__(self, channelName, hotkeys, resolution):
         self.channelName = channelName
@@ -343,7 +301,12 @@ class GameController:
                 time.sleep(durationLingerOnOneField)
 
     def reconnectGame(self):
+        """Reconnect game after disconnected from server"""
         self.moveMouse(self.COORDMAP['dotaDisconnectBtn']['x'],self.COORDMAP['dotaDisconnectBtn']['y'],'1')
+
+    def declineGame(self):
+        """Decline a lobby (useful if lobbies keep failing)"""
+        self.moveMouse(self.COORDMAP['dotaDeclineBtn']['x'], self.COORDMAP['dotaDeclineBtn']['y'], '1')
 
     def convertToLocation(self, field):
         """Returns pixel coordinates of a given field (AA,A1..H8)
@@ -1148,4 +1111,6 @@ class GameController:
         elif splitted[0] == '!calib':
             self.camCalibration(True)
         elif splitted[0] == '!reconnect':
-            self.camCalibration(True)
+            self.reconnectGame()
+        elif splitted[0] == '!decline':
+            self.declineGame()

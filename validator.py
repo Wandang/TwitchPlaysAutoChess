@@ -37,6 +37,7 @@ PATTERNS = {
             'search': r'^!search($| +)',
             'accept': r'^!accept($| +)',
             'reconnect': r'^!reconnect($| +)',
+            'disconnect': r'^!disconnect($| +)',
             'calib': r'^!calib($| +)',
             'run': r'^!run (left|right|top|bot)($| +)',
             'lockitem': r'^!(iu?l|itemlock) ([1-9])($| +)',
