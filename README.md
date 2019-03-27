@@ -1,4 +1,4 @@
-<a href="https://scan.coverity.com/projects/wandang-twitchplaysautochess">
+[![Build Status](https://travis-ci.org/Wandang/TwitchPlaysAutoChess.svg?branch=master)](https://travis-ci.org/Wandang/TwitchPlaysAutoChess) <a href="https://scan.coverity.com/projects/wandang-twitchplaysautochess">
   <img alt="Coverity Scan Build Status"
        src="https://scan.coverity.com/projects/17978/badge.svg"/>
 </a>
