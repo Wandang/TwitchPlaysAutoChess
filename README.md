@@ -1,3 +1,8 @@
+<a href="https://scan.coverity.com/projects/wandang-twitchplaysautochess">
+  <img alt="Coverity Scan Build Status"
+       src="https://scan.coverity.com/projects/17978/badge.svg"/>
+</a>
+
 # TwitchPlaysAutoChess
 Twitch Plays AutoChess bot that lets twitch-chat play Dota AutoChess
 
