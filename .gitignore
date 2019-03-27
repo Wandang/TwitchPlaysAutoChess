@@ -1,6 +1,9 @@
 .vscode/
 move.py
 ragequit.txt
+lastsaid.txt
+most_common_commands.txt
+commands.txt
 assets/Slardar_icon.png
 assets/items.jpg
 assets/items2.jpg
@@ -9,5 +12,4 @@ assets/stockfish.png
 assets/dota menu.png
 assets/ingame new perspective.png
 assets/ingame action.png
-*.txt
 *.pyc
