@@ -307,13 +307,10 @@ class GameController:
             tabTourDuration = 5
             timeToLingerOnPlayer = tabTourDuration/8
             for i in range(8):
-                if(self.isXDOTOOL):
-                    self.pressKey('Tab')
-                else:
-                    x,y = self.getLocationOfIntermediatePoint(self.COORDMAP['playerPosFirst'],self.COORDMAP['playerPosLast'],7,i)
-                    self.myPeripheral.moveMouse(x,y, '1')
-                    # move mouse away from avatars so the popovertext is not blocking the view
-                    self.clickNothing()
+                x,y = self.getLocationOfIntermediatePoint(self.COORDMAP['playerPosFirst'],self.COORDMAP['playerPosLast'],7,i)
+                self.myPeripheral.moveMouse(x,y, '1')
+                # move mouse away from avatars so the popovertext is not blocking the view
+                self.clickNothing()
 
                 time.sleep(timeToLingerOnPlayer)
 
@@ -325,25 +322,16 @@ class GameController:
     #     Keyword arguments:
     #         message -- Textmessage to be send
     #     """
-    #     if(self.isXDOTOOL):
-    #         self.pressKey('shift+Return')
-    #     else:
-    #         print('trying to hold shift...')
-    #         with self.keyboard.pressed(KeyboardKey.shift):
-    #             print('shift held')
-    #             self.pressKeyWithPynput(KeyboardKey.enter)
+    #     print('trying to hold shift...')
+    #     with self.keyboard.pressed(KeyboardKey.shift):
+    #          print('shift held')
+    #          self.pressKeyWithPynput(KeyboardKey.enter)
 
     #     time.sleep(self.delayBetweenActions)
-    #     if(self.isXDOTOOL):
-    #         subprocess.run(['xdotool', 'type', '--window', self.dota2WindowID, message])
-    #     else:
-    #         print('typing message')
-    #         self.keyboard.type(message)
+    #     print('typing message')
+    #     self.keyboard.type(message)
     #     time.sleep(0.5)
-    #     if (self.isXDOTOOL):
-    #         self.pressKey('Return')
-    #     else:
-    #         self.pressKeyWithPynput(KeyboardKey.enter)
+    #     self.pressKeyWithPynput(KeyboardKey.enter)
     #     time.sleep(self.delayBetweenActions)
 
     # TODO: promotelink should be read from settings file
@@ -357,10 +345,7 @@ class GameController:
             promote -- Promotes the twitch channel in allchat (bool)
         """
         pass
-        # if (self.isXDOTOOL):
-        #     self.pressKey('1')
-        # else:
-        #     self.pressKeyWithPynput('1')
+        # self.pressKeyWithPynput('1')
         # # shoutout in allchat to promote the bot
         # if(promote):
         #     self.writeAllChat(
@@ -376,10 +361,7 @@ class GameController:
         """Initiates the search for a Dota AutoChess game inside Dota."""
         # press esc to close any info windows (for example due to not accepting b4)
         self.clickNothing()
-        # if (self.isXDOTOOL):
-        #     self.pressKey('Escape')
-        # else:
-        #     self.pressKeyWithPynput(KeyboardKey.esc)
+        # self.pressKeyWithPynput(KeyboardKey.esc)
         
         # go to main menu first
         self.myPeripheral.moveMouse(self.COORDMAP['dotaMainMenuBtn']['x'],self.COORDMAP['dotaMainMenuBtn']['y'], '1')
@@ -523,10 +505,7 @@ class GameController:
         self.closeSelection()
         if(isOn == 'on'):
             # reopen shop in this case, otherwise keep it closed
-            if (self.isXDOTOOL):
-                self.pressKey('space')
-            else:
-                self.myPeripheral.moveMouse(self.COORDMAP['shopButton']['x'],self.COORDMAP['shopButton']['y'],'1')
+            self.myPeripheral.moveMouse(self.COORDMAP['shopButton']['x'],self.COORDMAP['shopButton']['y'],'1')
 
     def lockSelection(self):
         """Locks the shop to prevent automatic rerolling"""
@@ -541,10 +520,7 @@ class GameController:
         self.myPeripheral.moveMouse(self.COORDMAP['chickenAbility1']['x'],self.COORDMAP['chickenAbility1']['y'],'1')
         x,y = self.convertToLocation('aa')
         self.myPeripheral.moveMouse(x,y,'1')
-        # if (self.isXDOTOOL):
-        #     self.pressKey(self.hotkeys[0])
-        # else:
-        #     self.pressKeyWithPynput(self.hotkeys[0])
+        # self.pressKeyWithPynput(self.hotkeys[0])
 
         x,y = self.convertToLocation('e1')
         self.myPeripheral.moveMouse(x,y,'1')
@@ -559,10 +535,7 @@ class GameController:
 
         x,y = self.convertToLocation('aa')
         self.myPeripheral.moveMouse(x,y, '1')
-        # if (self.isXDOTOOL):
-        #     self.pressKey(self.hotkeys[0])
-        # else:
-        #     self.pressKeyWithPynput(self.hotkeys[0])
+        # self.pressKeyWithPynput(self.hotkeys[0])
         x,y = self.convertToLocation('d4')
         self.myPeripheral.moveMouse(x,y, '1')
         self.clickNothing()
@@ -575,10 +548,7 @@ class GameController:
         self.myPeripheral.moveMouse(self.COORDMAP['chickenAbility1']['x'],self.COORDMAP['chickenAbility1']['y'],'1')
         x,y = self.convertToLocation('aa')
         self.myPeripheral.moveMouse(x,y, '1')
-        # if (self.isXDOTOOL):
-        #     self.pressKey(self.hotkeys[0])
-        # else:
-        #     self.pressKeyWithPynput(self.hotkeys[0])
+        # self.pressKeyWithPynput(self.hotkeys[0])
         x,y = self.convertToLocation('g3')
         self.myPeripheral.moveMouse(x,y, '1')
         self.clickNothing()
@@ -591,10 +561,7 @@ class GameController:
         self.myPeripheral.moveMouse(self.COORDMAP['chickenAbility1']['x'],self.COORDMAP['chickenAbility1']['y'],'1')
         x,y = self.convertToLocation('aa')
         self.myPeripheral.moveMouse(x,y, '1')
-        # if (self.isXDOTOOL):
-        #     self.pressKey(self.hotkeys[0])
-        # else:
-        #     self.pressKeyWithPynput(self.hotkeys[0])
+        # self.pressKeyWithPynput(self.hotkeys[0])
         x,y = self.convertToLocation('b3')
         self.myPeripheral.moveMouse(x,y, '1')
         self.clickNothing()
@@ -653,10 +620,7 @@ class GameController:
         x, y = self.convertToLocation(source)
         self.myPeripheral.moveMouse(x,y, '1')
 
-        # if (self.isXDOTOOL):
-        #     self.pressKey(self.hotkeys[0])
-        # else:
-        #     self.pressKeyWithPynput(self.hotkeys[0])
+        # self.pressKeyWithPynput(self.hotkeys[0])
         x, y = self.convertToLocation(target)
         self.myPeripheral.moveMouse(x,y,'1')
         self.clickNothing()
@@ -695,10 +659,7 @@ class GameController:
         self.myPeripheral.moveMouse(x,y, '1')
         x, y = self.convertToLocation(target)
         self.myPeripheral.moveMouse(x,y, '1')
-        # if (self.isXDOTOOL):
-        #     self.pressKey(self.hotkeys[1])
-        # else:
-        #     self.pressKeyWithPynput(self.hotkeys[1])
+        # self.pressKeyWithPynput(self.hotkeys[1])
         self.clickNothing()
         self.showSelection('on')
 
@@ -715,10 +676,7 @@ class GameController:
         self.myPeripheral.moveMouse(x,y,'1')
         x, y = self.convertToLocation(target)
         self.myPeripheral.moveMouse(x,y, '1')
-        # if (self.isXDOTOOL):
-        #     self.pressKey(self.hotkeys[2])
-        # else:
-        #     self.pressKeyWithPynput(self.hotkeys[2])
+        # self.pressKeyWithPynput(self.hotkeys[2])
         self.clickNothing()
         self.showSelection('on')
 
@@ -728,10 +686,7 @@ class GameController:
         self.resetChickenPos()
         x, y = self.getLocationOfIntermediatePoint(self.COORDMAP['chickenAbility1'],self.COORDMAP['chickenAbility5'],4,3)
         self.myPeripheral.moveMouse(x,y,'1')
-        # if (self.isXDOTOOL):
-        #     self.pressKey(self.hotkeys[3])
-        # else:
-        #     self.pressKeyWithPynput(self.hotkeys[3])
+        # self.pressKeyWithPynput(self.hotkeys[3])
         self.clickNothing()
         self.showSelection('on')
 
@@ -744,10 +699,7 @@ class GameController:
         waitBetweenClicks = 0.8
         for dummy in range(int(amount)):
             self.myPeripheral.moveMouse(self.COORDMAP['chickenAbility5']['x'],self.COORDMAP['chickenAbility5']['y'],'1')
-            # if (self.isXDOTOOL):
-            #     self.pressKey(self.hotkeys[4])
-            # else:
-            #     self.pressKeyWithPynput(self.hotkeys[4])
+            # self.pressKeyWithPynput(self.hotkeys[4])
             time.sleep(waitBetweenClicks)
         self.clickNothing()
     
