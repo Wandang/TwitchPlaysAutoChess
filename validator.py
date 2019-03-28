@@ -36,8 +36,8 @@ PATTERNS = {
             'random': r'^!random($| +)',
             'search': r'^!search($| +)',
             'accept': r'^!accept($| +)',
+            'decline': r'^!decline($| +)',
             'reconnect': r'^!reconnect($| +)',
-            'disconnect': r'^!disconnect($| +)',
             'calib': r'^!calib($| +)',
             'run': r'^!run (left|right|top|bot)($| +)',
             'lockitem': r'^!(iu?l|itemlock) ([1-9])($| +)',
@@ -60,6 +60,6 @@ def validateCommand(command):
     # does it match any pattern?
     for pattern in PATTERNS:
         if(re.match(PATTERNS[pattern], command, re.IGNORECASE)):
-            return True
+            return pattern
 
     return False

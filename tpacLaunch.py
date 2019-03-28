@@ -185,8 +185,8 @@ class Setup:
                 list_commands = []
                 if(selected_c != 'None'):
                     # Do nothing if chat didn't write any commands
-                    splitted = selected_c.lower().split(' ')
-                    self.gc.findAndExecute(splitted)
+                    lowerCaseOutput = selected_c.lower()
+                    self.gc.findAndExecute(lowerCaseOutput)
             else:
                 self.myIO.writeFile("lastsaid.txt","Selected {0}\nTime left: {1}".format(selected_c ,str(
                         1.0 + last_command + self.democracy_time - time.time())[0:1]))
@@ -261,8 +261,8 @@ class Setup:
                             items += item + '\n'
                     self.myIO.writeFile('commands.txt',items)
                     if(self.mode != "democracy"):
-                        splitted = out.lower().split(' ')
-                        self.gc.findAndExecute(splitted)
+                        lowerCaseOutput = out.lower()
+                        self.gc.findAndExecute(lowerCaseOutput)
 
     def addToCommandList(self, user, out):
         """Adds all valid commands to a list and removes/pops the first entry if the list gets too long.

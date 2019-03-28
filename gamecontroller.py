@@ -1005,7 +1005,7 @@ class GameController:
     def executeStack(self):
         """Executes a stack/queue of commands sequentially."""
         for command in self.commandStack:
-            self.findAndExecute(command.split(' '))
+            self.findAndExecute(command)
         # clear command stack afterwards
         self.commandStack = []
 
@@ -1020,96 +1020,87 @@ class GameController:
         self.commandStack.append(commandForStack)
 
 
-    def stackCommand(self, commandArray):
+    def stackCommand(self, commandForStack):
         """Add a command to stack/queue for later execution
         
         Keyword arguments:
             commandForStack -- Command as string
         """
-        # since it was a splitted array before we need to recreate the original nested command string first
-        patchedCommand = ''
-        for i in range(1, len(commandArray)):
-            patchedCommand += commandArray[i] + ' '
-        patchedCommand = patchedCommand[:-1]
+        # remove '!stack ' beforehand
+        idxSpace = commandForStack.find(' ')
+        patchedCommand = commandForStack[idxSpace+1:]
         # check the nested command
         if validator.validateCommand(patchedCommand):
             # valid, add to stack
             self.addToStack(patchedCommand)
-
     
-    def findAndExecute(self, splitted):
+    def findAndExecute(self, command):
         """Checks which command is invoked and executes the command accordingly
         
         Keyword arguments:
-            splitted -- Array of commando parts that was splitted by space 
+            command -- commandstring to execute
         """
+        splitted = command.split(' ')
         # TODO: reuse patterns on unsplitted string to reduce redundance
-        if splitted[0] == '!m' or splitted[0] == '!move':
+        if validator.validateCommand(command) == "move":
             if(len(splitted) > 2):
                 self.movePiece(splitted[1], splitted[2])
             else:
                 self.movePieceDirection(splitted[1])
-        elif splitted[0] == '!b' or splitted[0] == '!bench':
+        elif validator.validateCommand(command) == 'bench':
             self.benchPiece(splitted[1])
-        elif splitted[0] == '!s' or splitted[0] == '!sell':
+        elif validator.validateCommand(command) == 'sell':
             self.sellPiece(splitted[1])
-        elif splitted[0] == '!r' or splitted[0] == '!reroll':
+        elif validator.validateCommand(command) == 'reroll':
             self.rerollPieces()
-        elif splitted[0] == '!x' or splitted[0] == '!xp':
+        elif validator.validateCommand(command) == 'buyxp':
             self.buyXP(splitted[1])
-        elif splitted[0] == '!shop':
+        elif validator.validateCommand(command) == 'shop':
             self.showSelection(splitted[1])
-        elif splitted[0] == '!p' or splitted[0] == '!pick':
+        elif validator.validateCommand(command) == 'pick':
             self.pickPiece(splitted[1])
-        elif splitted[0] == '!l' or splitted[0] == '!lock':
+        elif validator.validateCommand(command) == 'lock':
             self.lockSelection()
-        elif splitted[0] == '!g' or splitted[0] == '!grab':
+        elif validator.validateCommand(command) == 'grab':
             self.grabItem(splitted[1])
-        elif splitted[0] == '!i' or splitted[0] == '!item':
+        elif validator.validateCommand(command) == 'itemtohero':
             self.moveItem(splitted[1], splitted[2])
-        elif splitted[0] == '!tab':
+        elif validator.validateCommand(command) == 'tab':
             if(len(splitted) > 1):
                 self.tabTour(splitted[1])
             else:
                 self.tabTour()
-        elif splitted[0] == '!random':
+        elif validator.validateCommand(command) == 'random':
             self.randomAction()
-        elif splitted[0] == '!rq':
+        elif validator.validateCommand(command) == 'rq':
             self.leaveGame()
-        elif splitted[0] == '!il' or splitted[0] == '!iul' or splitted[0] == '!itemlock':
+        elif validator.validateCommand(command) == 'lockitem':
             self.toggleLockItem(splitted[1])
-        elif splitted[0] == '!run':
+        elif validator.validateCommand(command) == 'run':
             self.grabItemChickenloop(splitted[1])
-        elif splitted[0] == '!stay':
+        elif validator.validateCommand(command) == 'stay':
             self.abortRagequit()
-        elif splitted[0] == '!write':
+        elif validator.validateCommand(command) == 'write':
             tempword = ''
             for i in range(1, len(splitted)):
                 tempword += splitted[i] + ' '
             # self.writeAllChat(tempword)
-        elif splitted[0] == '!stack':
-            self.stackCommand(splitted)
-        elif splitted[0] == '!exec':
+        elif validator.validateCommand(command) == 'stack':
+            self.stackCommand(command)
+        elif validator.validateCommand(command) == 'exec':
             self.executeStack()
-        elif (splitted[0] == '!aa'
-            or splitted[0] == '!bb'
-            or splitted[0] == '!cc'
-            or splitted[0] == '!dd'
-            or splitted[0] == '!ee'
-            or splitted[0] == '!ff'
-            or splitted[0] == '!gg'
-                or splitted[0] == '!hh'):
+        elif validator.validateCommand(command) == 'movefromslots':
             if len(splitted) > 1:
                 self.movePieceFromSlot(splitted[0][1:], splitted[1])
             else:
                 self.movePieceFromSlot(splitted[0][1:], 'd3')
-        elif splitted[0] == '!search':
+        elif validator.validateCommand(command) == 'search':
             self.searchGame()
-        elif splitted[0] == '!accept':
+        elif validator.validateCommand(command) == 'accept':
             self.acceptGame()
-        elif splitted[0] == '!calib':
+        elif validator.validateCommand(command) == 'calib':
             self.camCalibration(True)
-        elif splitted[0] == '!reconnect':
+        elif validator.validateCommand(command) == 'reconnect':
             self.reconnectGame()
-        elif splitted[0] == '!decline':
+        elif validator.validateCommand(command) == 'decline':
             self.declineGame()
