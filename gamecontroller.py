@@ -33,7 +33,6 @@ class GameController:
 
     myIO = iocontroller.IOController()
     myPeripheral = peripherals.Peripherals()
-    isXDOTOOL = False
     commandStack = []
     # default delay after interacting with the dota menu
     sleepBetweenMenu = 1
@@ -83,280 +82,6 @@ class GameController:
             self.COORDMAP[coord]['x'] = str(int(relativeXValue))
             self.COORDMAP[coord]['y'] = str(int(relativeYValue))
             
-
-
-    def testAllFields(self):
-        """Testfunction that will move the mouse to every field"""
-        # give time to switch to dota/focus dota window
-        waitForAltTab = 5
-        durationLingerOnOneField = 0.1
-        time.sleep(waitForAltTab)
-        startOffset = ord('a')
-        for i in range(1,9):
-            for j in range(8):
-                tempChar = str(chr(startOffset + j))
-                x, y = self.convertToLocation(tempChar+str(i))
-                self.myPeripheral.moveMouse(x,y)
-                time.sleep(durationLingerOnOneField)
-
-    def reconnectGame(self):
-        """Reconnect game after disconnected from server"""
-        self.myPeripheral.moveMouse(self.COORDMAP['dotaDisconnectBtn']['x'],self.COORDMAP['dotaDisconnectBtn']['y'],'1')
-
-    def declineGame(self):
-        """Decline a lobby (useful if lobbies keep failing)"""
-        self.myPeripheral.moveMouse(self.COORDMAP['dotaDeclineBtn']['x'], self.COORDMAP['dotaDeclineBtn']['y'], '1')
-
-    def convertToLocation(self, field):
-        """Returns pixel coordinates of a given field (AA,A1..H8)
-        
-        Keyword arguments:
-            field -- Field (AA,A1..H8)
-        """
-        aAsNr = ord('a')
-        firstChar = field[:1]
-        secondChar = field[1:]
-        firstCharNr = ord(firstChar)
-        diffNr = firstCharNr - aAsNr 
-        if(firstChar == secondChar):
-            x, y = self.getLocationOfIntermediatePoint(self.COORDMAP['hh'],self.COORDMAP['aa'], 7,diffNr)
-        else:
-            x, y = self.getLocationOfIntermediatePoint(self.COORDMAP['h'+secondChar],self.COORDMAP['a'+secondChar], 7,diffNr)
-        return x, y
-
-
-    def dragAndDrop(self,source,target):
-        """Drags & drops from source to target location.
-        This is used for items.
-        
-        Keyword arguments:
-            source -- coordinates of source item location [x,y]
-            target -- Field name ('aa','a1'..'h8')
-        """
-        # TODO: check if dragExtraWaitTime is even needed anymore since we switched to pynput
-        dragExtraWaitTime = 1
-        self.myPeripheral.moveMouse(source['x'],source['y'])
-        time.sleep(dragExtraWaitTime)
-        # hold mouse button
-        self.myPeripheral.holdMouse('1')
-        time.sleep(dragExtraWaitTime)
-        x, y = self.convertToLocation(target)
-        self.myPeripheral.moveMouse(x,y)
-        time.sleep(dragExtraWaitTime)
-        # release mouse button
-        self.myPeripheral.releaseMouse('1')
-
-    def pressKey(self, key):
-        """Presses specified key on keyboard
-        
-        Keyword arguments:
-            key -- keyboard key (keycodes)
-        """
-        subprocess.run(['xdotool', 'key', '--window', self.dota2WindowID, key])
-
-    # def pressKeyWithPynput(self, key):
-    #     """Presses specified key on keyboard with pykeyboard module
-        
-    #     Keyword arguments:
-    #         key -- keyboard key (keycodes)
-    #     """
-    #     print('trying to press key: ',key)
-    #     self.keyboard.press(key)
-    #     self.keyboard.release(key)
-
-    def toggleLockItem(self, slot):
-        """Locks item in specified itemslot (1-9)
-        
-        Keyword arguments:
-            slot -- number between 1-9
-        """
-        # TODO: check if special delay is still needed since pynput
-        waitForRightClickMenu = 0.5
-        # We have 3x3 item matrix
-        # after 3 and 6 the next row starts
-        countingXSteps = (int(slot)-1) % 3
-        # reduce slot number slightly so 1,2,3 / 3.0 casted to int becomes 0; 4,5,6 become 1; and 7,8,9 become 2
-        countingYSteps = int((int(slot)-1)/3)
-        x,y = self.getLocationOfIntermediatePoint(self.COORDMAP['chickSlot1'],self.COORDMAP['chickSlot9'],3,[countingXSteps,countingYSteps])
-        self.myPeripheral.moveMouse(x,y, '3')
-        time.sleep(waitForRightClickMenu)
-        # the rightclick menu changes position depending on row
-        lockLabelPosX = str(int(x)+int(self.itemoffsetFirstRowX))
-        lockLabelPosY = str(int(y)+int(self.itemoffsetFirstRowy))
-        if(int(slot) > 3):
-            # slot is below first row
-            lockLabelPosX = str(int(x)+int(self.itemoffsetSecondRowX))
-            lockLabelPosY = str(int(y)+int(self.itemoffsetSecondRowy))
-        self.myPeripheral.moveMouse(lockLabelPosX,lockLabelPosY,'1')
-
-    # TODO: optimize, reduce redundancy
-    def grabItemChickenloop(self, side):
-        """Let's the chicken/courier walk alongside a side of the chessboard to pick up items.
-        
-        Keyword arguments:
-            side -- Which side should be checked for items. Can be left, top, bot or right.
-        """
-        # make sure the shop is hidden to not interfere with our clicks
-        self.showSelection('off')
-        # give chicken time to reach starting pos
-        timeToReachStartPos = 3
-        if(side == 'left'):
-            # pos chicken at A1 first
-            x, y = self.convertToLocation('a1')
-            self.myPeripheral.moveMouse(x,y ,'3')
-            time.sleep(timeToReachStartPos)
-            for coord in coordmaps.CHICKENLEFT:
-                self.myPeripheral.moveMouse(coordmaps.CHICKENLEFT[coord]['x'],coordmaps.CHICKENLEFT[coord]['y'],'3')
-        elif(side == 'top'):
-            # pos chicken at A8 first
-            x,y = self.convertToLocation('a8')
-            self.myPeripheral.moveMouse(x,y)
-            time.sleep(timeToReachStartPos)
-            for coord in coordmaps.CHICKENTOP:
-                self.myPeripheral.moveMouse(coordmaps.CHICKENTOP[coord]['x'],coordmaps.CHICKENTOP[coord]['y'])
-        elif(side == 'right'):
-            # pos chicken at H8 first
-            x,y = self.convertToLocation('h8')
-            self.myPeripheral.moveMouse(x,y)
-            time.sleep(timeToReachStartPos)
-            for coord in coordmaps.CHICKENRIGHT:
-                self.myPeripheral.moveMouse(coordmaps.CHICKENRIGHT[coord]['x'],coordmaps.CHICKENRIGHT[coord]['y'])
-        elif(side == 'bot'):
-            # pos chicken at H1 first
-            x,y = self.convertToLocation('h1')
-            self.myPeripheral.moveMouse(x,y)
-            time.sleep(timeToReachStartPos)
-            for coord in coordmaps.CHICKENBOT:
-                self.myPeripheral.moveMouse(coordmaps.CHICKENBOT[coord]['x'],coordmaps.CHICKENBOT[coord]['y'])
-        
-        # send chicken back to default position
-        self.resetChickenPos()
-
-
-    def resetChickenPos(self):
-        """Sends chicken back to default position"""
-        self.myPeripheral.moveMouse(self.COORDMAP['resetChicken']['x'],self.COORDMAP['resetChicken']['y'],'3')
-
-    def moveItem(self, slot, target):
-        '''Move item from chicken slot to target hero coordinates.
-        
-        Keyword arguments:
-            slot -- Itemslot of the chicken (1-9)
-            target -- target chessboard/bench position
-        '''
-        # close shop before
-        self.showSelection('off')
-        distanceX = int(self.COORDMAP['chickSlot9']['x']) - int(self.COORDMAP['chickSlot1']['x'])
-        distanceY = int(self.COORDMAP['chickSlot9']['y']) - int(self.COORDMAP['chickSlot1']['y'])
-        # We have 3x3 item matrix
-        distanceToEachCenterX = distanceX / 3
-        distanceToEachCenterY = distanceY / 3
-        # after 3 and 6 the next row starts
-        newXCoord = int(self.COORDMAP['chickSlot1']['x']) + ((int(slot)-1) % 3) * distanceToEachCenterX
-        # reduce slot number slightly so 1,2,3 / 3.0 casted to int becomes 0; 4,5,6 become 1; and 7,8,9 become 2
-        newYCoord = int(self.COORDMAP['chickSlot1']['y']) + int((int(slot)-1)/3.0) * distanceToEachCenterY
-        self.dragAndDrop({'x': newXCoord, 'y': newYCoord},target)
-        # give chicken time to run to the destination
-        # TODO: dynamic time depending on target location
-        waitForChickenDelivery = 5
-        time.sleep(waitForChickenDelivery)
-        self.resetChickenPos()
-
-
-    def grabItem(self, target):
-        """Let's the chicken pick up dropped items
-        
-        Keyword arguments:
-            target -- target chessboard position
-        """
-        # close shop first
-        self.showSelection('off')
-        x, y = self.convertToLocation(target)
-        self.myPeripheral.moveMouse(x,y,'3')
-        # TODO: dynamic time depending on target location
-        waitForChickenDelivery = 5
-        time.sleep(waitForChickenDelivery)
-        self.resetChickenPos()
-
-
-    def tabTour(self, playerPlacementID=-1):
-        '''Show chessboard of player x or if no player is given show every chessboard in 5s
-        
-        Keyword arguments:
-            playerPlacementID -- PlayerID defined by current placement (1-8)
-        '''
-        self.closeSelection()
-        if(playerPlacementID != -1):
-            #timeToStayOnPlayer = 3
-            x, y = self.getLocationOfIntermediatePoint(self.COORDMAP['playerPosFirst'],self.COORDMAP['playerPosLast'], 7, (int(playerPlacementID)-1))
-            # cheeky message to be displayed to make it feel more interactive with the other players
-            # allChatMessage = 'Chat wants to inspect the current position: '+playerPlacementID
-            # self.writeAllChat(allChatMessage)
-            # clicking on the avatar of the specific player leads us to their camposition
-            self.myPeripheral.moveMouse(x,y, '1')
-            # move mouse away from avatars so the popovertext is not blocking the view
-            self.clickNothing()
-            #time.sleep(timeToStayOnPlayer)
-            # cheeky message to be displayed to make it feel more interactive with the other players
-            # allChatMessage = 'Chat judgement: ' + \
-            #     self.TWITCHEMOTES[random.randint(0, len(self.TWITCHEMOTES))]
-            # self.writeAllChat(allChatMessage)
-            #self.camCalibration()
-        else:
-            self.clickNothing()
-            tabTourDuration = 5
-            timeToLingerOnPlayer = tabTourDuration/8
-            for i in range(8):
-                x,y = self.getLocationOfIntermediatePoint(self.COORDMAP['playerPosFirst'],self.COORDMAP['playerPosLast'],7,i)
-                self.myPeripheral.moveMouse(x,y, '1')
-                # move mouse away from avatars so the popovertext is not blocking the view
-                self.clickNothing()
-
-                time.sleep(timeToLingerOnPlayer)
-
-
-    # TODO: add profanity filter to prevent possible repercussions through twitch/ possible violation of TOS?
-    # def writeAllChat(self, message):
-    #     """Writes a message to everyone
-        
-    #     Keyword arguments:
-    #         message -- Textmessage to be send
-    #     """
-    #     print('trying to hold shift...')
-    #     with self.keyboard.pressed(KeyboardKey.shift):
-    #          print('shift held')
-    #          self.pressKeyWithPynput(KeyboardKey.enter)
-
-    #     time.sleep(self.delayBetweenActions)
-    #     print('typing message')
-    #     self.keyboard.type(message)
-    #     time.sleep(0.5)
-    #     self.pressKeyWithPynput(KeyboardKey.enter)
-    #     time.sleep(self.delayBetweenActions)
-
-    # TODO: promotelink should be read from settings file
-    def camCalibration(self, promote=False):
-        """Needs to be done once at the start of each game!
-        Sets cam to playerposition.
-        This is the referenceposition for all other commands and therefore important!
-        Without calibration every chess piece interaction will fail.
-        
-        Keyword arguments:
-            promote -- Promotes the twitch channel in allchat (bool)
-        """
-        pass
-        # self.pressKeyWithPynput('1')
-        # # shoutout in allchat to promote the bot
-        # if(promote):
-        #     self.writeAllChat(
-        #         'Chat is playing right now on https://www.twitch.tv/' + self.channelName)
-        # time.sleep(self.delayBetweenActions)
-
-
-    def acceptGame(self):
-        """Press the accept button in Dota"""
-        self.myPeripheral.moveMouse(self.COORDMAP['dotaAcceptBtn']['x'],self.COORDMAP['dotaAcceptBtn']['y'], '1')
-
     def searchGame(self):
         """Initiates the search for a Dota AutoChess game inside Dota."""
         # press esc to close any info windows (for example due to not accepting b4)
@@ -375,6 +100,27 @@ class GameController:
         waitForFirstLobby = 5
         time.sleep(waitForFirstLobby)
         self.acceptGame()
+
+    def acceptGame(self):
+        """Press the accept button in Dota"""
+        self.myPeripheral.moveMouse(self.COORDMAP['dotaAcceptBtn']['x'],self.COORDMAP['dotaAcceptBtn']['y'], '1')
+
+    def declineGame(self):
+        """Decline a lobby (useful if lobbies keep failing)"""
+        self.myPeripheral.moveMouse(self.COORDMAP['dotaDeclineBtn']['x'], self.COORDMAP['dotaDeclineBtn']['y'], '1')
+
+
+    def leaveGame(self):
+        """Initiates a process of leaving the current AutoChess game with the option to abort that process."""
+        # Make sure the process is only started once
+        if(self.allowRagequit):
+            print('ragequit already in process')
+            return
+        self.allowRagequit = True
+        # start counter in seperate thread
+        rageQuitJob = Thread(target=self.rageQuitProcess, args=())
+        rageQuitJob.start()
+
 
 
     def abortRagequit(self):
@@ -428,51 +174,63 @@ class GameController:
 
         self.allowRagequit = False
 
-
-    def leaveGame(self):
-        """Initiates a process of leaving the current AutoChess game with the option to abort that process."""
-        # Make sure the process is only started once
-        if(self.allowRagequit):
-            print('ragequit already in process')
-            return
-        self.allowRagequit = True
-        # start counter in seperate thread
-        rageQuitJob = Thread(target=self.rageQuitProcess, args=())
-        rageQuitJob.start()
+    def reconnectGame(self):
+        """Reconnect game after disconnected from server"""
+        self.myPeripheral.moveMouse(self.COORDMAP['dotaDisconnectBtn']['x'],self.COORDMAP['dotaDisconnectBtn']['y'],'1')
 
 
-    # TODO: recheck entire function
-    def randomAction(self):
-        """Execute a random action to confuse everyone and yourself."""
-        randomNumber = random.randint(0, 4)
-        if(randomNumber == 0):
-            # pick random piece
-            self.pickPiece(random.randint(1, 5))
-        elif(randomNumber == 1):
-            # sell random unit on bench
-            charNr = random.randint(0, 7)
-            sellChar = chr(charNr+ord('a'))
-            sellChar += sellChar
-            self.sellPiece(sellChar)
-        elif(randomNumber == 2):
-            # move random unit to random pos
-            rand1X = random.randint(0, 7)  # A-H
-            rand1Y = random.randint(1, 8)  # 1-8
-            rand2X = random.randint(0, 7)
-            rand2Y = random.randint(1, 8)
-            source = chr(rand1X + ord('a')) + rand1Y
-            target = chr(rand2X + ord('a')) + rand2Y
-            self.movePiece(source, target)
-            # bench reroll
-        elif(randomNumber == 3):
-            # bench random unit
-            rand1X = random.randint(0, 7)  # A-H
-            rand1Y = random.randint(1, 8)  # 1-8
-            target = chr(rand1X + ord('a')) + rand1Y
-            self.benchPiece(target)
-        elif(randomNumber == 4):
-            # reroll
-            self.rerollPieces()
+    def camCalibration(self, promote=False):
+        """Needs to be done once at the start of each game!
+        Sets cam to playerposition.
+        This is the referenceposition for all other commands and therefore important!
+        Without calibration every chess piece interaction will fail.
+        
+        Keyword arguments:
+            promote -- Promotes the twitch channel in allchat (bool)
+        """
+        pass
+        # self.pressKeyWithPynput('1')
+        # # shoutout in allchat to promote the bot
+        # if(promote):
+        #     self.writeAllChat(
+        #         'Chat is playing right now on https://www.twitch.tv/' + self.channelName)
+        # time.sleep(self.delayBetweenActions)
+
+
+    def tabTour(self, playerPlacementID=-1):
+        '''Show chessboard of player x or if no player is given show every chessboard in 5s
+        
+        Keyword arguments:
+            playerPlacementID -- PlayerID defined by current placement (1-8)
+        '''
+        self.closeSelection()
+        if(playerPlacementID != -1):
+            #timeToStayOnPlayer = 3
+            x, y = self.getLocationOfIntermediatePoint(self.COORDMAP['playerPosFirst'],self.COORDMAP['playerPosLast'], 7, (int(playerPlacementID)-1))
+            # cheeky message to be displayed to make it feel more interactive with the other players
+            # allChatMessage = 'Chat wants to inspect the current position: '+playerPlacementID
+            # self.writeAllChat(allChatMessage)
+            # clicking on the avatar of the specific player leads us to their camposition
+            self.myPeripheral.moveMouse(x,y, '1')
+            # move mouse away from avatars so the popovertext is not blocking the view
+            self.clickNothing()
+            #time.sleep(timeToStayOnPlayer)
+            # cheeky message to be displayed to make it feel more interactive with the other players
+            # allChatMessage = 'Chat judgement: ' + \
+            #     self.TWITCHEMOTES[random.randint(0, len(self.TWITCHEMOTES))]
+            # self.writeAllChat(allChatMessage)
+            #self.camCalibration()
+        else:
+            self.clickNothing()
+            tabTourDuration = 5
+            timeToLingerOnPlayer = tabTourDuration/8
+            for i in range(8):
+                x,y = self.getLocationOfIntermediatePoint(self.COORDMAP['playerPosFirst'],self.COORDMAP['playerPosLast'],7,i)
+                self.myPeripheral.moveMouse(x,y, '1')
+                # move mouse away from avatars so the popovertext is not blocking the view
+                self.clickNothing()
+
+                time.sleep(timeToLingerOnPlayer)
 
 
     def pickPiece(self, target):
@@ -486,33 +244,65 @@ class GameController:
         self.myPeripheral.moveMouse(x,y,'1')
         self.clickNothing()
 
-    def clickNothing(self):
-        '''Click on the right side of the chessboard where nothing is to interact with.
-        Can be used to click empty space as well for resetting commandchain (autochess bug)'''
-        self.myPeripheral.moveMouse(self.COORDMAP['nothing']['x'],self.COORDMAP['nothing']['y'], '1')
 
-    def closeSelection(self):
-        '''Closes the shop via X button in the right upper corner'''
-        self.myPeripheral.moveMouse(self.COORDMAP['close']['x'],self.COORDMAP['close']['y'], '1')
-
-    def showSelection(self, isOn):
-        """Shows/hides the shop.
+    def movePiece(self, source, target):
+        """Moves piece from source to target location.
+        Source and target locations are fields on the chessboard or on the bench
         
         Keyword arguments:
-            isOn -- Show/hide (bool)
+            source -- Field on the chessboard (aa,a1..h8)
+            target -- Field on the chessboard (aa,a1..h8)
         """
-        # Make sure to close the shop via X button before since we do not have game feedback and therefore need to prevent toggling wrongly
-        self.closeSelection()
-        if(isOn == 'on'):
-            # reopen shop in this case, otherwise keep it closed
-            self.myPeripheral.moveMouse(self.COORDMAP['shopButton']['x'],self.COORDMAP['shopButton']['y'],'1')
+        # make sure shop is closed while moving pieces
+        self.showSelection('off')
+        self.resetChickenPos()
+        self.myPeripheral.moveMouse(self.COORDMAP['chickenAbility1']['x'],self.COORDMAP['chickenAbility1']['y'],'1')
+        x, y = self.convertToLocation(source)
+        self.myPeripheral.moveMouse(x,y, '1')
 
-    def lockSelection(self):
-        """Locks the shop to prevent automatic rerolling"""
-        # first open selection
+        # self.pressKeyWithPynput(self.hotkeys[0])
+        x, y = self.convertToLocation(target)
+        self.myPeripheral.moveMouse(x,y,'1')
+        self.clickNothing()
+        # show shop after movement for comfort
         self.showSelection('on')
-        # click on the lock icon
-        self.myPeripheral.moveMouse(self.COORDMAP['lock']['x'],self.COORDMAP['lock']['y'],'1')
+
+
+    def movePieceFromSlot(self, slot, direction=''):
+        """Shortcut command: Moves a piece from a slot/bench towards a general direction.
+        If no direction is specified the piece will be put in the middle
+        
+        Keyword arguments:
+            slot -- Bench/slot position of chess piece
+            direction -- Direction can be left, right, top or bot
+        """
+        if direction == 'left':
+            self.movePiece(slot, 'b3')
+        elif direction == 'right':
+            self.movePiece(slot, 'g3')
+        elif direction == 'top':
+            self.movePiece(slot, 'd4')
+        elif direction == 'bot':
+            self.movePiece(slot, 'e1')
+        else:
+            self.movePiece(slot, 'd3')
+
+
+    # TODO: check if this is needed anymore (probably obsolete)
+    def movePieceDirection(self, direction):
+        """Shortcut command: Moves first piece towards a general direction
+        
+        Keyword arguments:
+            direction -- Direction can be left, right, top or bot
+        """
+        if direction == 'left':
+            self.moveLeft()
+        elif direction == 'right':
+            self.moveRight()
+        elif direction == 'top':
+            self.moveTop()
+        elif direction == 'bot':
+            self.moveBot()
 
     def moveBot(self):
         """Shortcut command: Moves the first piece to the backline"""
@@ -567,85 +357,28 @@ class GameController:
         self.clickNothing()
         self.showSelection('on')
 
+    def closeSelection(self):
+        '''Closes the shop via X button in the right upper corner'''
+        self.myPeripheral.moveMouse(self.COORDMAP['close']['x'],self.COORDMAP['close']['y'], '1')
 
-    def movePieceFromSlot(self, slot, direction=''):
-        """Shortcut command: Moves a piece from a slot/bench towards a general direction.
-        If no direction is specified the piece will be put in the middle
+    def showSelection(self, isOn):
+        """Shows/hides the shop.
         
         Keyword arguments:
-            slot -- Bench/slot position of chess piece
-            direction -- Direction can be left, right, top or bot
+            isOn -- Show/hide (bool)
         """
-        if direction == 'left':
-            self.movePiece(slot, 'b3')
-        elif direction == 'right':
-            self.movePiece(slot, 'g3')
-        elif direction == 'top':
-            self.movePiece(slot, 'd4')
-        elif direction == 'bot':
-            self.movePiece(slot, 'e1')
-        else:
-            self.movePiece(slot, 'd3')
+        # Make sure to close the shop via X button before since we do not have game feedback and therefore need to prevent toggling wrongly
+        self.closeSelection()
+        if(isOn == 'on'):
+            # reopen shop in this case, otherwise keep it closed
+            self.myPeripheral.moveMouse(self.COORDMAP['shopButton']['x'],self.COORDMAP['shopButton']['y'],'1')
 
-
-    # TODO: check if this is needed anymore (probably obsolete)
-    def movePieceDirection(self, direction):
-        """Shortcut command: Moves first piece towards a general direction
-        
-        Keyword arguments:
-            direction -- Direction can be left, right, top or bot
-        """
-        if direction == 'left':
-            self.moveLeft()
-        elif direction == 'right':
-            self.moveRight()
-        elif direction == 'top':
-            self.moveTop()
-        elif direction == 'bot':
-            self.moveBot()
-
-
-    def movePiece(self, source, target):
-        """Moves piece from source to target location.
-        Source and target locations are fields on the chessboard or on the bench
-        
-        Keyword arguments:
-            source -- Field on the chessboard (aa,a1..h8)
-            target -- Field on the chessboard (aa,a1..h8)
-        """
-        # make sure shop is closed while moving pieces
-        self.showSelection('off')
-        self.resetChickenPos()
-        self.myPeripheral.moveMouse(self.COORDMAP['chickenAbility1']['x'],self.COORDMAP['chickenAbility1']['y'],'1')
-        x, y = self.convertToLocation(source)
-        self.myPeripheral.moveMouse(x,y, '1')
-
-        # self.pressKeyWithPynput(self.hotkeys[0])
-        x, y = self.convertToLocation(target)
-        self.myPeripheral.moveMouse(x,y,'1')
-        self.clickNothing()
-        # show shop after movement for comfort
+    def lockSelection(self):
+        """Locks the shop to prevent automatic rerolling"""
+        # first open selection
         self.showSelection('on')
-
-    def getLocationOfIntermediatePoint(self, pointA, pointB, intervals, indexOfElements):
-        aX = int(pointA.x)
-        aY = int(pointA.Y)
-        bX = int(pointB.x)
-        bY = int(pointB.Y)
-        diffDistanceX = aX - bX
-        diffDistanceY = aY - bY
-        distanceBetweenEachPointX = diffDistanceX/intervals
-        distanceBetweenEachPointY = diffDistanceY/intervals
-
-        if(len(indexOfElements)==1):
-            newCoordX = aX - indexOfElements[0] * distanceBetweenEachPointX
-            newCoordY = aY - indexOfElements[0] * distanceBetweenEachPointY
-        else:
-            newCoordX = aX - indexOfElements[0] * distanceBetweenEachPointX
-            newCoordY = aY - indexOfElements[1] * distanceBetweenEachPointY
-
-        return newCoordX, newCoordY
-        
+        # click on the lock icon
+        self.myPeripheral.moveMouse(self.COORDMAP['lock']['x'],self.COORDMAP['lock']['y'],'1')
 
     def benchPiece(self, target):
         """Removes an active chess piece from the chessboard and puts it on the bench.
@@ -703,6 +436,71 @@ class GameController:
             time.sleep(waitBetweenClicks)
         self.clickNothing()
     
+    def toggleLockItem(self, slot):
+        """Locks item in specified itemslot (1-9)
+        
+        Keyword arguments:
+            slot -- number between 1-9
+        """
+        # TODO: check if special delay is still needed since pynput
+        waitForRightClickMenu = 0.5
+        # We have 3x3 item matrix
+        # after 3 and 6 the next row starts
+        countingXSteps = (int(slot)-1) % 3
+        # reduce slot number slightly so 1,2,3 / 3.0 casted to int becomes 0; 4,5,6 become 1; and 7,8,9 become 2
+        countingYSteps = int((int(slot)-1)/3)
+        x,y = self.getLocationOfIntermediatePoint(self.COORDMAP['chickSlot1'],self.COORDMAP['chickSlot9'],3,[countingXSteps,countingYSteps])
+        self.myPeripheral.moveMouse(x,y, '3')
+        time.sleep(waitForRightClickMenu)
+        # the rightclick menu changes position depending on row
+        lockLabelPosX = str(int(x)+int(self.itemoffsetFirstRowX))
+        lockLabelPosY = str(int(y)+int(self.itemoffsetFirstRowy))
+        if(int(slot) > 3):
+            # slot is below first row
+            lockLabelPosX = str(int(x)+int(self.itemoffsetSecondRowX))
+            lockLabelPosY = str(int(y)+int(self.itemoffsetSecondRowy))
+        self.myPeripheral.moveMouse(lockLabelPosX,lockLabelPosY,'1')
+
+    def moveItem(self, slot, target):
+        '''Move item from chicken slot to target hero coordinates.
+        
+        Keyword arguments:
+            slot -- Itemslot of the chicken (1-9)
+            target -- target chessboard/bench position
+        '''
+        # close shop before
+        self.showSelection('off')
+        distanceX = int(self.COORDMAP['chickSlot9']['x']) - int(self.COORDMAP['chickSlot1']['x'])
+        distanceY = int(self.COORDMAP['chickSlot9']['y']) - int(self.COORDMAP['chickSlot1']['y'])
+        # We have 3x3 item matrix
+        distanceToEachCenterX = distanceX / 3
+        distanceToEachCenterY = distanceY / 3
+        # after 3 and 6 the next row starts
+        newXCoord = int(self.COORDMAP['chickSlot1']['x']) + ((int(slot)-1) % 3) * distanceToEachCenterX
+        # reduce slot number slightly so 1,2,3 / 3.0 casted to int becomes 0; 4,5,6 become 1; and 7,8,9 become 2
+        newYCoord = int(self.COORDMAP['chickSlot1']['y']) + int((int(slot)-1)/3.0) * distanceToEachCenterY
+        self.dragAndDrop({'x': newXCoord, 'y': newYCoord},target)
+        # give chicken time to run to the destination
+        # TODO: dynamic time depending on target location
+        waitForChickenDelivery = 5
+        time.sleep(waitForChickenDelivery)
+        self.resetChickenPos()
+
+    def grabItem(self, target):
+        """Let's the chicken pick up dropped items
+        
+        Keyword arguments:
+            target -- target chessboard position
+        """
+        # close shop first
+        self.showSelection('off')
+        x, y = self.convertToLocation(target)
+        self.myPeripheral.moveMouse(x,y,'3')
+        # TODO: dynamic time depending on target location
+        waitForChickenDelivery = 5
+        time.sleep(waitForChickenDelivery)
+        self.resetChickenPos()
+
     def executeStack(self):
         """Executes a stack/queue of commands sequentially."""
         for command in self.commandStack:
@@ -734,7 +532,194 @@ class GameController:
         if validator.validateCommand(patchedCommand):
             # valid, add to stack
             self.addToStack(patchedCommand)
-    
+   
+   # TODO: optimize, reduce redundancy
+    def grabItemChickenloop(self, side):
+        """Let's the chicken/courier walk alongside a side of the chessboard to pick up items.
+        
+        Keyword arguments:
+            side -- Which side should be checked for items. Can be left, top, bot or right.
+        """
+        # make sure the shop is hidden to not interfere with our clicks
+        self.showSelection('off')
+        # give chicken time to reach starting pos
+        timeToReachStartPos = 3
+        if(side == 'left'):
+            # pos chicken at A1 first
+            x, y = self.convertToLocation('a1')
+            self.myPeripheral.moveMouse(x,y ,'3')
+            time.sleep(timeToReachStartPos)
+            for coord in coordmaps.CHICKENLEFT:
+                self.myPeripheral.moveMouse(coordmaps.CHICKENLEFT[coord]['x'],coordmaps.CHICKENLEFT[coord]['y'],'3')
+        elif(side == 'top'):
+            # pos chicken at A8 first
+            x,y = self.convertToLocation('a8')
+            self.myPeripheral.moveMouse(x,y)
+            time.sleep(timeToReachStartPos)
+            for coord in coordmaps.CHICKENTOP:
+                self.myPeripheral.moveMouse(coordmaps.CHICKENTOP[coord]['x'],coordmaps.CHICKENTOP[coord]['y'])
+        elif(side == 'right'):
+            # pos chicken at H8 first
+            x,y = self.convertToLocation('h8')
+            self.myPeripheral.moveMouse(x,y)
+            time.sleep(timeToReachStartPos)
+            for coord in coordmaps.CHICKENRIGHT:
+                self.myPeripheral.moveMouse(coordmaps.CHICKENRIGHT[coord]['x'],coordmaps.CHICKENRIGHT[coord]['y'])
+        elif(side == 'bot'):
+            # pos chicken at H1 first
+            x,y = self.convertToLocation('h1')
+            self.myPeripheral.moveMouse(x,y)
+            time.sleep(timeToReachStartPos)
+            for coord in coordmaps.CHICKENBOT:
+                self.myPeripheral.moveMouse(coordmaps.CHICKENBOT[coord]['x'],coordmaps.CHICKENBOT[coord]['y'])
+        
+        # send chicken back to default position
+        self.resetChickenPos()
+
+    def resetChickenPos(self):
+        """Sends chicken back to default position"""
+        self.myPeripheral.moveMouse(self.COORDMAP['resetChicken']['x'],self.COORDMAP['resetChicken']['y'],'3')
+
+    def testAllFields(self):
+        """Testfunction that will move the mouse to every field"""
+        # give time to switch to dota/focus dota window
+        waitForAltTab = 5
+        durationLingerOnOneField = 0.1
+        time.sleep(waitForAltTab)
+        startOffset = ord('a')
+        for i in range(1,9):
+            for j in range(8):
+                tempChar = str(chr(startOffset + j))
+                x, y = self.convertToLocation(tempChar+str(i))
+                self.myPeripheral.moveMouse(x,y)
+                time.sleep(durationLingerOnOneField)
+
+    def convertToLocation(self, field):
+        """Returns pixel coordinates of a given field (AA,A1..H8)
+        
+        Keyword arguments:
+            field -- Field (AA,A1..H8)
+        """
+        aAsNr = ord('a')
+        firstChar = field[:1]
+        secondChar = field[1:]
+        firstCharNr = ord(firstChar)
+        diffNr = firstCharNr - aAsNr 
+        if(firstChar == secondChar):
+            x, y = self.getLocationOfIntermediatePoint(self.COORDMAP['hh'],self.COORDMAP['aa'], 7,diffNr)
+        else:
+            x, y = self.getLocationOfIntermediatePoint(self.COORDMAP['h'+secondChar],self.COORDMAP['a'+secondChar], 7,diffNr)
+        return x, y
+
+
+    def dragAndDrop(self,source,target):
+        """Drags & drops from source to target location.
+        This is used for items.
+        
+        Keyword arguments:
+            source -- coordinates of source item location [x,y]
+            target -- Field name ('aa','a1'..'h8')
+        """
+        # TODO: check if dragExtraWaitTime is even needed anymore since we switched to pynput
+        dragExtraWaitTime = 1
+        self.myPeripheral.moveMouse(source['x'],source['y'])
+        time.sleep(dragExtraWaitTime)
+        # hold mouse button
+        self.myPeripheral.holdMouse('1')
+        time.sleep(dragExtraWaitTime)
+        x, y = self.convertToLocation(target)
+        self.myPeripheral.moveMouse(x,y)
+        time.sleep(dragExtraWaitTime)
+        # release mouse button
+        self.myPeripheral.releaseMouse('1')
+
+    # def pressKeyWithPynput(self, key):
+    #     """Presses specified key on keyboard with pykeyboard module
+        
+    #     Keyword arguments:
+    #         key -- keyboard key (keycodes)
+    #     """
+    #     print('trying to press key: ',key)
+    #     self.keyboard.press(key)
+    #     self.keyboard.release(key)
+
+ 
+    # TODO: add profanity filter to prevent possible repercussions through twitch/ possible violation of TOS?
+    # def writeAllChat(self, message):
+    #     """Writes a message to everyone
+        
+    #     Keyword arguments:
+    #         message -- Textmessage to be send
+    #     """
+    #     print('trying to hold shift...')
+    #     with self.keyboard.pressed(KeyboardKey.shift):
+    #          print('shift held')
+    #          self.pressKeyWithPynput(KeyboardKey.enter)
+
+    #     time.sleep(self.delayBetweenActions)
+    #     print('typing message')
+    #     self.keyboard.type(message)
+    #     time.sleep(0.5)
+    #     self.pressKeyWithPynput(KeyboardKey.enter)
+    #     time.sleep(self.delayBetweenActions)
+
+    # TODO: recheck entire function
+    def randomAction(self):
+        """Execute a random action to confuse everyone and yourself."""
+        randomNumber = random.randint(0, 4)
+        if(randomNumber == 0):
+            # pick random piece
+            self.pickPiece(random.randint(1, 5))
+        elif(randomNumber == 1):
+            # sell random unit on bench
+            charNr = random.randint(0, 7)
+            sellChar = chr(charNr+ord('a'))
+            sellChar += sellChar
+            self.sellPiece(sellChar)
+        elif(randomNumber == 2):
+            # move random unit to random pos
+            rand1X = random.randint(0, 7)  # A-H
+            rand1Y = random.randint(1, 8)  # 1-8
+            rand2X = random.randint(0, 7)
+            rand2Y = random.randint(1, 8)
+            source = chr(rand1X + ord('a')) + rand1Y
+            target = chr(rand2X + ord('a')) + rand2Y
+            self.movePiece(source, target)
+            # bench reroll
+        elif(randomNumber == 3):
+            # bench random unit
+            rand1X = random.randint(0, 7)  # A-H
+            rand1Y = random.randint(1, 8)  # 1-8
+            target = chr(rand1X + ord('a')) + rand1Y
+            self.benchPiece(target)
+        elif(randomNumber == 4):
+            # reroll
+            self.rerollPieces()
+
+    def clickNothing(self):
+        '''Click on the right side of the chessboard where nothing is to interact with.
+        Can be used to click empty space as well for resetting commandchain (autochess bug)'''
+        self.myPeripheral.moveMouse(self.COORDMAP['nothing']['x'],self.COORDMAP['nothing']['y'], '1')
+
+    def getLocationOfIntermediatePoint(self, pointA, pointB, intervals, indexOfElements):
+        aX = int(pointA.x)
+        aY = int(pointA.Y)
+        bX = int(pointB.x)
+        bY = int(pointB.Y)
+        diffDistanceX = aX - bX
+        diffDistanceY = aY - bY
+        distanceBetweenEachPointX = diffDistanceX/intervals
+        distanceBetweenEachPointY = diffDistanceY/intervals
+
+        if(len(indexOfElements)==1):
+            newCoordX = aX - indexOfElements[0] * distanceBetweenEachPointX
+            newCoordY = aY - indexOfElements[0] * distanceBetweenEachPointY
+        else:
+            newCoordX = aX - indexOfElements[0] * distanceBetweenEachPointX
+            newCoordY = aY - indexOfElements[1] * distanceBetweenEachPointY
+
+        return newCoordX, newCoordY
+        
     def findAndExecute(self, command):
         """Checks which command is invoked and executes the command accordingly
         
