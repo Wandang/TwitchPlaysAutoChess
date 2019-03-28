@@ -16,10 +16,6 @@
 
 
 import subprocess
-from pynput.mouse import Button as MouseButton
-from pynput.mouse import Controller as MouseController
-from pynput.keyboard import Key as KeyboardKey
-from pynput.keyboard import Controller as KeyboardController
 import time
 import random
 import math
@@ -29,18 +25,16 @@ from threading import Thread
 import validator
 import iocontroller
 import coordmaps
+import peripherals
 
 class GameController:
     """Controls the game input. Emulates mouse and keyboard input via pynput.
     Each Dota AutoChess action is mapped as function"""
 
     myIO = iocontroller.IOController()
+    myPeripheral = peripherals.Peripherals()
     isXDOTOOL = False
-    mouse = MouseController()
-    keyboard = KeyboardController()
     commandStack = []
-    # default delay after each peripheral action. Needs to be > 0 to make sure that the actions are finished properly
-    sleepAfterMouseMove = 0.3
     # default delay after interacting with the dota menu
     sleepBetweenMenu = 1
     dota2WindowID = ''
@@ -102,16 +96,16 @@ class GameController:
             for j in range(8):
                 tempChar = str(chr(startOffset + j))
                 x, y = self.convertToLocation(tempChar+str(i))
-                self.moveMouse(x,y)
+                self.myPeripheral.moveMouse(x,y)
                 time.sleep(durationLingerOnOneField)
 
     def reconnectGame(self):
         """Reconnect game after disconnected from server"""
-        self.moveMouse(self.COORDMAP['dotaDisconnectBtn']['x'],self.COORDMAP['dotaDisconnectBtn']['y'],'1')
+        self.myPeripheral.moveMouse(self.COORDMAP['dotaDisconnectBtn']['x'],self.COORDMAP['dotaDisconnectBtn']['y'],'1')
 
     def declineGame(self):
         """Decline a lobby (useful if lobbies keep failing)"""
-        self.moveMouse(self.COORDMAP['dotaDeclineBtn']['x'], self.COORDMAP['dotaDeclineBtn']['y'], '1')
+        self.myPeripheral.moveMouse(self.COORDMAP['dotaDeclineBtn']['x'], self.COORDMAP['dotaDeclineBtn']['y'], '1')
 
     def convertToLocation(self, field):
         """Returns pixel coordinates of a given field (AA,A1..H8)
@@ -131,50 +125,6 @@ class GameController:
         return x, y
 
 
-    def moveMouse(self,x,y,clickType = None):
-        """Move the mouse to the desired coordinates and optionally click at that location.
-        
-        Keyword arguments:
-            x -- x coordinate inside screen resolution
-            y -- y coordinate inside screen resolution
-            clickType -- 1: leftclick, 2: middleclick, 3: rightclick
-        """
-        print('trying to move to x: ',x)
-        print('trying to move to y: ',y)
-        # print('trying to click: ' + clickType)
-        if(self.isXDOTOOL):
-            # -- window param makes sure that the input gets send to a specific window, even if it is in the background
-            subprocess.run(['xdotool',
-                            'mousemove',
-                            '--window',
-                            self.dota2WindowID,
-                            x,
-                            y])
-            if(clickType):
-                self.clickMouse(clickType)
-        else:
-            self.mouse.position = (int(x),int(y))
-            if(clickType):
-                self.clickMouse(clickType)
-        time.sleep(self.sleepAfterMouseMove)
-
-    def clickMouse(self, clickType):
-        """Clicks the specified mousebutton    
-                
-        Keyword arguments:
-            clickType -- 1: leftclick, 2: middleclick, 3: rightclick
-        """
-        if(self.isXDOTOOL):
-            subprocess.run(['xdotool','click','--window',self.dota2WindowID, clickType])
-        else:
-            if(clickType == '1'):
-                self.mouse.click(MouseButton.left)
-            elif(clickType == '2'):
-                self.mouse.click(MouseButton.middle)
-            elif(clickType == '3'):
-                self.mouse.click(MouseButton.right)
-
-
     def dragAndDrop(self,source,target):
         """Drags & drops from source to target location.
         This is used for items.
@@ -185,22 +135,16 @@ class GameController:
         """
         # TODO: check if dragExtraWaitTime is even needed anymore since we switched to pynput
         dragExtraWaitTime = 1
-        self.moveMouse(source['x'],source['y'])
+        self.myPeripheral.moveMouse(source['x'],source['y'])
         time.sleep(dragExtraWaitTime)
         # hold mouse button
-        if(self.isXDOTOOL):
-            subprocess.run(['xdotool', 'mousedown', '--window', self.dota2WindowID, '1'])
-        else:
-            self.mouse.press(MouseButton.left)
+        self.myPeripheral.holdMouse('1')
         time.sleep(dragExtraWaitTime)
         x, y = self.convertToLocation(target)
-        self.moveMouse(x,y)
+        self.myPeripheral.moveMouse(x,y)
         time.sleep(dragExtraWaitTime)
         # release mouse button
-        if(self.isXDOTOOL):
-            subprocess.run(['xdotool', 'mouseup', '--window', self.dota2WindowID, '1'])
-        else:
-            self.mouse.release(MouseButton.left)
+        self.myPeripheral.releaseMouse('1')
 
     def pressKey(self, key):
         """Presses specified key on keyboard
@@ -234,7 +178,7 @@ class GameController:
         # reduce slot number slightly so 1,2,3 / 3.0 casted to int becomes 0; 4,5,6 become 1; and 7,8,9 become 2
         countingYSteps = int((int(slot)-1)/3)
         x,y = self.getLocationOfIntermediatePoint(self.COORDMAP['chickSlot1'],self.COORDMAP['chickSlot9'],3,[countingXSteps,countingYSteps])
-        self.moveMouse(x,y, '3')
+        self.myPeripheral.moveMouse(x,y, '3')
         time.sleep(waitForRightClickMenu)
         # the rightclick menu changes position depending on row
         lockLabelPosX = str(int(x)+int(self.itemoffsetFirstRowX))
@@ -243,7 +187,7 @@ class GameController:
             # slot is below first row
             lockLabelPosX = str(int(x)+int(self.itemoffsetSecondRowX))
             lockLabelPosY = str(int(y)+int(self.itemoffsetSecondRowy))
-        self.moveMouse(lockLabelPosX,lockLabelPosY,'1')
+        self.myPeripheral.moveMouse(lockLabelPosX,lockLabelPosY,'1')
 
     # TODO: optimize, reduce redundancy
     def grabItemChickenloop(self, side):
@@ -259,31 +203,31 @@ class GameController:
         if(side == 'left'):
             # pos chicken at A1 first
             x, y = self.convertToLocation('a1')
-            self.moveMouse(x,y ,'3')
+            self.myPeripheral.moveMouse(x,y ,'3')
             time.sleep(timeToReachStartPos)
             for coord in coordmaps.CHICKENLEFT:
-                self.moveMouse(coordmaps.CHICKENLEFT[coord]['x'],coordmaps.CHICKENLEFT[coord]['y'],'3')
+                self.myPeripheral.moveMouse(coordmaps.CHICKENLEFT[coord]['x'],coordmaps.CHICKENLEFT[coord]['y'],'3')
         elif(side == 'top'):
             # pos chicken at A8 first
             x,y = self.convertToLocation('a8')
-            self.moveMouse(x,y)
+            self.myPeripheral.moveMouse(x,y)
             time.sleep(timeToReachStartPos)
             for coord in coordmaps.CHICKENTOP:
-                self.moveMouse(coordmaps.CHICKENTOP[coord]['x'],coordmaps.CHICKENTOP[coord]['y'])
+                self.myPeripheral.moveMouse(coordmaps.CHICKENTOP[coord]['x'],coordmaps.CHICKENTOP[coord]['y'])
         elif(side == 'right'):
             # pos chicken at H8 first
             x,y = self.convertToLocation('h8')
-            self.moveMouse(x,y)
+            self.myPeripheral.moveMouse(x,y)
             time.sleep(timeToReachStartPos)
             for coord in coordmaps.CHICKENRIGHT:
-                self.moveMouse(coordmaps.CHICKENRIGHT[coord]['x'],coordmaps.CHICKENRIGHT[coord]['y'])
+                self.myPeripheral.moveMouse(coordmaps.CHICKENRIGHT[coord]['x'],coordmaps.CHICKENRIGHT[coord]['y'])
         elif(side == 'bot'):
             # pos chicken at H1 first
             x,y = self.convertToLocation('h1')
-            self.moveMouse(x,y)
+            self.myPeripheral.moveMouse(x,y)
             time.sleep(timeToReachStartPos)
             for coord in coordmaps.CHICKENBOT:
-                self.moveMouse(coordmaps.CHICKENBOT[coord]['x'],coordmaps.CHICKENBOT[coord]['y'])
+                self.myPeripheral.moveMouse(coordmaps.CHICKENBOT[coord]['x'],coordmaps.CHICKENBOT[coord]['y'])
         
         # send chicken back to default position
         self.resetChickenPos()
@@ -291,7 +235,7 @@ class GameController:
 
     def resetChickenPos(self):
         """Sends chicken back to default position"""
-        self.moveMouse(self.COORDMAP['resetChicken']['x'],self.COORDMAP['resetChicken']['y'],'3')
+        self.myPeripheral.moveMouse(self.COORDMAP['resetChicken']['x'],self.COORDMAP['resetChicken']['y'],'3')
 
     def moveItem(self, slot, target):
         '''Move item from chicken slot to target hero coordinates.
@@ -328,7 +272,7 @@ class GameController:
         # close shop first
         self.showSelection('off')
         x, y = self.convertToLocation(target)
-        self.moveMouse(x,y,'3')
+        self.myPeripheral.moveMouse(x,y,'3')
         # TODO: dynamic time depending on target location
         waitForChickenDelivery = 5
         time.sleep(waitForChickenDelivery)
@@ -349,7 +293,7 @@ class GameController:
             # allChatMessage = 'Chat wants to inspect the current position: '+playerPlacementID
             # self.writeAllChat(allChatMessage)
             # clicking on the avatar of the specific player leads us to their camposition
-            self.moveMouse(x,y, '1')
+            self.myPeripheral.moveMouse(x,y, '1')
             # move mouse away from avatars so the popovertext is not blocking the view
             self.clickNothing()
             #time.sleep(timeToStayOnPlayer)
@@ -367,7 +311,7 @@ class GameController:
                     self.pressKey('Tab')
                 else:
                     x,y = self.getLocationOfIntermediatePoint(self.COORDMAP['playerPosFirst'],self.COORDMAP['playerPosLast'],7,i)
-                    self.moveMouse(x,y, '1')
+                    self.myPeripheral.moveMouse(x,y, '1')
                     # move mouse away from avatars so the popovertext is not blocking the view
                     self.clickNothing()
 
@@ -426,7 +370,7 @@ class GameController:
 
     def acceptGame(self):
         """Press the accept button in Dota"""
-        self.moveMouse(self.COORDMAP['dotaAcceptBtn']['x'],self.COORDMAP['dotaAcceptBtn']['y'], '1')
+        self.myPeripheral.moveMouse(self.COORDMAP['dotaAcceptBtn']['x'],self.COORDMAP['dotaAcceptBtn']['y'], '1')
 
     def searchGame(self):
         """Initiates the search for a Dota AutoChess game inside Dota."""
@@ -438,13 +382,13 @@ class GameController:
         #     self.pressKeyWithPynput(KeyboardKey.esc)
         
         # go to main menu first
-        self.moveMouse(self.COORDMAP['dotaMainMenuBtn']['x'],self.COORDMAP['dotaMainMenuBtn']['y'], '1')
+        self.myPeripheral.moveMouse(self.COORDMAP['dotaMainMenuBtn']['x'],self.COORDMAP['dotaMainMenuBtn']['y'], '1')
         time.sleep(self.sleepBetweenMenu)
         # navigate to autochess
-        self.moveMouse(self.COORDMAP['dotaAutoChessBtn']['x'],self.COORDMAP['dotaAutoChessBtn']['y'], '1')
+        self.myPeripheral.moveMouse(self.COORDMAP['dotaAutoChessBtn']['x'],self.COORDMAP['dotaAutoChessBtn']['y'], '1')
         time.sleep(self.sleepBetweenMenu)
         # start autochess search
-        self.moveMouse(self.COORDMAP['dotaPlayAutoChessBtn']['x'],self.COORDMAP['dotaPlayAutoChessBtn']['y'], '1')
+        self.myPeripheral.moveMouse(self.COORDMAP['dotaPlayAutoChessBtn']['x'],self.COORDMAP['dotaPlayAutoChessBtn']['y'], '1')
         # automatically accept the first lobby to reduce user burden. Estimated time after a lobby is ready
         waitForFirstLobby = 5
         time.sleep(waitForFirstLobby)
@@ -483,20 +427,20 @@ class GameController:
         # Ragequit still allowed?
         if(self.allowRagequit):
             # Press the dota arrow button on the upper left corner
-            self.moveMouse(self.COORDMAP['dotaArrowBtn']['x'],self.COORDMAP['dotaArrowBtn']['y'], '1')
+            self.myPeripheral.moveMouse(self.COORDMAP['dotaArrowBtn']['x'],self.COORDMAP['dotaArrowBtn']['y'], '1')
             time.sleep(self.sleepBetweenMenu)
             # Press the dota disconnect button on the bottom right corner
-            self.moveMouse(self.COORDMAP['dotaDisconnectBtn']['x'],self.COORDMAP['dotaDisconnectBtn']['y'], '1')
+            self.myPeripheral.moveMouse(self.COORDMAP['dotaDisconnectBtn']['x'],self.COORDMAP['dotaDisconnectBtn']['y'], '1')
             time.sleep(self.sleepBetweenMenu)
             # circumvent dac rating popup
             self.clickNothing()
             time.sleep(self.sleepBetweenMenu)
             # Press the dota leave button above the disconnect (now reconnect) button
             # TODO: Test if this works without the workaround now since we use pynput
-            self.moveMouse(self.COORDMAP['dotaLeaveBtn']['x'],self.COORDMAP['dotaLeaveBtn']['y'], '1')
+            self.myPeripheral.moveMouse(self.COORDMAP['dotaLeaveBtn']['x'],self.COORDMAP['dotaLeaveBtn']['y'], '1')
             time.sleep(self.sleepBetweenMenu)
             # Press the dota acccept button for leaving in the middle of the screen
-            self.moveMouse(self.COORDMAP['dotaLeaveAcceptBtn']['x'],self.COORDMAP['dotaLeaveAcceptBtn']['y'], '1')
+            self.myPeripheral.moveMouse(self.COORDMAP['dotaLeaveAcceptBtn']['x'],self.COORDMAP['dotaLeaveAcceptBtn']['y'], '1')
             # clean file for stream view
             self.myIO.resetFile("ragequit.txt")
 
@@ -557,17 +501,17 @@ class GameController:
         """
         self.showSelection('on')
         x, y = self.getLocationOfIntermediatePoint(self.COORDMAP['chickenAbility1'],self.COORDMAP['chickenAbility5'],4,(int(target)-1))
-        self.moveMouse(x,y,'1')
+        self.myPeripheral.moveMouse(x,y,'1')
         self.clickNothing()
 
     def clickNothing(self):
         '''Click on the right side of the chessboard where nothing is to interact with.
         Can be used to click empty space as well for resetting commandchain (autochess bug)'''
-        self.moveMouse(self.COORDMAP['nothing']['x'],self.COORDMAP['nothing']['y'], '1')
+        self.myPeripheral.moveMouse(self.COORDMAP['nothing']['x'],self.COORDMAP['nothing']['y'], '1')
 
     def closeSelection(self):
         '''Closes the shop via X button in the right upper corner'''
-        self.moveMouse(self.COORDMAP['close']['x'],self.COORDMAP['close']['y'], '1')
+        self.myPeripheral.moveMouse(self.COORDMAP['close']['x'],self.COORDMAP['close']['y'], '1')
 
     def showSelection(self, isOn):
         """Shows/hides the shop.
@@ -582,28 +526,28 @@ class GameController:
             if (self.isXDOTOOL):
                 self.pressKey('space')
             else:
-                self.moveMouse(self.COORDMAP['shopButton']['x'],self.COORDMAP['shopButton']['y'],'1')
+                self.myPeripheral.moveMouse(self.COORDMAP['shopButton']['x'],self.COORDMAP['shopButton']['y'],'1')
 
     def lockSelection(self):
         """Locks the shop to prevent automatic rerolling"""
         # first open selection
         self.showSelection('on')
         # click on the lock icon
-        self.moveMouse(self.COORDMAP['lock']['x'],self.COORDMAP['lock']['y'],'1')
+        self.myPeripheral.moveMouse(self.COORDMAP['lock']['x'],self.COORDMAP['lock']['y'],'1')
 
     def moveBot(self):
         """Shortcut command: Moves the first piece to the backline"""
         self.resetChickenPos()
-        self.moveMouse(self.COORDMAP['chickenAbility1']['x'],self.COORDMAP['chickenAbility1']['y'],'1')
+        self.myPeripheral.moveMouse(self.COORDMAP['chickenAbility1']['x'],self.COORDMAP['chickenAbility1']['y'],'1')
         x,y = self.convertToLocation('aa')
-        self.moveMouse(x,y,'1')
+        self.myPeripheral.moveMouse(x,y,'1')
         # if (self.isXDOTOOL):
         #     self.pressKey(self.hotkeys[0])
         # else:
         #     self.pressKeyWithPynput(self.hotkeys[0])
 
         x,y = self.convertToLocation('e1')
-        self.moveMouse(x,y,'1')
+        self.myPeripheral.moveMouse(x,y,'1')
         self.clickNothing()
         self.showSelection('on')
 
@@ -611,16 +555,16 @@ class GameController:
     def moveTop(self):
         """Shortcut command: Moves the first piece to the frontline"""
         self.resetChickenPos()
-        self.moveMouse(self.COORDMAP['chickenAbility1']['x'],self.COORDMAP['chickenAbility1']['y'],'1')
+        self.myPeripheral.moveMouse(self.COORDMAP['chickenAbility1']['x'],self.COORDMAP['chickenAbility1']['y'],'1')
 
         x,y = self.convertToLocation('aa')
-        self.moveMouse(x,y, '1')
+        self.myPeripheral.moveMouse(x,y, '1')
         # if (self.isXDOTOOL):
         #     self.pressKey(self.hotkeys[0])
         # else:
         #     self.pressKeyWithPynput(self.hotkeys[0])
         x,y = self.convertToLocation('d4')
-        self.moveMouse(x,y, '1')
+        self.myPeripheral.moveMouse(x,y, '1')
         self.clickNothing()
         self.showSelection('on')
 
@@ -628,15 +572,15 @@ class GameController:
     def moveRight(self):
         """Shortcut command: Moves the first piece to the right side"""
         self.resetChickenPos()
-        self.moveMouse(self.COORDMAP['chickenAbility1']['x'],self.COORDMAP['chickenAbility1']['y'],'1')
+        self.myPeripheral.moveMouse(self.COORDMAP['chickenAbility1']['x'],self.COORDMAP['chickenAbility1']['y'],'1')
         x,y = self.convertToLocation('aa')
-        self.moveMouse(x,y, '1')
+        self.myPeripheral.moveMouse(x,y, '1')
         # if (self.isXDOTOOL):
         #     self.pressKey(self.hotkeys[0])
         # else:
         #     self.pressKeyWithPynput(self.hotkeys[0])
         x,y = self.convertToLocation('g3')
-        self.moveMouse(x,y, '1')
+        self.myPeripheral.moveMouse(x,y, '1')
         self.clickNothing()
         self.showSelection('on')
 
@@ -644,15 +588,15 @@ class GameController:
     def moveLeft(self):
         """Shortcut command: Moves the first piece to the left side"""
         self.resetChickenPos()
-        self.moveMouse(self.COORDMAP['chickenAbility1']['x'],self.COORDMAP['chickenAbility1']['y'],'1')
+        self.myPeripheral.moveMouse(self.COORDMAP['chickenAbility1']['x'],self.COORDMAP['chickenAbility1']['y'],'1')
         x,y = self.convertToLocation('aa')
-        self.moveMouse(x,y, '1')
+        self.myPeripheral.moveMouse(x,y, '1')
         # if (self.isXDOTOOL):
         #     self.pressKey(self.hotkeys[0])
         # else:
         #     self.pressKeyWithPynput(self.hotkeys[0])
         x,y = self.convertToLocation('b3')
-        self.moveMouse(x,y, '1')
+        self.myPeripheral.moveMouse(x,y, '1')
         self.clickNothing()
         self.showSelection('on')
 
@@ -705,16 +649,16 @@ class GameController:
         # make sure shop is closed while moving pieces
         self.showSelection('off')
         self.resetChickenPos()
-        self.moveMouse(self.COORDMAP['chickenAbility1']['x'],self.COORDMAP['chickenAbility1']['y'],'1')
+        self.myPeripheral.moveMouse(self.COORDMAP['chickenAbility1']['x'],self.COORDMAP['chickenAbility1']['y'],'1')
         x, y = self.convertToLocation(source)
-        self.moveMouse(x,y, '1')
+        self.myPeripheral.moveMouse(x,y, '1')
 
         # if (self.isXDOTOOL):
         #     self.pressKey(self.hotkeys[0])
         # else:
         #     self.pressKeyWithPynput(self.hotkeys[0])
         x, y = self.convertToLocation(target)
-        self.moveMouse(x,y,'1')
+        self.myPeripheral.moveMouse(x,y,'1')
         self.clickNothing()
         # show shop after movement for comfort
         self.showSelection('on')
@@ -748,9 +692,9 @@ class GameController:
         self.showSelection('off')
         self.resetChickenPos()
         x, y = self.getLocationOfIntermediatePoint(self.COORDMAP['chickenAbility1'],self.COORDMAP['chickenAbility5'], 4, 1)
-        self.moveMouse(x,y, '1')
+        self.myPeripheral.moveMouse(x,y, '1')
         x, y = self.convertToLocation(target)
-        self.moveMouse(x,y, '1')
+        self.myPeripheral.moveMouse(x,y, '1')
         # if (self.isXDOTOOL):
         #     self.pressKey(self.hotkeys[1])
         # else:
@@ -768,9 +712,9 @@ class GameController:
         self.showSelection('off')
         self.resetChickenPos()
         x, y = self.getLocationOfIntermediatePoint(self.COORDMAP['chickenAbility1'],self.COORDMAP['chickenAbility5'],4,2)
-        self.moveMouse(x,y,'1')
+        self.myPeripheral.moveMouse(x,y,'1')
         x, y = self.convertToLocation(target)
-        self.moveMouse(x,y, '1')
+        self.myPeripheral.moveMouse(x,y, '1')
         # if (self.isXDOTOOL):
         #     self.pressKey(self.hotkeys[2])
         # else:
@@ -783,7 +727,7 @@ class GameController:
         self.showSelection('off')
         self.resetChickenPos()
         x, y = self.getLocationOfIntermediatePoint(self.COORDMAP['chickenAbility1'],self.COORDMAP['chickenAbility5'],4,3)
-        self.moveMouse(x,y,'1')
+        self.myPeripheral.moveMouse(x,y,'1')
         # if (self.isXDOTOOL):
         #     self.pressKey(self.hotkeys[3])
         # else:
@@ -799,7 +743,7 @@ class GameController:
         """
         waitBetweenClicks = 0.8
         for dummy in range(int(amount)):
-            self.moveMouse(self.COORDMAP['chickenAbility5']['x'],self.COORDMAP['chickenAbility5']['y'],'1')
+            self.myPeripheral.moveMouse(self.COORDMAP['chickenAbility5']['x'],self.COORDMAP['chickenAbility5']['y'],'1')
             # if (self.isXDOTOOL):
             #     self.pressKey(self.hotkeys[4])
             # else:
