@@ -21,33 +21,36 @@ from pynput.mouse import Controller as MouseController
 from pynput.keyboard import Key as KeyboardKey
 from pynput.keyboard import Controller as KeyboardController
 
+
 class Peripherals:
 
     mouse = MouseController()
-    mouseButtons = [MouseButton.left,MouseButton.middle,MouseButton.right]
+    mouseButtons = [MouseButton.left, MouseButton.middle, MouseButton.right]
     keyboard = KeyboardController()
-    # default delay after each peripheral action. Needs to be > 0 to make sure that the actions are finished properly
+    # default delay after each peripheral action. Needs to be > 0 to make sure
+    # that the actions are finished properly
     sleepAfterMouseMove = 0.3
 
-    def moveMouse(self, x,y,clickType = None):
-        """Move the mouse to the desired coordinates and optionally click at that location.
-        
+    def moveMouse(self, x, y, clickType=None):
+        """Move the mouse to the desired coordinates and optionally click at
+        that location.
+
         Keyword arguments:
             x -- x coordinate inside screen resolution
             y -- y coordinate inside screen resolution
             clickType -- 1: leftclick, 2: middleclick, 3: rightclick
         """
-        print('trying to move to x: ',x)
-        print('trying to move to y: ',y)
+        print('trying to move to x: ', x)
+        print('trying to move to y: ', y)
         # print('trying to click: ' + clickType)
-        self.mouse.position = (int(x),int(y))
+        self.mouse.position = (int(x), int(y))
         if(clickType):
             self.clickMouse(clickType)
         time.sleep(self.sleepAfterMouseMove)
 
     def clickMouse(self, clickType):
-        """Clicks the specified mousebutton    
-                
+        """Clicks the specified mousebutton
+
         Keyword arguments:
             clickType -- 1: leftclick, 2: middleclick, 3: rightclick
         """

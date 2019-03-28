@@ -17,9 +17,10 @@
 import re
 
 PATTERNS = {
-            # ! + m or move + (a-H + a-H(same a-H as b4) or number 1-4) +
-            # (must be different then b4 =>)(a-H + a-H(same a-H as b4) or number 1-4) + ending or + ' trash'
-            'move': r'^!(m|move) (([a-hA-H])((?=\3)[a-hA-H]|[1-4])) (?!\2)(([a-hA-H])((?=\3)[a-hA-H]|[1-4]))($| +)',
+    # ! + m or move + (a-H + a-H(same a-H as b4) or number 1-4) +
+    # (must be different then b4 =>)(a-H + a-H(same a-H as b4) or number 1-4) +
+    # ending or + ' trash'
+    'move': r'^!(m|move) (([a-hA-H])((?=\3)[a-hA-H]|[1-4])) (?!\2)(([a-hA-H])((?=\3)[a-hA-H]|[1-4]))($| +)',
             'movedirection': r'^!(m|move) (left|right|top|bot)($| +)',
             'movefromslots': r'^!(aa|bb|cc|dd|ee|ff|gg|hh)( (left|right|top|bot))?($| +)',
             'grab': r'^!(g|grab) (([a-hA-H])((?=\3)[a-hA-H]|[1-8]))($| +)',
@@ -45,7 +46,8 @@ PATTERNS = {
             'write': r'^!write($| +)',
             'exec': r'^!exec($| +)',
             'stack': r'^!stack (!m|!g|!b|!s|!rq|!r|!x|!shop|!l|!p|!i|!tab|!random|!search|!accept|!calib|!run|!iu?l|!stay)'
-        }
+}
+
 
 def validateCommand(command):
     '''Validate incoming commands. Returns bool

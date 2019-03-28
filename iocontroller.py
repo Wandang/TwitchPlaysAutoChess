@@ -15,20 +15,24 @@
 
 import os
 
+
 class Singleton(type):
     """Singleton pattern metaclass"""
     _instances = {}
+
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+            cls._instances[cls] = super(
+                Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
+
 
 class IOController(metaclass=Singleton):
     """Handles the writing of files"""
 
     def writeFile(self, filename, message):
         """Writes textfiles to use for chat representation and execution.
-        
+
         Keyword arguments:
             filename -- Filename of file to be written
             message -- Text to write
@@ -37,16 +41,17 @@ class IOController(metaclass=Singleton):
             f.write(message)
         pass
 
-    def resetFile(self, filename = None):
+    def resetFile(self, filename=None):
         """Clears specific file or all files by overwriting them with an empty string.
 
         Keyword arguments:
-            filename -- Filename of file to cleared. None if all files should be cleared.
+            filename -- Filename of file to cleared. None if all files should
+            be cleared.
         """
         if(filename):
             self.writeFile(filename, '')
         else:
-            self.writeFile('lastsaid.txt','')
-            self.writeFile('most_common_commands.txt','')
-            self.writeFile('ragequit.txt','')
-            self.writeFile('commands.txt','')
+            self.writeFile('lastsaid.txt', '')
+            self.writeFile('most_common_commands.txt', '')
+            self.writeFile('ragequit.txt', '')
+            self.writeFile('commands.txt', '')

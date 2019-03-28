@@ -46,8 +46,8 @@ COORDMAP_RESOLUTION_4TO3 = {
     'close': {'x': '971', 'y': '245'},
     'nothing': {'x': '848', 'y': '39'},
 
-    'chickenAbility1':{'x': '438', 'y': '690'},
-    'chickenAbility5':{'x': '601', 'y': '690'},
+    'chickenAbility1': {'x': '438', 'y': '690'},
+    'chickenAbility5': {'x': '601', 'y': '690'},
     'shopButton': {'x': '249', 'y': '30'},
 
     'chickSlot1': {'x': '651', 'y': '686'},
@@ -97,8 +97,8 @@ COORDMAP_RESOLUTION_16TO9 = {
     'close': {'x': '1610', 'y': '344'},
     'nothing': {'x': '1547', 'y': '77'},
 
-    'chickenAbility1':{'x': '855', 'y': '970'},
-    'chickenAbility5':{'x': '1087', 'y': '970'},
+    'chickenAbility1': {'x': '855', 'y': '970'},
+    'chickenAbility5': {'x': '1087', 'y': '970'},
     'shopButton': {'x': '591', 'y': '37'},
 
     'chickSlot1': {'x': '1158', 'y': '964'},
@@ -149,8 +149,8 @@ COORDMAP_RESOLUTION_16TO10 = {
     'close': {'x': '1121', 'y': '255'},
     'nothing': {'x': '1027', 'y': '39'},
 
-    'chickenAbility1':{'x': '562', 'y': '717'},
-    'chickenAbility5':{'x': '734', 'y': '717'},
+    'chickenAbility1': {'x': '562', 'y': '717'},
+    'chickenAbility5': {'x': '734', 'y': '717'},
     'shopButton': {'x': '365', 'y': '30'},
 
     'chickSlot1': {'x': '785', 'y': '715'},

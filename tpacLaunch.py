@@ -27,6 +27,8 @@ import iocontroller
 import gamecontroller
 
 # TODO: split setup/configuration from controller flow
+
+
 class Setup:
     """
     Configures program and controls flow
@@ -38,10 +40,11 @@ class Setup:
 
     def __init__(self):
         self.config()
-        
+
     def config(self):
         """Generates a config file if it does not exist"""
-        # TODO: exclude settings and configs outside of controlling programflow -> move programflow to controller class
+        # TODO: exclude settings and configs outside of controlling
+        # programflow -> move programflow to controller class
         while True:
             if os.path.isfile("settings.txt"):
                 config = configparser.ConfigParser()
@@ -51,22 +54,29 @@ class Setup:
                 self.AUTH = config.get('Settings', 'AUTH')
                 self.NICK = config.get('Settings', 'USERNAME').lower()
                 self.APP = config.get('Settings', 'APP')
-                self.CHAT_CHANNEL = config.get('Settings', 'CHAT_CHANNEL').lower()
+                self.CHAT_CHANNEL = config.get(
+                    'Settings',
+                    'CHAT_CHANNEL').lower()
                 self.command_length = config.getint('Settings', 'LENGTH')
                 self.hotkeys = config.get('Settings', 'HOTKEYS').split(',')
-                self.resolution = config.get('Settings', 'RESOLUTION').split('x')
+                self.resolution = config.get(
+                    'Settings',
+                    'RESOLUTION').split('x')
                 break
             else:
                 print("Let's make you a config file")
                 settings = []
                 settings.append("; Settings for Twitch Plays AutoChess bot")
-                settings.append("; Thanks to TwitchPlaysPokemon developers: sunshinekitty, RDJ, MZ, AP, & Oriax\n")
+                settings.append("; Thanks to TwitchPlaysPokemon developers:" +
+                                "sunshinekitty, RDJ, MZ, AP, & Oriax\n")
 
                 settings.append("[Settings]\n")
 
                 settings.append(
-                    "; Where you're connecting to, if it's Twitch leave it as is")
-                print("Where you're connecting to, if it's Twitch use irc.twitch.tv")
+                    "; Where you're connecting to," +
+                    " if it's Twitch leave it as is")
+                print("Where you're connecting to, " +
+                      "if it's Twitch use irc.twitch.tv")
                 settings_host = input("Hostname: ")
                 settings.append("HOST = " + settings_host + "\n")
 
@@ -76,8 +86,10 @@ class Setup:
                 settings.append("PORT = " + settings_port + "\n")
 
                 settings.append(
-                    "; Auth token, grab this from http://www.twitchapps.com/tmi")
-                print("Auth token, grab this from http://www.twitchapps.com/tmi")
+                    "; Auth token, grab this from " +
+                    "http://www.twitchapps.com/tmi")
+                print("Auth token, grab this from " +
+                      "http://www.twitchapps.com/tmi")
                 settings_auth = input("Auth Token: ")
                 settings.append("AUTH = " + settings_auth + "\n")
 
@@ -92,37 +104,55 @@ class Setup:
                 settings_app = input("Application name: ")
                 settings.append("APP = " + settings_app + "\n")
 
-                settings.append("; Username of who's channel you're connecting to")
+                settings.append(
+                    "; Username of who's channel you're connecting to")
                 print("Username of who's channel you're connecting to")
                 settings_chat = input("Username: ")
                 settings.append("CHAT_CHANNEL = " + settings_chat + "\n")
 
                 settings.append(
-                    "; The maximum number of lines in commands.txt (Useful for showing commands received in stream)")
-                print("The maximum number of lines in commands.txt (Useful for showing commands received in stream)")
+                    "; The maximum number of lines in commands.txt " +
+                    "(Useful for showing commands received in stream)")
+                print(
+                    "The maximum number of lines in commands.txt " +
+                    "(Useful for showing commands received in stream)")
                 settings_length = input("Length: ")
                 settings.append("LENGTH = " + settings_length + "\n")
-                
-                settings.append("; Dota 2 Hotkey mapping for the courier/chicken abilities.\n; default: m,b,s,r,x")
-                print("Dota 2 Hotkey mapping for the courier/chicken abilities.")
-                settings_hotkey_ability1 = input("Select Chess Piece (default: m): ")
-                settings_hotkey_ability2 = input("Recall Chess Piece (default: b): ")
-                settings_hotkey_ability3 = input("Sell Chess Piece (default: s): ")
-                settings_hotkey_ability4 = input("Reroll Pieces (default: r): ")
+
+                settings.append(
+                    "; Dota 2 Hotkey mapping for the courier/chicken" +
+                    " abilities.\n; default: m,b,s,r,x")
+                print("Dota 2 Hotkey mapping for the courier/chicken" +
+                      " abilities.")
+                settings_hotkey_ability1 = input(
+                    "Select Chess Piece (default: m): ")
+                settings_hotkey_ability2 = input(
+                    "Recall Chess Piece (default: b): ")
+                settings_hotkey_ability3 = input(
+                    "Sell Chess Piece (default: s): ")
+                settings_hotkey_ability4 = input(
+                    "Reroll Pieces (default: r): ")
                 settings_hotkey_ability5 = input("Buy XP (default: x): ")
-                settings_hotkeys = '' + settings_hotkey_ability1 + ',' + settings_hotkey_ability2 + ',' + settings_hotkey_ability3 + ',' + settings_hotkey_ability4 + ',' + settings_hotkey_ability5
+                settings_hotkeys = '' +
+                settings_hotkey_ability1 + ',' +
+                settings_hotkey_ability2 + ',' +
+                settings_hotkey_ability3 + ',' +
+                settings_hotkey_ability4 + ',' +
+                settings_hotkey_ability5
                 settings.append("HOTKEYS = " + settings_hotkeys + "\n")
 
                 settings.append("; Screen resolution")
-                settings_resolution = input("What's your screen resolution? (default: 1920x1080): ")
+                settings_resolution = input(
+                    "What's your screen resolution? (default: 1920x1080): ")
                 settings.append("RESOLUTION = " + settings_resolution + "\n")
 
                 allSettings = ''
                 for each_setting in settings:
                     allSettings += each_setting + '\n'
-                self.myIO.writeFile("settings.txt",allSettings)
+                self.myIO.writeFile("settings.txt", allSettings)
 
-        self.gc = gamecontroller.GameController(self.CHAT_CHANNEL, self.hotkeys, self.resolution)
+        self.gc = gamecontroller.GameController(
+            self.CHAT_CHANNEL, self.hotkeys, self.resolution)
         self.configDynamicSettings()
 
     def configDynamicSettings(self):
@@ -130,13 +160,9 @@ class Setup:
         Select game type (Democracy/Anarchy)"""
         while True:
             # TODO: get window ID cross platform style (maybe with pynput)
-            # while self.gc.dota2WindowID == '':
-            #     input("Dota already running? Then press enter")
-            #     completedProcess = subprocess.run(['xdotool', 'search', '--name',
-            #                                     'Dota 2'], capture_output=True)
-            #     self.gc.dota2WindowID = completedProcess.stdout.decode('UTF-8')
-            print("Currently available: Democracy, Anarchy\n"+
-                "Democracy: Takes most said command every X second(s)\nAnarchy: Executes every incoming command")
+            print("Currently available: Democracy, Anarchy\n" +
+                  "Democracy: Takes most said command every X " +
+                  "second(s)\nAnarchy: Executes every incoming command")
             self.mode = input("Game type (default Anarchy): ")
             if self.mode.lower() == "democracy":
                 print("Takes most said command every X second(s): ")
@@ -157,7 +183,7 @@ class Setup:
         self.myIO.resetFile()
         # Democracy Game Mode?
         if self.mode.lower() == "democracy":
-            
+
             count_job = Thread(target=self.democracy, args=())
             count_job.start()
 
@@ -166,7 +192,8 @@ class Setup:
         self.handleTwitchResponse(twitchSocket)
 
     def democracy(self):
-        """Runs in parallel thread and counts the most popular commands for a few seconds.
+        """Runs in parallel thread and counts the most popular commands for a
+        few seconds.
         After that the most popular command is executed"""
         list_commands = []
         last_command = time.time()
@@ -181,30 +208,45 @@ class Setup:
                     selected_c = self.most_common(list_commands)
                 else:
                     selected_c = 'None'
-                self.myIO.writeFile("lastsaid.txt","Selected {0}\nTime left: {1}".format(selected_c,str(self.democracy_time)[0:1]))
+                self.myIO.writeFile(
+                    "lastsaid.txt",
+                    "Selected {0}\nTime left: {1}".format(
+                        selected_c, str(self.democracy_time)[0:1]))
                 list_commands = []
                 if(selected_c != 'None'):
                     # Do nothing if chat didn't write any commands
                     lowerCaseOutput = selected_c.lower()
                     self.gc.findAndExecute(lowerCaseOutput)
             else:
-                self.myIO.writeFile("lastsaid.txt","Selected {0}\nTime left: {1}".format(selected_c ,str(
-                        1.0 + last_command + self.democracy_time - time.time())[0:1]))
+                self.myIO.writeFile(
+                    "lastsaid.txt",
+                    "Selected {0}\nTime left: {1}".format(
+                        selected_c,
+                        str(
+                            1.0 +
+                            last_command +
+                            self.democracy_time -
+                            time.time()
+                        )[0:1]))
             time.sleep(1)
 
     def connectToTwitch(self):
-        """Connects to twitch by using a socket, host, port and user credentials"""
+        """Connects to twitch by using a socket, host, port and user
+        credentials"""
         s = socket.socket()
         s.connect((self.HOST, self.PORT))
 
         s.send(bytes("PASS {0}\r\n".format(self.AUTH), "UTF-8"))
         s.send(bytes("NICK {0}\r\n".format(self.NICK), "UTF-8"))
-        s.send(bytes("USER {0} {1} bla :{2}\r\n".format(self.NICK, self.HOST, self.NICK), "UTF-8"))
+        s.send(bytes("USER {0} {1} bla :{2}\r\n".format(
+            self.NICK, self.HOST, self.NICK), "UTF-8"))
         s.send(bytes("JOIN #{0}\r\n".format(self.CHAT_CHANNEL), "UTF-8"))
-        s.send(bytes("PRIVMSG #{0} :Connected\r\n".format(self.CHAT_CHANNEL), "UTF-8"))
-        print("Sent connected message to channel {0}".format(self.CHAT_CHANNEL))
+        s.send(bytes("PRIVMSG #{0} :Connected\r\n".format(
+            self.CHAT_CHANNEL), "UTF-8"))
+        print("Sent connected message to channel {0}".format(
+            self.CHAT_CHANNEL))
         return s
-    
+
     def handleTwitchResponse(self, s):
         """Extracts the relevant info/command from each chat line
 
@@ -213,7 +255,8 @@ class Setup:
         """
         readbuffer = ''
         while True:
-            readbuffer = readbuffer+s.recv(1024).decode("UTF-8", errors="ignore")
+            readbuffer = readbuffer + \
+                s.recv(1024).decode("UTF-8", errors="ignore")
             temp = str.split(readbuffer, "\n")
             readbuffer = temp.pop()
 
@@ -223,7 +266,7 @@ class Setup:
                 line = str.rstrip(line)
                 line = str.split(line)
 
-                # remove username and : in front of each line 
+                # remove username and : in front of each line
                 for index, dummy in enumerate(line):
                     if x == 0:
                         user = line[index]
@@ -236,7 +279,8 @@ class Setup:
                         out += " " + line[index]
                     x = x + 1
 
-                # Respond to ping, squelch useless feedback given by twitch, print output and read to list
+                # Respond to ping, squelch useless feedback given by twitch,
+                # print output and read to list
                 if user == "PING: ":
                     s.send(bytes("PONG tmi.twitch.tv\r\n", "UTF-8"))
                 elif user == ":tmi.twitch.tv: ":
@@ -250,7 +294,7 @@ class Setup:
                         print(user + out)
                     except UnicodeEncodeError:
                         print(user)
-                
+
                 # Take in output
                 # sanitize output
                 if(validator.validateCommand(out.lower())):
@@ -258,15 +302,17 @@ class Setup:
                     # Write to file for stream view
                     items = ''
                     for item in self.commands:
-                            items += item + '\n'
-                    self.myIO.writeFile('commands.txt',items)
+                        items += item + '\n'
+                    self.myIO.writeFile('commands.txt', items)
                     if(self.mode != "democracy"):
                         lowerCaseOutput = out.lower()
                         self.gc.findAndExecute(lowerCaseOutput)
 
     def addToCommandList(self, user, out):
-        """Adds all valid commands to a list and removes/pops the first entry if the list gets too long.
-        Additionally adds commands to a democracy list which is used to determine the top 5 commands
+        """Adds all valid commands to a list and removes/pops the first entry
+        if the list gets too long.
+        Additionally adds commands to a democracy list which is used to
+        determine the top 5 commands
 
         Keyword arguments:
             user -- twitch username as send by twitch api
@@ -284,8 +330,9 @@ class Setup:
 
     def most_common(self, lst):
         """Return the most common/popular command of a given list.
-        At the same time determine the Top 5 commands to show stream view by writing it to a file
-        
+        At the same time determine the Top 5 commands to show stream view by
+        writing it to a file
+
         Keyword arguments:
             lst -- list of commands to be examined
         """
@@ -316,6 +363,7 @@ class Setup:
             topCommands += item + '\n'
         self.myIO.writeFile("most_common_commands.txt", topCommands)
         return maxList[0]
+
 
 if __name__ == "__main__":
     setup = Setup()
