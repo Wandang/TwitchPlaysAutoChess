@@ -320,16 +320,10 @@ class GameController:
         firstCharNr = ord(firstChar)
         diffNr = firstCharNr - aAsNr 
         if(firstChar == secondChar):
-            diffRow = float(self.COORDMAP['hh']['x']) - float(self.COORDMAP['aa']['x'])
-            intervalRow = diffRow / 7
-            newXPos = int(float(self.COORDMAP['aa']['x'])+diffNr*intervalRow)
-            newYPos = int(self.COORDMAP['aa']['y'])
+            x, y = self.getLocationOfIntermediatePoint(self.COORDMAP['hh'],self.COORDMAP['aa'], 7,diffNr)
         else:
-            diffRow = float(self.COORDMAP['h'+secondChar]['x']) - float(self.COORDMAP['a'+secondChar]['x'])
-            intervalRow = diffRow / 7
-            newXPos = int(float(self.COORDMAP['a'+secondChar]['x'])+diffNr*intervalRow)
-            newYPos = int(self.COORDMAP['a'+secondChar]['y'])
-        return newXPos, newYPos
+            x, y = self.getLocationOfIntermediatePoint(self.COORDMAP['h'+secondChar],self.COORDMAP['a'+secondChar], 7,diffNr)
+        return x, y
 
 
     def moveMouse(self,x,y,clickType = None):
@@ -429,24 +423,21 @@ class GameController:
         """
         # TODO: check if special delay is still needed since pynput
         waitForRightClickMenu = 0.5
-        distanceX = int(self.COORDMAP['chickSlot9']['x']) - int(self.COORDMAP['chickSlot1']['x'])
-        distanceY = int(self.COORDMAP['chickSlot9']['y']) - int(self.COORDMAP['chickSlot1']['y'])
         # We have 3x3 item matrix
-        distanceToEachCenterX = distanceX / 3
-        distanceToEachCenterY = distanceY / 3
         # after 3 and 6 the next row starts
-        newXCoord = int(self.COORDMAP['chickSlot1']['x']) + ((int(slot)-1) % 3) * distanceToEachCenterX
+        countingXSteps = (int(slot)-1) % 3
         # reduce slot number slightly so 1,2,3 / 3.0 casted to int becomes 0; 4,5,6 become 1; and 7,8,9 become 2
-        newYCoord = int(self.COORDMAP['chickSlot1']['y']) + int((int(slot)-1)/3.0) * distanceToEachCenterY
-        self.moveMouse(newXCoord,newYCoord, '3')
+        countingYSteps = int((int(slot)-1)/3)
+        x,y = self.getLocationOfIntermediatePoint(self.COORDMAP['chickSlot1'],self.COORDMAP['chickSlot9'],3,[countingXSteps,countingYSteps])
+        self.moveMouse(x,y, '3')
         time.sleep(waitForRightClickMenu)
         # the rightclick menu changes position depending on row
-        lockLabelPosX = str(int(newXCoord)+int(self.itemoffsetFirstRowX))
-        lockLabelPosY = str(int(newYCoord)+int(self.itemoffsetFirstRowy))
+        lockLabelPosX = str(int(x)+int(self.itemoffsetFirstRowX))
+        lockLabelPosY = str(int(y)+int(self.itemoffsetFirstRowy))
         if(int(slot) > 3):
             # slot is below first row
-            lockLabelPosX = str(int(newXCoord)+int(self.itemoffsetSecondRowX))
-            lockLabelPosY = str(int(newYCoord)+int(self.itemoffsetSecondRowy))
+            lockLabelPosX = str(int(x)+int(self.itemoffsetSecondRowX))
+            lockLabelPosY = str(int(y)+int(self.itemoffsetSecondRowy))
         self.moveMouse(lockLabelPosX,lockLabelPosY,'1')
 
     # TODO: optimize, reduce redundancy
@@ -546,17 +537,14 @@ class GameController:
             playerPlacementID -- PlayerID defined by current placement (1-8)
         '''
         self.closeSelection()
-        distancePlayersY = int(self.COORDMAP['playerPosLast']['y']) - int(self.COORDMAP['playerPosFirst']['y'])
-        diffCenter = distancePlayersY / 7
         if(playerPlacementID != -1):
             #timeToStayOnPlayer = 3
-
-            newYCoord = int(self.COORDMAP['playerPosFirst']['y']) + (int(playerPlacementID)-1) * diffCenter
+            x, y = self.getLocationOfIntermediatePoint(self.COORDMAP['playerPosFirst'],self.COORDMAP['playerPosLast'], 7, (int(playerPlacementID)-1))
             # cheeky message to be displayed to make it feel more interactive with the other players
             # allChatMessage = 'Chat wants to inspect the current position: '+playerPlacementID
             # self.writeAllChat(allChatMessage)
             # clicking on the avatar of the specific player leads us to their camposition
-            self.moveMouse(self.COORDMAP['playerPosFirst']['x'],newYCoord, '1')
+            self.moveMouse(x,y, '1')
             # move mouse away from avatars so the popovertext is not blocking the view
             self.clickNothing()
             #time.sleep(timeToStayOnPlayer)
@@ -573,8 +561,8 @@ class GameController:
                 if(self.isXDOTOOL):
                     self.pressKey('Tab')
                 else:
-                    newYCoord = int(self.COORDMAP['playerPosFirst']['y']) + i * diffCenter
-                    self.moveMouse(self.COORDMAP['playerPosFirst']['x'],newYCoord, '1')
+                    x,y = self.getLocationOfIntermediatePoint(self.COORDMAP['playerPosFirst'],self.COORDMAP['playerPosLast'],7,i)
+                    self.moveMouse(x,y, '1')
                     # move mouse away from avatars so the popovertext is not blocking the view
                     self.clickNothing()
 
@@ -763,10 +751,8 @@ class GameController:
             target -- Number between 1-5
         """
         self.showSelection('on')
-        distancePixels = int(self.COORDMAP['pickLast']['x']) - int(self.COORDMAP['pickFirst']['x'])
-        distanceToEachCenter = distancePixels / 4
-        newXCoord = int(self.COORDMAP['pickFirst']['x']) + (int(target)-1) * distanceToEachCenter
-        self.moveMouse(newXCoord,self.COORDMAP['pickFirst']['y'], '1')
+        x, y = self.getLocationOfIntermediatePoint(self.COORDMAP['chickenAbility1'],self.COORDMAP['chickenAbility5'],4,(int(target)-1))
+        self.moveMouse(x,y,'1')
         self.clickNothing()
 
     def clickNothing(self):
@@ -928,6 +914,26 @@ class GameController:
         # show shop after movement for comfort
         self.showSelection('on')
 
+    def getLocationOfIntermediatePoint(self, pointA, pointB, intervals, indexOfElements):
+        aX = int(pointA.x)
+        aY = int(pointA.Y)
+        bX = int(pointB.x)
+        bY = int(pointB.Y)
+        diffDistanceX = aX - bX
+        diffDistanceY = aY - bY
+        distanceBetweenEachPointX = diffDistanceX/intervals
+        distanceBetweenEachPointY = diffDistanceY/intervals
+
+        if(len(indexOfElements)==1):
+            newCoordX = aX - indexOfElements[0] * distanceBetweenEachPointX
+            newCoordY = aY - indexOfElements[0] * distanceBetweenEachPointY
+        else:
+            newCoordX = aX - indexOfElements[0] * distanceBetweenEachPointX
+            newCoordY = aY - indexOfElements[1] * distanceBetweenEachPointY
+
+        return newCoordX, newCoordY
+        
+
     def benchPiece(self, target):
         """Removes an active chess piece from the chessboard and puts it on the bench.
         
@@ -936,11 +942,8 @@ class GameController:
         """
         self.showSelection('off')
         self.resetChickenPos()
-        diffDistance = int(self.COORDMAP['chickenAbility5']['x']) - int(self.COORDMAP['chickenAbility1']['x'])
-        interval = diffDistance / 4
-        # TODO: write a function to use coordmaps as integers -> useCoordsAsNumber(coord)
-        newXCoord = int(self.COORDMAP['chickenAbility1']['x']) + interval
-        self.moveMouse(newXCoord,self.COORDMAP['chickenAbility1']['y'],'1')
+        x, y = self.getLocationOfIntermediatePoint(self.COORDMAP['chickenAbility1'],self.COORDMAP['chickenAbility5'], 4, 1)
+        self.moveMouse(x,y, '1')
         x, y = self.convertToLocation(target)
         self.moveMouse(x,y, '1')
         # if (self.isXDOTOOL):
@@ -959,10 +962,8 @@ class GameController:
         """
         self.showSelection('off')
         self.resetChickenPos()
-        diffDistance = int(self.COORDMAP['chickenAbility5']['x']) - int(self.COORDMAP['chickenAbility1']['x'])
-        interval = diffDistance / 4
-        newXCoord = int(self.COORDMAP['chickenAbility1']['x']) + 2 * interval
-        self.moveMouse(newXCoord,self.COORDMAP['chickenAbility1']['y'],'1')
+        x, y = self.getLocationOfIntermediatePoint(self.COORDMAP['chickenAbility1'],self.COORDMAP['chickenAbility5'],4,2)
+        self.moveMouse(x,y,'1')
         x, y = self.convertToLocation(target)
         self.moveMouse(x,y, '1')
         # if (self.isXDOTOOL):
@@ -976,10 +977,8 @@ class GameController:
         """Rerolls the shop selection."""
         self.showSelection('off')
         self.resetChickenPos()
-        diffDistance = int(self.COORDMAP['chickenAbility5']['x']) - int(self.COORDMAP['chickenAbility1']['x'])
-        interval = diffDistance / 4
-        newXCoord = int(self.COORDMAP['chickenAbility1']['x']) + 3 * interval
-        self.moveMouse(newXCoord,self.COORDMAP['chickenAbility1']['y'],'1')
+        x, y = self.getLocationOfIntermediatePoint(self.COORDMAP['chickenAbility1'],self.COORDMAP['chickenAbility5'],4,3)
+        self.moveMouse(x,y,'1')
         # if (self.isXDOTOOL):
         #     self.pressKey(self.hotkeys[3])
         # else:
