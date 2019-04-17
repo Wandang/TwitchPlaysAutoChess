@@ -786,10 +786,10 @@ class GameController:
             self.COORDMAP['nothing']['x'], self.COORDMAP['nothing']['y'], '1')
 
     def getLocationOfIntermediatePoint(self, pointA, pointB, intervals, idx):
-        aX = int(pointA.x)
-        aY = int(pointA.Y)
-        bX = int(pointB.x)
-        bY = int(pointB.Y)
+        aX = int(pointA['x'])
+        aY = int(pointA['y'])
+        bX = int(pointB['x'])
+        bY = int(pointB['y'])
         diffDistanceX = aX - bX
         diffDistanceY = aY - bY
         distanceBetweenEachPointX = diffDistanceX/intervals
