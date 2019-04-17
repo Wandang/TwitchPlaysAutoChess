@@ -133,12 +133,7 @@ class Setup:
                 settings_hotkey_ability4 = input(
                     "Reroll Pieces (default: r): ")
                 settings_hotkey_ability5 = input("Buy XP (default: x): ")
-                settings_hotkeys = '' +
-                settings_hotkey_ability1 + ',' +
-                settings_hotkey_ability2 + ',' +
-                settings_hotkey_ability3 + ',' +
-                settings_hotkey_ability4 + ',' +
-                settings_hotkey_ability5
+                settings_hotkeys = '' + settings_hotkey_ability1 + ',' + settings_hotkey_ability2 + ',' + settings_hotkey_ability3 + ',' + settings_hotkey_ability4 + ',' + settings_hotkey_ability5
                 settings.append("HOTKEYS = " + settings_hotkeys + "\n")
 
                 settings.append("; Screen resolution")
