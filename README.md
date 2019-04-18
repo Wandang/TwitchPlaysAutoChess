@@ -53,7 +53,7 @@ There is an example OBS scene/overlay inside the assets folder that can be impor
 
 * Search game: `!search` (search accepts once after 5s, if that lobby does not start you will need to use !accept)
 * Accept game: `!accept`
-* Calibrate cam: `!calib` (needed for mouse movements to be accurate/work)
+* ~Calibrate cam: `!calib` (needed for mouse movements to be accurate/work)~ Use !tab <number> instead for now!
 * Quit current game: `!rq` (20s grace period. Can be aborted with !stay)
 * Stay in current game: `!stay`
 
