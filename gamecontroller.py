@@ -237,7 +237,7 @@ class GameController:
             # timeToStayOnPlayer = 3
             x, y = self.getLocationOfIntermediatePoint(
                 self.COORDMAP['playerPosFirst'],
-                self.COORDMAP['playerPosLast'], 7, (int(playerPlacementID)-1))
+                self.COORDMAP['playerPosLast'], 7, [(int(playerPlacementID)-1)])
             # cheeky message to be displayed to make it feel more interactive
             # with the other players
             # allChatMessage = 'Chat wants to inspect the current position: '+
@@ -263,7 +263,7 @@ class GameController:
             for i in range(8):
                 x, y = self.getLocationOfIntermediatePoint(
                     self.COORDMAP['playerPosFirst'],
-                    self.COORDMAP['playerPosLast'], 7, i)
+                    self.COORDMAP['playerPosLast'], 7, [i])
                 self.myPeripheral.moveMouse(x, y, '1')
                 # move mouse away from avatars so the popovertext is not
                 # blocking the view
@@ -279,8 +279,8 @@ class GameController:
         """
         self.showSelection('on')
         x, y = self.getLocationOfIntermediatePoint(
-            self.COORDMAP['chickenAbility1'],
-            self.COORDMAP['chickenAbility5'], 4, (int(target)-1))
+            self.COORDMAP['pickFirst'],
+            self.COORDMAP['pickLast'], 4, [(int(target)-1)])
         self.myPeripheral.moveMouse(x, y, '1')
         self.clickNothing()
 
@@ -442,7 +442,7 @@ class GameController:
         self.resetChickenPos()
         x, y = self.getLocationOfIntermediatePoint(
             self.COORDMAP['chickenAbility1'],
-            self.COORDMAP['chickenAbility5'], 4, 1)
+            self.COORDMAP['chickenAbility5'], 4, [1])
         self.myPeripheral.moveMouse(x, y, '1')
         x, y = self.convertToLocation(target)
         self.myPeripheral.moveMouse(x, y, '1')
@@ -461,7 +461,7 @@ class GameController:
         self.resetChickenPos()
         x, y = self.getLocationOfIntermediatePoint(
             self.COORDMAP['chickenAbility1'],
-            self.COORDMAP['chickenAbility5'], 4, 2)
+            self.COORDMAP['chickenAbility5'], 4, [2])
         self.myPeripheral.moveMouse(x, y, '1')
         x, y = self.convertToLocation(target)
         self.myPeripheral.moveMouse(x, y, '1')
@@ -475,7 +475,7 @@ class GameController:
         self.resetChickenPos()
         x, y = self.getLocationOfIntermediatePoint(
             self.COORDMAP['chickenAbility1'],
-            self.COORDMAP['chickenAbility5'], 4, 3)
+            self.COORDMAP['chickenAbility5'], 4, [3])
         self.myPeripheral.moveMouse(x, y, '1')
         # self.pressKeyWithPynput(self.hotkeys[3])
         self.clickNothing()
@@ -685,11 +685,11 @@ class GameController:
         diffNr = firstCharNr - aAsNr
         if(firstChar == secondChar):
             x, y = self.getLocationOfIntermediatePoint(
-                self.COORDMAP['hh'], self.COORDMAP['aa'], 7, diffNr)
+                self.COORDMAP['aa'], self.COORDMAP['hh'], 7, [diffNr])
         else:
             x, y = self.getLocationOfIntermediatePoint(
-                self.COORDMAP['h'+secondChar],
-                self.COORDMAP['a'+secondChar], 7, diffNr)
+                self.COORDMAP['a'+secondChar],
+                self.COORDMAP['h'+secondChar], 7, [diffNr])
         return x, y
 
     def dragAndDrop(self, source, target):
@@ -794,11 +794,10 @@ class GameController:
         diffDistanceY = aY - bY
         distanceBetweenEachPointX = diffDistanceX/intervals
         distanceBetweenEachPointY = diffDistanceY/intervals
-
         if(len(idx) == 1):
             newCoordX = aX - idx[0] * distanceBetweenEachPointX
             newCoordY = aY - idx[0] * distanceBetweenEachPointY
-        else:
+        elif(len(idx) == 2):
             newCoordX = aX - idx[0] * distanceBetweenEachPointX
             newCoordY = aY - idx[1] * distanceBetweenEachPointY
 
