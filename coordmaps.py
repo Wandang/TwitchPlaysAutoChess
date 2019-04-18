@@ -59,11 +59,14 @@ COORDMAP_RESOLUTION_4TO3 = {
     'dotaDisconnectBtn': {'x': '841', 'y': '735'},
     'dotaLeaveBtn': {'x': '850', 'y': '700'},
     'dotaLeaveAcceptBtn': {'x': '456', 'y': '423'},
-    'dotaPlayAutoChessBtn': {'x': '892', 'y': '351'},
+    'dotaPlayAutoChessBtn': {'x': '879', 'y': '620'},
     'dotaAcceptBtn': {'x': '504', 'y': '371'},
     'dotaDeclineBtn': {'x': '724', 'y': '419'},
     'dotaMainMenuBtn': {'x': '207', 'y': '27'},
     'dotaAutoChessBtn': {'x': '394', 'y': '345'},
+    'dotaArcadeBtn': {'x': '762', 'y': '20'},
+    'dotaBrowseBtn': {'x': '540', 'y': '60'},
+    'dotaBrowseListAutoChessBtn': {'x': '287', 'y': '140'},
 
     'playerPosFirst': {'x': '895', 'y': '108'},
     'playerPosLast': {'x': '895', 'y': '605'}
@@ -110,11 +113,14 @@ COORDMAP_RESOLUTION_16TO9 = {
     'dotaDisconnectBtn': {'x': '1627', 'y': '1035'},
     'dotaLeaveBtn': {'x': '1648', 'y': '985'},
     'dotaLeaveAcceptBtn': {'x': '874', 'y': '603'},
-    'dotaPlayAutoChessBtn': {'x': '1473', 'y': '485'},
+    'dotaPlayAutoChessBtn': {'x': '1473', 'y': '864'},
     'dotaAcceptBtn': {'x': '901', 'y': '529'},
     'dotaDeclineBtn': {'x': '1255', 'y': '589'},
     'dotaMainMenuBtn': {'x': '286', 'y': '32'},
     'dotaAutoChessBtn': {'x': '780', 'y': '478'},
+    'dotaArcadeBtn': {'x': '1125', 'y': '25'},
+    'dotaBrowseBtn': {'x': '931', 'y': '85'},
+    'dotaBrowseListAutoChessBtn': {'x': '641', 'y': '200'},
 
     'playerPosFirst': {'x': '1737', 'y': '155'},
     'playerPosLast': {'x': '1737', 'y': '855'}
@@ -162,12 +168,15 @@ COORDMAP_RESOLUTION_16TO10 = {
     'dotaDisconnectBtn': {'x': '1103', 'y': '764'},
     'dotaLeaveBtn': {'x': '1100', 'y': '730'},
     'dotaLeaveAcceptBtn': {'x': '553', 'y': '444'},
-    'dotaPlayAutoChessBtn': {'x': '1029', 'y': '362'},
+    'dotaPlayAutoChessBtn': {'x': '1034', 'y': '650'},
     'dotaAcceptBtn': {'x': '627', 'y': '390'},
     'dotaDeclineBtn': {'x': '865', 'y': '438'},
     'dotaMainMenuBtn': {'x': '214', 'y': '24'},
     'dotaAutoChessBtn': {'x': '504', 'y': '357'},
-
+    'dotaArcadeBtn': {'x': '762', 'y': '25'},
+    'dotaBrowseBtn': {'x': '540', 'y': '60'},
+    'dotaBrowseListAutoChessBtn': {'x': '287', 'y': '145'},
+    
     'playerPosFirst': {'x': '1144', 'y': '112'},
     'playerPosLast': {'x': '1144', 'y': '630'}
 }

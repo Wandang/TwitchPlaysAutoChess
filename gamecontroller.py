@@ -94,6 +94,21 @@ class GameController:
             self.COORDMAP['dotaMainMenuBtn']['x'],
             self.COORDMAP['dotaMainMenuBtn']['y'], '1')
         time.sleep(self.sleepBetweenMenu)
+        # navigate to arcade
+        self.myPeripheral.moveMouse(
+            self.COORDMAP['dotaArcadeBtn']['x'],
+            self.COORDMAP['dotaArcadeBtn']['y'], '1')
+        time.sleep(self.sleepBetweenMenu)
+        # navigate to browse
+        self.myPeripheral.moveMouse(
+            self.COORDMAP['dotaBrowseBtn']['x'],
+            self.COORDMAP['dotaBrowseBtn']['y'], '1')
+        time.sleep(self.sleepBetweenMenu)
+        # navigate to autochess inside browselist (first entry)
+        self.myPeripheral.moveMouse(
+            self.COORDMAP['dotaBrowseListAutoChessBtn']['x'],
+            self.COORDMAP['dotaBrowseListAutoChessBtn']['y'], '1')
+        time.sleep(self.sleepBetweenMenu)
         # navigate to autochess
         self.myPeripheral.moveMouse(
             self.COORDMAP['dotaAutoChessBtn']['x'],
