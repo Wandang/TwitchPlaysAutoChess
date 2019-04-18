@@ -29,7 +29,7 @@ class Peripherals:
     keyboard = KeyboardController()
     # default delay after each peripheral action. Needs to be > 0 to make sure
     # that the actions are finished properly
-    sleepAfterMouseMove = 0.3
+    sleepAfterMouseMove = 0.5
 
     def moveMouse(self, x, y, clickType=None):
         """Move the mouse to the desired coordinates and optionally click at
