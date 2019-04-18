@@ -40,8 +40,6 @@ class Peripherals:
             y -- y coordinate inside screen resolution
             clickType -- 1: leftclick, 2: middleclick, 3: rightclick
         """
-        print('trying to move to x: ', x)
-        print('trying to move to y: ', y)
         # print('trying to click: ' + clickType)
         self.mouse.position = (int(x), int(y))
         if(clickType):
