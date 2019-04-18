@@ -186,6 +186,34 @@ class Setup:
         twitchSocket = self.connectToTwitch()
         self.handleTwitchResponse(twitchSocket)
 
+    def testing_start(self):
+        """Tests most of the programflow/peripherals/gamecontroller.
+        Reads a text file that contains the demoflow to be replicated"""
+        self.myIO.resetFile()
+        # read each line of demoflow file
+        with open('testing_commands.txt', "r") as f:
+            for line in f:
+                line = line.rstrip('\n')
+                if('#' in line):
+                    pass
+                elif('!' in line):
+                    print(line)
+                    if(validator.validateCommand(line)):
+                        # self.addToCommandList(user, out)
+                        # Write to file for stream view
+                        items = ''
+                        for item in self.commands:
+                            items += item + '\n'
+                        self.myIO.writeFile('commands.txt', items)
+                        lowerCaseOutput = line.lower()
+                        self.gc.findAndExecute(lowerCaseOutput)
+                        # wait after each command test
+                        time.sleep(1)
+                elif('wait' in line):
+                    time_to_wait = int(line.split(' ')[1])
+                    print(time_to_wait)
+                    time.sleep(time_to_wait)
+
     def democracy(self):
         """Runs in parallel thread and counts the most popular commands for a
         few seconds.
@@ -363,3 +391,4 @@ class Setup:
 if __name__ == "__main__":
     setup = Setup()
     setup.start()
+    #setup.testing_start()
