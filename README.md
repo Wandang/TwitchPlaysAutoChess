@@ -106,16 +106,21 @@ There is an example OBS scene/overlay inside the assets folder that can be impor
 
 # Shoutout
 
-Big thanks to TwitchPlaysPokemon developers: sunshinekitty, RDJ, MZ, AP, & Oriax
+Big thanks to TwitchPlaysPokemon developers: 
+* sunshinekitty
+* RDJ
+* MZ
+* AP
+* Oriax
 
 Big thanks as well to:
-MrTee
-Sinthowinto
-StuckyO
-モエリッル
-erax0r
-billymitchell_dk
-unyieldingdeath
+* MrTee
+* Sinthowinto
+* StuckyO
+* モエリッル
+* erax0r
+* billymitchell_dk
+* unyieldingdeath
 
 # Licence
 
